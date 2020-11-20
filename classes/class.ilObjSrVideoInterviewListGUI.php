@@ -1,4 +1,5 @@
 <?php
+require_once('./Customizing/global/plugins/Services/Repository/RepositoryObject/SrVideoInterview/classes/class.ilObjSrVideoInterviewGUI.php');
 
 /**
  * Class ilObjSrVideoInterviewListGUI
@@ -16,7 +17,22 @@ class ilObjSrVideoInterviewListGUI extends ilObjectPluginListGUI
      */
     public function initCommands()
     {
-        return [];
+        $this->copy_enabled = false;
+        $this->enableTags(true);
+
+        return array(
+            array(
+                'permission' => 'read',
+                'cmd'        => ilObjSrVideoInterviewGUI::CMD_INDEX,
+                'default'    => true
+            ),
+            array(
+                'permission' => 'write',
+                'cmd'        => ilObjSrVideoInterviewGUI::CMD_EDIT,
+                'txt'        => $this->txt('edit'),
+                'default'    => false
+            ),
+        );
     }
 
     public function initType()

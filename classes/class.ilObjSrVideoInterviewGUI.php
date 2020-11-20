@@ -44,7 +44,7 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
 
     public function getAfterCreationCmd()
     {
-        return self::CMD_EDIT;
+        return self::CMD_INDEX;
     }
 
     public function getStandardCmd()

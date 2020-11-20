@@ -59,7 +59,7 @@ il.Plugins.SrVideoInterview = il.Plugins.SrVideoInterview || {};
 					video.srcObject = camera;
 
 					recorder = RecordRTC(camera, {
-						type: 'video',
+						// type: 'video',
 						// mimeType: 'video/mp4'
 					});
 
