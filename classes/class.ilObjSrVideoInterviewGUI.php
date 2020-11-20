@@ -15,6 +15,27 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
 {
     const CMD_INDEX = 'index';
     const CMD_EDIT = 'edit';
+    /**
+     * @var \ILIAS\UI\Factory
+     */
+    protected $ui_component;
+    /**
+     * @var \ILIAS\UI\Renderer
+     */
+    protected $ui_renderer;
+    /**
+     * @var \ILIAS\DI\HTTPServices
+     */
+    protected $http;
+
+    public function __construct($a_ref_id = 0, $a_id_type = self::REPOSITORY_NODE_ID, $a_parent_node_id = 0)
+    {
+        global $DIC;
+        $this->ui_component = $DIC->ui()->factory();
+        $this->ui_renderer  = $DIC->ui()->renderer();
+        $this->http         = $DIC->http();
+        parent::__construct($a_ref_id, $a_id_type, $a_parent_node_id);
+    }
 
     public function getType()
     {
@@ -38,7 +59,6 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
 
     public function performCommand($cmd)
     {
-        // $cmd = $this->ctrl->getCmd(self::CMD_INDEX);
         switch ($cmd) {
             case self::CMD_INDEX:
                 $this->index();
@@ -51,7 +71,12 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
 
     private function index() : void
     {
+        $this->tpl->addJavaScript("./Customizing/global/plugins/Services/Repository/RepositoryObject/SrVideoInterview/node_modules/recordrtc/RecordRTC.js");
+        $this->tpl->addJavaScript("./Customizing/global/plugins/Services/Repository/RepositoryObject/SrVideoInterview/js/script.recordRTC.js");
+        $this->tpl->addOnLoadCode("il.Plugins.SrVideoInterview.init();");
+        $tpl = new ilTemplate("./Customizing/global/plugins/Services/Repository/RepositoryObject/SrVideoInterview/templates/tpl.record_rtc.html", false, false);
 
+        $this->tpl->setContent($tpl->get());
     }
 
 }
