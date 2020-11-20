@@ -1,0 +1,21 @@
+{
+  "name": "srvideointerview",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@git.studer-raimann.ch:ILIAS/Plugins/SrVideoInterview.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "recordrtc": "^5.6.1"
+  }
+}
