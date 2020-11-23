@@ -8,7 +8,7 @@ class ilObjSrVideoInterview extends ilObjectPlugin
 {
     protected function initType()
     {
-        $this->type = 'xvin';
+        $this->type = ilSrVideoInterviewPlugin::PLUGIN_ID;
     }
 
 }

@@ -28,6 +28,11 @@ class ilObjSrVideoInterviewListGUI extends ilObjectPluginListGUI
             ),
             array(
                 'permission' => 'write',
+                'cmd'        => ilObjSrVideoInterviewGUI::CMD_MANAGE,
+                'default'    => false
+            ),
+            array(
+                'permission' => 'write',
                 'cmd'        => ilObjSrVideoInterviewGUI::CMD_EDIT,
                 'txt'        => $this->txt('edit'),
                 'default'    => false
@@ -37,7 +42,7 @@ class ilObjSrVideoInterviewListGUI extends ilObjectPluginListGUI
 
     public function initType()
     {
-        $this->type = 'xvin';
+        $this->type = ilSrVideoInterviewPlugin::PLUGIN_ID;
     }
 
 }

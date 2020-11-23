@@ -1,0 +1,31 @@
+obj_xvin_tab_settings#:#Einstellungen
+obj_xvin_tab_management#:#Teilnehmendenverwaltung
+obj_xvin_tab_index#:#Inhalt
+
+obj_xvin#:#Video Interview
+objs_xvin#:#Video Interview
+obj_xvin_duplicate#:#Kopieren
+objs_xvin_duplicate#:#Video Interview kopieren
+obj_xvin_select#:#Video Interview auswählen
+xvin_add#:#Video Interview hinzufügen
+xvin_new#:#Neues Video Interview hinzufügen
+xvin_read#:#Leseberechtigung für Video Interview
+xvin_write#:#Video Interview bearbeiten
+xvin_delete#:#Video Interview löschen
+xvin_visible#:#Video Interview ist sichtbar
+xvin_edit_permission#:#Berechtigungseinstellungen ändern
+crs_create_xvin#:#Video Interview erstellen
+grp_create_xvin#:#Video Interview erstellen
+fold_create_xvin#:#Video Interview erstellen
+root_create_xvin#:#Video Interview erstellen
+cat_create_xvin#:#Video Interview erstellen
+title#:#Titel
+description#:#Beschreibung
+online#:#Online
+save#:#Speichern
+update#:#Aktualisieren
+properties#:#Eigenschaften
+content#:#Inhalt
+copy#:#Kopieren
+edit#:#Bearbeiten
+export#:#Exportieren

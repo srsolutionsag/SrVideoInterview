@@ -6,6 +6,14 @@
  */
 class ilSrVideoInterviewPlugin extends ilRepositoryObjectPlugin
 {
+    /**
+     * @var string
+     */
+    const PLUGIN_ID   = 'xvin';
+
+    /**
+     * @var string
+     */
     const PLUGIN_NAME = 'SrVideoInterview';
 
     public function getPluginName()

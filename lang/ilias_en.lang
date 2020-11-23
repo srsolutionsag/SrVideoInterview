@@ -1,0 +1,43 @@
+obj_xvin_tab_settings#:#Settings
+obj_xvin_tab_management#:#Participant Management
+obj_xvin_tab_index#:#Content
+
+obj_xvin#:#Video Interview
+objs_xvin#:#Video Interview
+obj_xvin_duplicate#:#Copy
+objs_xvin_duplicate#:#Copy Video Interview
+obj_xvin_select#:#Select Video Interview
+xvin_add#:#Add Video Interview
+xvin_new#:#Add New Video Interview
+xvin_read#:#Read access to Video Interview
+xvin_write#:#Edit Video Interview
+xvin_delete#:#Delete Video Interview
+xvin_visible#:#Video Interview is visible
+xvin_edit_permission#:#Change permission settings
+crs_create_xvin#:#Create Video Interview
+grp_create_xvin#:#Create Video Interview
+fold_create_xvin#:#Create Video Interview
+root_create_xvin#:#Create Video Interview
+cat_create_xvin#:#Create Video Interview
+title#:#Title
+description#:#Description
+online#:#Online
+save#:#Save
+update#:#Update
+properties#:#Properties
+content#:#Content
+copy#:#Copy
+edit#:#Edit
+export#:#Export
+set_not_attempted#:#Set LP Status to not attempted
+set_in_progress#:#Set LP Status to in progress
+set_passed#:#Set LP Status to not completed
+set_failed#:#Set LP Status to not failed
+set_completed#:#Set LP Status to completed
+lp_status_0#:#Not Attempted
+lp_status_1#:#In Progress
+lp_status_2#:#Completed
+lp_status_3#:#Failed
+lp_status_#:#No state yet.
+lp_status_info#:#Attention: Setting the LP Status will set the LP status of the currently logged in user to the chosen Stauts. THE STATUS OF EVERY OTHER USER WILL BE SET TO NOT ATTEMPTED!
+offline:#:Offline
