@@ -1,6 +1,6 @@
-obj_xvin_tab_settings#:#Settings
-obj_xvin_tab_management#:#Participant Management
-obj_xvin_tab_index#:#Content
+xvin_tab_settings#:#Settings
+xvin_tab_management#:#Participant Management
+xvin_tab_content#:#Content
 
 obj_xvin#:#Video Interview
 objs_xvin#:#Video Interview

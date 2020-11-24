@@ -1,5 +1,9 @@
 <?php
+
 require_once('./Customizing/global/plugins/Services/Repository/RepositoryObject/SrVideoInterview/classes/class.ilObjSrVideoInterviewGUI.php');
+require_once __DIR__ . "/VideoInterviewGUI/class.ilObjSrVideoInterviewManagementGUI.php";
+require_once __DIR__ . "/VideoInterviewGUI/class.ilObjSrVideoInterviewSettingsGUI.php";
+require_once __DIR__ . "/VideoInterviewGUI/class.ilObjSrVideoInterviewContentGUI.php";
 
 /**
  * Class ilObjSrVideoInterviewListGUI
@@ -23,17 +27,17 @@ class ilObjSrVideoInterviewListGUI extends ilObjectPluginListGUI
         return array(
             array(
                 'permission' => 'read',
-                'cmd'        => ilObjSrVideoInterviewGUI::CMD_INDEX,
+                'cmd'        => ilObjSrVideoInterviewContentGUI::CMD_INDEX,
                 'default'    => true
             ),
             array(
                 'permission' => 'write',
-                'cmd'        => ilObjSrVideoInterviewGUI::CMD_MANAGE,
+                'cmd'        => ilObjSrVideoInterviewManagementGUI::CMD_MANAGE,
                 'default'    => false
             ),
             array(
                 'permission' => 'write',
-                'cmd'        => ilObjSrVideoInterviewGUI::CMD_EDIT,
+                'cmd'        => ilObjSrVideoInterviewSettingsGUI::CMD_EDIT,
                 'txt'        => $this->txt('edit'),
                 'default'    => false
             ),

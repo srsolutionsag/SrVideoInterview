@@ -10,5 +10,4 @@ class ilObjSrVideoInterviewAccess extends ilObjectPluginAccess
     {
         return true;
     }
-
 }
