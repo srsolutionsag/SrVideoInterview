@@ -1,9 +1,9 @@
 <?php
 
 require_once('./Customizing/global/plugins/Services/Repository/RepositoryObject/SrVideoInterview/classes/class.ilObjSrVideoInterviewGUI.php');
-require_once __DIR__ . "/VideoInterviewGUI/class.ilObjSrVideoInterviewManagementGUI.php";
-require_once __DIR__ . "/VideoInterviewGUI/class.ilObjSrVideoInterviewSettingsGUI.php";
-require_once __DIR__ . "/VideoInterviewGUI/class.ilObjSrVideoInterviewContentGUI.php";
+require_once __DIR__ . "/SrVideoInterviewGUI/class.ilObjSrVideoInterviewManagementGUI.php";
+require_once __DIR__ . "/SrVideoInterviewGUI/class.ilObjSrVideoInterviewSettingsGUI.php";
+require_once __DIR__ . "/SrVideoInterviewGUI/class.ilObjSrVideoInterviewContentGUI.php";
 
 /**
  * Class ilObjSrVideoInterviewListGUI

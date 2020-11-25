@@ -1,5 +1,7 @@
 <?php
 
+use srag\Plugins\SrVideoInterview\Repository\ExerciseRepository;
+
 /**
  * Class ilObjSrVideoInterviewContentGUI
  * @author Thibeau Fuhrer <thf@studer-raimann.ch>
@@ -62,11 +64,27 @@ class ilObjSrVideoInterviewContentGUI
 
     private function index() : void
     {
-        $this->tpl->addJavaScript("./Customizing/global/plugins/Services/Repository/RepositoryObject/SrVideoInterview/node_modules/recordrtc/RecordRTC.js");
-        $this->tpl->addJavaScript("./Customizing/global/plugins/Services/Repository/RepositoryObject/SrVideoInterview/js/script.recordRTC.js");
-        $this->tpl->addOnLoadCode("il.Plugins.SrVideoInterview.init();");
-        $tpl = new ilTemplate("./Customizing/global/plugins/Services/Repository/RepositoryObject/SrVideoInterview/templates/tpl.record_rtc.html", false, false);
+        $exercise = new Exercise(
+            "title",
+            "desc",
+            "question lorem ipsdum?",
+            "",
+            [
+                $interview1,
+                $interview2,
+                $interview3
+            ]
+        );
 
-        $this->tpl->setContent($tpl->get());
+        $repo = new ExerciseRepository();
+
+
+        //        // recordRTC example
+        //        $this->tpl->addJavaScript("./Customizing/global/plugins/Services/Repository/RepositoryObject/SrVideoInterview/node_modules/recordrtc/RecordRTC.js");
+        //        $this->tpl->addJavaScript("./Customizing/global/plugins/Services/Repository/RepositoryObject/SrVideoInterview/js/script.recordRTC.js");
+        //        $this->tpl->addOnLoadCode("il.Plugins.SrVideoInterview.init();");
+        //        $tpl = new ilTemplate("./Customizing/global/plugins/Services/Repository/RepositoryObject/SrVideoInterview/templates/tpl.record_rtc.html", false, false);
+        //
+        //        $this->tpl->setContent($tpl->get());
     }
 }
