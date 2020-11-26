@@ -29,7 +29,15 @@ class VideoInterview
      */
     private $exercises;
 
-    public function __construct(string $title = "", string $description = "", array $exercises = [], int $id = null)
+    /**
+     * VideoInterview constructor.
+     *
+     * @param int|null   $id
+     * @param string     $title
+     * @param string     $description
+     * @param array|null $exercises
+     */
+    public function __construct(int $id = null, string $title = "", string $description = "", array $exercises = null)
     {
         $this->id = $id;
         $this->title = $title;
@@ -96,6 +104,10 @@ class VideoInterview
      */
     public function getExercises() : array
     {
+        if (null === $this->exercises) {
+            return [];
+        }
+
         return $this->exercises;
     }
 

@@ -3,6 +3,7 @@
 namespace srag\Plugins\SrVideoInterview\AREntity;
 
 use ActiveRecord;
+use arConnector;
 
 /**
  * Class ARExercise

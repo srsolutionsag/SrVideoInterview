@@ -3,91 +3,96 @@
 namespace srag\Plugins\SrVideoInterview\Repository;
 
 use srag\Plugins\SrVideoInterview\VideoInterview\Repository;
+use srag\Plugins\SrVideoInterview\Repository\VideoInterviewRepository;
+use srag\Plugins\SrVideoInterview\Repository\VideoInterviewExerciseReferenceRepository;
 use srag\Plugins\SrVideoInterview\AREntity\ARExercise;
 use srag\Plugins\SrVideoInterview\VideoInterview\Entity\Exercise;
 use srag\Plugins\SrVideoInterview\AREntity\ARVideoInterviewExerciseReference;
 use srag\Plugins\SrVideoInterview\VideoInterview\Entity\VideoInterview;
 use srag\Plugins\SrVideoInterview\AREntity\ARVideoInterview;
 
+/**
+ * Class ExerciseRepository
+ *
+ * @author Thibeau Fuhrer <thf@studer-raimann.ch>
+ */
 class ExerciseRepository implements Repository
 {
     /**
+     * @var VideoInterviewExerciseReferenceRepository
+     */
+    protected $reference_repository;
+
+    /**
+     * Initialise ExerciseRepository
+     */
+    public function __construct()
+    {
+        $this->reference_repository = new VideoInterviewExerciseReferenceRepository();
+    }
+
+    /**
      * @inheritDoc
      */
-    public function get(int $obj_id) : ?object
+    public function get(int $exercise_id) : ?object
     {
-        $ar_obj = ARExercise::find($obj_id);
-        if (null === $ar_obj) return null;
+        $ar_exercise = ARExercise::find($exercise_id);
+        if (null === $ar_exercise) return null;
 
-        $obj = new Exercise(
-            $obj_id,
-            $ar_obj->getTitle(),
-            $ar_obj->getDescription(),
-            $ar_obj->getQuestion(),
-            $ar_obj->getResourceId(),
-            $this->getVideointerviewReferences($obj_id)
+        $exercise = new Exercise(
+            $exercise_id,
+            $ar_exercise->getTitle(),
+            $ar_exercise->getDescription(),
+            $ar_exercise->getQuestion(),
+            $ar_exercise->getResourceId(),
         );
 
-        return $obj;
-    }
+        $exercise->setVideoInterviews(
+            $this->reference_repository->getReferencesForEntity($exercise)
+        );
 
-    /**
-     * retrieve all interviews referenced with given exercise id.
-     *
-     * @param int $obj_id
-     * @return array
-     */
-    private function getVideoInterviewReferences(int $obj_id) : array
-    {
-        $ar_references = ARVideoInterviewExerciseReference::where(['video_interview_id' => $obj_id])->getArray();
-        $video_interview_objs = [];
-        foreach ($ar_references as $ref)
-        {
-            $ar_video_interview = ARVideoInterview::find($ref->getVideoInterviewId());
-            array_push($video_interview_objs, new VideoInterview(
-                $ar_video_interview->getId(),
-                $ar_video_interview->getTitle(),
-                $ar_video_interview->getDescription()
-            ));
-        }
-
-        return $video_interview_objs;
+        return $exercise;
     }
 
     /**
      * @inheritDoc
      */
-    public function store(object $obj) : bool
+    public function store(object $exercise) : bool
     {
-        if (!$obj instanceof Exercise) return false;
+        if (!$exercise instanceof Exercise) return false;
 
-        $ar_exercise = ARExercise::find($obj->getId());
+        $ar_exercise = ARExercise::find($exercise->getId());
         if (null !== $ar_exercise) {
             $ar_exercise
-                ->setTitle($obj->getTitle())
-                ->setDescription($obj->getDescription())
-                ->setQuestion($obj->getQuestion())
-                ->setResourceId($obj->getResourceId())
+                ->setTitle($exercise->getTitle())
+                ->setDescription($exercise->getDescription())
+                ->setQuestion($exercise->getQuestion())
+                ->setResourceId($exercise->getResourceId())
+                ->update()
             ;
 
-            $ar_exercise->update();
+            $ar_references = $this->reference_repository->getReferencesForEntity($exercise);
+            $references = $exercise->getVideoInterviews();
+            // create non-existing references and delete existing ones, that are no longer in $references.
 
-            // alle exercise_refs die das Objekt hat hinzufügen, alle die das Objekt nicht hat löschen.
+        } else {
+            $ar_exercise = new ARExercise();
+            $ar_exercise
+                ->setTitle($exercise->getTitle())
+                ->setDescription($exercise->getDescription())
+                ->setQuestion($exercise->getQuestion())
+                ->setResourceId($exercise->getResourceId())
+                ->store()
+            ;
 
-//            $ar_exercise_refs = ARVideoInterviewExerciseReference::where([
-//                'exercise_id' => $obj->getId()
-//            ])->getArray();
-//
-//            foreach ($obj->getVideoInterviews() as $interview) {
-//                $ar_exercise_ref = ARVideoInterviewExerciseReference::where([
-//                    'exercise_id' => $obj->getId(),
-//                    'video_interview_id' => $interview->getId()
-//                ], "=");
-//
-//                if (null === $ar_exercise_ref) {
-//                    $ar_exercise_ref->create();
-//                }
-//            }
+            foreach ($exercise->getVideoInterviews() as $interview) {
+                $ar_reference = new ARVideoInterviewExerciseReference();
+                $ar_reference
+                    ->setVideoInterviewId($interview->getId())
+                    ->setExerciseId($exercise->getId())
+                    ->store()
+                ;
+            }
         }
 
         return true;
@@ -99,5 +104,13 @@ class ExerciseRepository implements Repository
     public function getAll() : array
     {
         return [];
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function delete(int $obj_id) : bool
+    {
+        return true;
     }
 }

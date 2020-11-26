@@ -37,9 +37,19 @@ class Exercise
     /**
      * @var array
      */
-    private array $videointerviews;
+    private $videointerviews;
 
-    public function __construct(string $title = "", string $description = "", $question = "", string $resource_id = "", array $videointerviews = [], int $id = null)
+    /**
+     * Exercise constructor.
+     *
+     * @param int|null   $id
+     * @param string     $title
+     * @param string     $description
+     * @param string     $question
+     * @param string     $resource_id
+     * @param array|null $videointerviews
+     */
+    public function __construct(int $id = null, string $title = "", string $description = "", $question = "", string $resource_id = "", array $videointerviews = null)
     {
         $this->id = $id;
         $this->title = $title;
@@ -144,6 +154,10 @@ class Exercise
      */
     public function getVideoInterviews() : array
     {
+        if (null === $this->videointerviews) {
+            return [];
+        }
+
         return $this->videointerviews;
     }
 

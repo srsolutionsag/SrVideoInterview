@@ -10,6 +10,14 @@ namespace srag\Plugins\SrVideoInterview\VideoInterview;
 interface Repository
 {
     /**
+     * delete an existing object in the persistence layer.
+     *
+     * @param int $obj_id
+     * @return bool
+     */
+    public function delete(int $obj_id) : bool;
+
+    /**
      * store a new object or update an existing one in the persistence layer.
      *
      * @param Object $obj

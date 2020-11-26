@@ -64,17 +64,10 @@ class ilObjSrVideoInterviewContentGUI
 
     private function index() : void
     {
-        $exercise = new Exercise(
-            "title",
-            "desc",
-            "question lorem ipsdum?",
-            "",
-            [
-                $interview1,
-                $interview2,
-                $interview3
-            ]
-        );
+        $arr = [];
+        foreach ($arr as $i) {
+            var_dump($i);
+        }
 
         $repo = new ExerciseRepository();
 
