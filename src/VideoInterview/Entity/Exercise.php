@@ -12,51 +12,51 @@ class Exercise
     /**
      * @var int
      */
-    private $id;
+    protected $id;
 
     /**
      * @var string
      */
-    private $title;
+    protected $title;
 
     /**
      * @var string
      */
-    private $description;
+    protected $description;
 
     /**
      * @var string
      */
-    private $question;
+    protected $detailed_description;
 
     /**
      * @var string
      */
-    private $resource_id;
+    protected $resource_id;
 
     /**
-     * @var array
+     * @var int
      */
-    private $videointerviews;
+    protected $obj_id;
 
     /**
      * Exercise constructor.
      *
-     * @param int|null   $id
-     * @param string     $title
-     * @param string     $description
-     * @param string     $question
-     * @param string     $resource_id
-     * @param array|null $videointerviews
+     * @param int|null $id
+     * @param string   $title
+     * @param string   $description
+     * @param string   $detailed_description
+     * @param string   $resource_id
+     * @param int|null $obj_id
      */
-    public function __construct(int $id = null, string $title = "", string $description = "", $question = "", string $resource_id = "", array $videointerviews = null)
+    public function __construct(int $id = null, string $title = "", string $description = "", $detailed_description = "", string $resource_id = "", int $obj_id = null)
     {
         $this->id = $id;
         $this->title = $title;
         $this->description = $description;
-        $this->question = $question;
+        $this->detailed_description = $detailed_description;
         $this->resource_id = $resource_id;
-        $this->videointerviews = $videointerviews;
+        $this->obj_id = $obj_id;
     }
 
     /**
@@ -116,18 +116,18 @@ class Exercise
     /**
      * @return string
      */
-    public function getQuestion() : string
+    public function getDetailedDescription() : string
     {
-        return $this->question;
+        return $this->detailed_description;
     }
 
     /**
-     * @param string $question
+     * @param string $detailed_description
      * @return Exercise
      */
-    public function setQuestion(string $question) : Exercise
+    public function setDetailedDescription(string $detailed_description) : Exercise
     {
-        $this->question = $question;
+        $this->detailed_description = $detailed_description;
         return $this;
     }
 
@@ -150,24 +150,20 @@ class Exercise
     }
 
     /**
-     * @return array
+     * @return int
      */
-    public function getVideoInterviews() : array
+    public function getObjId() : int
     {
-        if (null === $this->videointerviews) {
-            return [];
-        }
-
-        return $this->videointerviews;
+        return $this->obj_id;
     }
 
     /**
-     * @param array $videointerviews
+     * @param int $obj_id
      * @return Exercise
      */
-    public function setVideoInterviews(array $videointerviews) : Exercise
+    public function setObjId(int $obj_id) : Exercise
     {
-        $this->videointerviews = $videointerviews;
+        $this->obj_id = $obj_id;
         return $this;
     }
 }

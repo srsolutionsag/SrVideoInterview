@@ -3,7 +3,6 @@
 namespace srag\Plugins\SrVideoInterview\AREntity;
 
 use ActiveRecord;
-use arConnector;
 
 /**
  * Class ARExercise
@@ -20,6 +19,7 @@ class ARExercise extends ActiveRecord
      * @con_has_field   true
      * @con_is_primary  true
      * @con_sequence    true
+     * @con_is_notnull  true
      * @con_fieldtype   integer
      * @con_length      8
      */
@@ -53,7 +53,7 @@ class ARExercise extends ActiveRecord
      * @con_fieldtype   clob
      * @con_length      4000
      */
-    protected $question = null;
+    protected $detailed_description = null;
 
     /**
      * @var string
@@ -64,6 +64,16 @@ class ARExercise extends ActiveRecord
      * @con_length      250
      */
     protected $resource_id = null;
+
+    /**
+     * @var int
+     *
+     * @con_has_field   true
+     * @con_is_notnull  true
+     * @con_fieldtype   integer
+     * @con_length      8
+     */
+    protected $obj_id = null;
 
     /**
      * @return string
@@ -138,18 +148,18 @@ class ARExercise extends ActiveRecord
     /**
      * @return string
      */
-    public function getQuestion() : string
+    public function getDetailedDescription() : string
     {
-        return $this->question;
+        return $this->detailed_description;
     }
 
     /**
-     * @param string $question
+     * @param string $detailed_description
      * @return ARExercise
      */
-    public function setQuestion(string $question) : ARExercise
+    public function setDetailedDescription(string $detailed_description) : ARExercise
     {
-        $this->question = $question;
+        $this->detailed_description = $detailed_description;
         return $this;
     }
 
@@ -168,6 +178,24 @@ class ARExercise extends ActiveRecord
     public function setResourceId(string $resource_id) : ARExercise
     {
         $this->resource_id = $resource_id;
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getObjId() : int
+    {
+        return $this->obj_id;
+    }
+
+    /**
+     * @param int $obj_id
+     * @return ARExercise
+     */
+    public function setObjId(int $obj_id) : ARExercise
+    {
+        $this->obj_id = $obj_id;
         return $this;
     }
 }

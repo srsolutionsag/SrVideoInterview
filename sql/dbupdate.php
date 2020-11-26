@@ -1,42 +1,46 @@
 <#1>
+<#2>
+<#3>
+<#4>
 <?php
-/**
- * @var $ilDB ilDBInterface
- */
 $fields = array(
     'id' => array(
+        'notnull' => '1',
         'type' => 'integer',
         'length' => '8',
 
     ),
-    'title' => array(
-        'notnull' => '1',
+    'feedback' => array(
+        'type' => 'clob',
+
+    ),
+    'resource_id' => array(
         'type' => 'text',
         'length' => '250',
 
     ),
-    'description' => array(
-        'type' => 'clob',
+    'participant_id' => array(
+        'notnull' => '1',
+        'type' => 'integer',
+        'length' => '8',
 
     ),
 
 );
-if (! $ilDB->tableExists('xvin_interview')) {
-    $ilDB->createTable('xvin_interview', $fields);
-    $ilDB->addPrimaryKey('xvin_interview', array( 'id' ));
+if (! $ilDB->tableExists('xvin_answer')) {
+    $ilDB->createTable('xvin_answer', $fields);
+    $ilDB->addPrimaryKey('xvin_answer', array( 'id' ));
 
-    if (! $ilDB->sequenceExists('xvin_interview')) {
-        $ilDB->createSequence('xvin_interview');
+    if (! $ilDB->sequenceExists('xvin_answer')) {
+        $ilDB->createSequence('xvin_answer');
     }
 }
 ?>
-<#2>
+<#5>
 <?php
-/**
- * @var $ilDB ilDBInterface
- */
 $fields = array(
     'id' => array(
+        'notnull' => '1',
         'type' => 'integer',
         'length' => '8',
 
@@ -51,7 +55,7 @@ $fields = array(
         'type' => 'clob',
 
     ),
-    'question' => array(
+    'detailed_description' => array(
         'notnull' => '1',
         'type' => 'clob',
 
@@ -61,9 +65,14 @@ $fields = array(
         'length' => '250',
 
     ),
+    'obj_id' => array(
+        'notnull' => '1',
+        'type' => 'integer',
+        'length' => '8',
+
+    ),
 
 );
-
 if (! $ilDB->tableExists('xvin_exercise')) {
     $ilDB->createTable('xvin_exercise', $fields);
     $ilDB->addPrimaryKey('xvin_exercise', array( 'id' ));
@@ -73,21 +82,25 @@ if (! $ilDB->tableExists('xvin_exercise')) {
     }
 }
 ?>
-<#3>
+<#6>
 <?php
-/**
- * @var $ilDB ilDBInterface
- */
 $fields = array(
     'id' => array(
+        'notnull' => '1',
         'type' => 'integer',
         'length' => '8',
 
     ),
-    'video_interview_id' => array(
+    'feedback_sent' => array(
         'notnull' => '1',
         'type' => 'integer',
-        'length' => '8',
+        'length' => '1',
+
+    ),
+    'invitation_sent' => array(
+        'notnull' => '1',
+        'type' => 'integer',
+        'length' => '1',
 
     ),
     'exercise_id' => array(
@@ -96,15 +109,20 @@ $fields = array(
         'length' => '8',
 
     ),
+    'user_id' => array(
+        'notnull' => '1',
+        'type' => 'integer',
+        'length' => '8',
+
+    ),
 
 );
+if (! $ilDB->tableExists('xvin_participant')) {
+    $ilDB->createTable('xvin_participant', $fields);
+    $ilDB->addPrimaryKey('xvin_participant', array( 'id' ));
 
-if (! $ilDB->tableExists('xvin_exercise_ref')) {
-    $ilDB->createTable('xvin_exercise_ref', $fields);
-    $ilDB->addPrimaryKey('xvin_exercise_ref', array( 'id' ));
-
-    if (! $ilDB->sequenceExists('xvin_exercise_ref')) {
-        $ilDB->createSequence('xvin_exercise_ref');
+    if (! $ilDB->sequenceExists('xvin_participant')) {
+        $ilDB->createSequence('xvin_participant');
     }
 }
 ?>

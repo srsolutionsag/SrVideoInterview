@@ -10,7 +10,7 @@ namespace srag\Plugins\SrVideoInterview\VideoInterview;
 interface Repository
 {
     /**
-     * delete an existing object in the persistence layer.
+     * delete an existing object by its id.
      *
      * @param int $obj_id
      * @return bool
@@ -18,7 +18,7 @@ interface Repository
     public function delete(int $obj_id) : bool;
 
     /**
-     * store a new object or update an existing one in the persistence layer.
+     * create a new object or update an existing one.
      *
      * @param Object $obj
      * @return bool
@@ -26,7 +26,7 @@ interface Repository
     public function store(object $obj) : bool;
 
     /**
-     * retrieve an existing object from the persistence layer if it exists.
+     * retrieve an existing object by it's id or null.
      *
      * @param int $obj_id
      * @return object|null
@@ -34,9 +34,9 @@ interface Repository
     public function get(int $obj_id) : ?object;
 
     /**
-     * retrieve all existing objects from the persistence layer.
+     * retrieve all existing objects in an array or null.
      *
-     * @return array
+     * @return array|null
      */
-    public function getAll() : array;
+    public function getAll() : ?array;
 }

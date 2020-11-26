@@ -1,10 +1,10 @@
 <?php
 
-use srag\Plugins\SrVideoInterview\Repository\ExerciseRepository;
-
 /**
  * Class ilObjSrVideoInterviewContentGUI
+ *
  * @author Thibeau Fuhrer <thf@studer-raimann.ch>
+ *
  * @ilCtrl_isCalledBy ilObjSrVideoInterviewContentGUI: ilObjSrVideoInterviewGUI
  */
 class ilObjSrVideoInterviewContentGUI
@@ -64,13 +64,9 @@ class ilObjSrVideoInterviewContentGUI
 
     private function index() : void
     {
-        $arr = [];
-        foreach ($arr as $i) {
-            var_dump($i);
-        }
-
-        $repo = new ExerciseRepository();
-
+        $rep1 = new \srag\Plugins\SrVideoInterview\Repository\AnswerRepository();
+        $rep2 = new \srag\Plugins\SrVideoInterview\Repository\ExerciseRepository();
+        $rep3 = new \srag\Plugins\SrVideoInterview\Repository\ParticipantRepository();
 
         //        // recordRTC example
         //        $this->tpl->addJavaScript("./Customizing/global/plugins/Services/Repository/RepositoryObject/SrVideoInterview/node_modules/recordrtc/RecordRTC.js");
