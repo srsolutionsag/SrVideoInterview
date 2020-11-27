@@ -53,13 +53,14 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
         $next_class = $this->ctrl->getNextClass($this);
         switch ($next_class)
         {
-            case "":
+            case '':
             case strtolower(ilObjSrVideoInterviewContentGUI::class):
-                $content_gui = new ilObjSrVideoInterviewContentGUI();
+                if ($this->getCreationMode()) break;
+                $content_gui = new ilObjSrVideoInterviewContentGUI($this->ref_id, $this->obj_id);
                 $this->ctrl->forwardCommand($content_gui);
                 break;
             case strtolower(ilObjSrVideoInterviewSettingsGUI::class):
-                $settings_gui = new ilObjSrVideoInterviewSettingsGUI();
+                $settings_gui = new ilObjSrVideoInterviewSettingsGUI($this->ref_id, $this->obj_id);
                 $this->ctrl->forwardCommand($settings_gui);
                 break;
             case strtolower(ilObjSrVideoInterviewManagementGUI::class):
@@ -77,6 +78,11 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
         parent::executeCommand();
     }
 
+    /**
+     * needs to be implemented because of ilObjectPluginGUI.
+     *
+     * @param string $cmd
+     */
     public function performCommand(string $cmd) : void
     {
         // do nothing actually.
@@ -108,7 +114,7 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
                 $this->txt(ilObjSrVideoInterviewSettingsGUI::TAB_NAME),
                 $this->ctrl->getLinkTargetByClass(
                     ilObjSrVideoInterviewSettingsGUI::class,
-                    ilObjSrVideoInterviewSettingsGUI::CMD_EDIT
+                    ilObjSrVideoInterviewSettingsGUI::CMD_SETTINGS_SHOW
                 )
             );
 

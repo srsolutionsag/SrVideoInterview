@@ -72,6 +72,37 @@ class ExerciseRepository implements Repository
     }
 
     /**
+     * retrieve all exercises for a repository obj by it's id.
+     *
+     * @param int $obj_id
+     * @return Exercise|null
+     */
+    public function getByObjId(int $obj_id) : ?array
+    {
+        $ar_exercises = ARExercise::where([
+            'obj_id' => $obj_id
+        ], "=");
+
+        $exercises = [];
+        if (!empty($ar_exercises)) {
+            foreach ($ar_exercises as $exercise) {
+                array_push($exercises, new Exercise(
+                    $exercise->getId(),
+                    $exercise->getTitle(),
+                    $exercise->getDescription(),
+                    $exercise->getDetailedDescription(),
+                    $exercise->getResourceId(),
+                    $exercise->getObjId()
+                ));
+            }
+
+            return $exercises;
+        }
+
+        return null;
+    }
+
+    /**
      * @inheritDoc
      */
     public function getAll() : ?array

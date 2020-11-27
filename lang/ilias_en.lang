@@ -1,6 +1,9 @@
 xvin_tab_settings#:#Settings
 xvin_tab_management#:#Participant Management
 xvin_tab_content#:#Content
+xvin_detailed_description#:#Detailed Description
+xvin_back_to#:#Back
+xvin_exercise_not_found#:#This exercise could not be found.
 
 obj_xvin#:#Video Interview
 objs_xvin#:#Video Interview

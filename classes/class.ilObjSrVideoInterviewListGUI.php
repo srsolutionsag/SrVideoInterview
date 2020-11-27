@@ -37,7 +37,7 @@ class ilObjSrVideoInterviewListGUI extends ilObjectPluginListGUI
             ),
             array(
                 'permission' => 'write',
-                'cmd'        => ilObjSrVideoInterviewSettingsGUI::CMD_EDIT,
+                'cmd'        => ilObjSrVideoInterviewSettingsGUI::CMD_SETTINGS_SHOW,
                 'txt'        => $this->txt('edit'),
                 'default'    => false
             ),
