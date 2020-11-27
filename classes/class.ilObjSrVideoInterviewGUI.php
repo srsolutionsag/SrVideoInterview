@@ -1,8 +1,8 @@
 <?php
 
-require_once __DIR__ . "/SrVideoInterviewGUI/class.ilObjSrVideoInterviewManagementGUI.php";
-require_once __DIR__ . "/SrVideoInterviewGUI/class.ilObjSrVideoInterviewSettingsGUI.php";
-require_once __DIR__ . "/SrVideoInterviewGUI/class.ilObjSrVideoInterviewContentGUI.php";
+//require_once __DIR__ . "/SrVideoInterviewGUI/class.ilObjSrVideoInterviewManagementGUI.php";
+//require_once __DIR__ . "/SrVideoInterviewGUI/class.ilObjSrVideoInterviewSettingsGUI.php";
+//require_once __DIR__ . "/SrVideoInterviewGUI/class.ilObjSrVideoInterviewContentGUI.php";
 
 /**
  * Class ilObjSrVideoInterviewGUI
@@ -21,11 +21,35 @@ require_once __DIR__ . "/SrVideoInterviewGUI/class.ilObjSrVideoInterviewContentG
 class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
 {
     /**
-     * initialise ilObjSrVideoInterviewGUI
+     * @var \ILIAS\DI\HTTPServices
      */
-    public function afterConstructor() : void
+    protected $http;
+
+    /**
+     * @var ILIAS\Refinery\Factory
+     */
+    protected $refinery;
+
+    /**
+     * @var \ILIAS\UI\Factory
+     */
+    protected $ui_factory;
+
+    /**
+     * @var \ILIAS\UI\Renderer
+     */
+    protected $ui_renderer;
+
+    public function __construct($a_ref_id = 0, $a_id_type = self::REPOSITORY_NODE_ID, $a_parent_node_id = 0)
     {
-        // dependencies
+        global $DIC;
+
+        $this->ui_factory  = $DIC->ui()->factory();
+        $this->ui_renderer = $DIC->ui()->renderer();
+        $this->refinery    = $DIC->refinery();
+        $this->http        = $DIC->http();
+
+        parent::__construct($a_ref_id, $a_id_type, $a_parent_node_id);
     }
 
     public final function getType() : string
@@ -44,7 +68,17 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
     }
 
     /**
-     * @TODO cannot activate ilPermissionGUI Tab
+     * needs to be implemented because of ilObjectPluginGUI.
+     *
+     * @param string $cmd
+     */
+    public function performCommand(string $cmd) : void
+    {
+        // does nothing.
+    }
+
+    /**
+     * @TODO: activate ilPermissionGUI tab, not working yet.
      * @throws ilCtrlException
      */
     public function executeCommand() : void
@@ -60,7 +94,7 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
                 $this->ctrl->forwardCommand($content_gui);
                 break;
             case strtolower(ilObjSrVideoInterviewSettingsGUI::class):
-                $settings_gui = new ilObjSrVideoInterviewSettingsGUI($this->ref_id, $this->obj_id);
+                $settings_gui = new ilObjSrVideoInterviewSettingsGUI($this->ref_id);
                 $this->ctrl->forwardCommand($settings_gui);
                 break;
             case strtolower(ilObjSrVideoInterviewManagementGUI::class):
@@ -71,21 +105,11 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
                 // activate permission tab here.
                 break;
             default:
-                // we should not reach this
+                // we should not reach this.
                 break;
         }
 
         parent::executeCommand();
-    }
-
-    /**
-     * needs to be implemented because of ilObjectPluginGUI.
-     *
-     * @param string $cmd
-     */
-    public function performCommand(string $cmd) : void
-    {
-        // do nothing actually.
     }
 
     /**
@@ -127,5 +151,31 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
                 )
             );
         }
+    }
+
+    /**
+     * retrieve rendered error-message for a custom message.
+     *
+     * @param string $msg
+     * @return string
+     */
+    protected function renderErrorMessage(string $msg) : string
+    {
+        return $this->ui_renderer->render(
+            $this->ui_factory->messageBox()->failure($msg)
+        );
+    }
+
+    /**
+     * retrieve rendered success-message for a custom message.
+     *
+     * @param string $msg
+     * @return string
+     */
+    protected function renderSuccessMessage(string $msg) : string
+    {
+        return $this->ui_renderer->render(
+            $this->ui_factory->messageBox()->success($msg)
+        );
     }
 }

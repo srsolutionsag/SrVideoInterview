@@ -16,6 +16,11 @@ class ilObjSrVideoInterviewListGUI extends ilObjectPluginListGUI
         return ilObjSrVideoInterviewGUI::class;
     }
 
+    public function initType()
+    {
+        $this->type = ilSrVideoInterviewPlugin::PLUGIN_ID;
+    }
+
     /**
      * @return array
      */
@@ -43,10 +48,4 @@ class ilObjSrVideoInterviewListGUI extends ilObjectPluginListGUI
             ),
         );
     }
-
-    public function initType()
-    {
-        $this->type = ilSrVideoInterviewPlugin::PLUGIN_ID;
-    }
-
 }

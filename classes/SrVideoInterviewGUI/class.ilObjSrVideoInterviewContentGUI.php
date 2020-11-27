@@ -1,5 +1,8 @@
 <?php
 
+require_once __DIR__ . "/../class.ilSrPermissionDeniedException.php";
+require_once __DIR__ . "/../class.ilObjSrVideoInterviewGUI.php";
+
 use srag\Plugins\SrVideoInterview\Repository\ExerciseRepository;
 
 /**
@@ -9,66 +12,18 @@ use srag\Plugins\SrVideoInterview\Repository\ExerciseRepository;
  *
  * @ilCtrl_isCalledBy ilObjSrVideoInterviewContentGUI: ilObjSrVideoInterviewGUI
  */
-class ilObjSrVideoInterviewContentGUI
+class ilObjSrVideoInterviewContentGUI extends ilObjSrVideoInterviewGUI
 {
     const TAB_NAME  = 'xvin_tab_content';
     const CMD_INDEX = 'index';
 
-    /**
-     * @var int
-     */
-    private $ref_id;
-
-    /**
-     * @var int
-     */
-    private $obj_id;
-    
-    /**
-     * @var ilTemplate
-     */
-    private $tpl;
-
-    /**
-     * @var ilTabsGUI
-     */
-    private $tabs;
-
-    /**
-     * @var \ILIAS\DI\HTTPServices
-     */
-    private $http;
-
-    /**
-     * @var ilCtrl
-     */
-    private $ctrl;
-
-    /**
-     * @var ilAccessHandler
-     */
-    private $access;
-
     private $repository;
 
-    /**
-     * Initialise ilObjSrVideoInterviewContentGUI
-     *
-     * @param int $ref_id
-     * @param int $obj_id
-     */
-    public function __construct(int $ref_id, int $obj_id)
+    public function __construct($a_ref_id = 0, $a_id_type = self::REPOSITORY_NODE_ID, $a_parent_node_id = 0)
     {
-        global $DIC;
-
         $this->repository = new ExerciseRepository();
-        $this->tpl      = $DIC->ui()->mainTemplate();
-        $this->tabs     = $DIC->tabs();
-        $this->http     = $DIC->http();
-        $this->ctrl     = $DIC->ctrl();
-        $this->access   = $DIC->access();
-        $this->ref_id   = $ref_id;
-        $this->obj_id   = $obj_id;
+
+        parent::__construct($a_ref_id, $a_id_type, $a_parent_node_id);
     }
 
     /**
@@ -88,12 +43,6 @@ class ilObjSrVideoInterviewContentGUI
         }
     }
 
-    private function buildExerciseComponent(Exercise $exercise) : string
-    {
-
-        return '';
-    }
-
     /**
      * show exercise entity.
      */
@@ -101,11 +50,16 @@ class ilObjSrVideoInterviewContentGUI
     {
         $exercises = $this->repository->getByObjId($this->obj_id);
         if (!empty($exercises)) {
+            $exercises = [];
             foreach ($exercises as $exercise) {
-                $this->tpl->setContent(
-                    ""
-                );
+                array_push($exercises, [
+                    'title' => $exercise->getTitle(),
+                    'description' => $exercise->getDescription(),
+                    'detail' => $exercise->getDetailedDescription(),
+                ]);
             }
+
+            $listing = $this->ui_factory->listing()->characteristicValue($exercises);
         } else {
             // display error toast instead.
         }
