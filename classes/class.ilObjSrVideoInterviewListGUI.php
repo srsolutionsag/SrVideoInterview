@@ -1,12 +1,12 @@
 <?php
 
 require_once('./Customizing/global/plugins/Services/Repository/RepositoryObject/SrVideoInterview/classes/class.ilObjSrVideoInterviewGUI.php');
-require_once __DIR__ . "/SrVideoInterviewGUI/class.ilObjSrVideoInterviewManagementGUI.php";
-require_once __DIR__ . "/SrVideoInterviewGUI/class.ilObjSrVideoInterviewSettingsGUI.php";
-require_once __DIR__ . "/SrVideoInterviewGUI/class.ilObjSrVideoInterviewContentGUI.php";
+require_once __DIR__ . "/SrVideoInterviewGUI/class.ilObjSrVideoInterviewExerciseGUI.php";
+require_once __DIR__ . "/SrVideoInterviewGUI/class.ilObjSrVideoInterviewParticipantGUI.php";
 
 /**
  * Class ilObjSrVideoInterviewListGUI
+ *
  * @author Fabian Schmid <fs@studer-raimann.ch>
  */
 class ilObjSrVideoInterviewListGUI extends ilObjectPluginListGUI
@@ -32,17 +32,17 @@ class ilObjSrVideoInterviewListGUI extends ilObjectPluginListGUI
         return array(
             array(
                 'permission' => 'read',
-                'cmd'        => ilObjSrVideoInterviewContentGUI::CMD_INDEX,
+                'cmd'        => ilObjSrVideoInterviewExerciseGUI::CMD_EXERCISE_INDEX,
                 'default'    => true
             ),
             array(
                 'permission' => 'write',
-                'cmd'        => ilObjSrVideoInterviewManagementGUI::CMD_MANAGE,
+                'cmd'        => ilObjSrVideoInterviewParticipantGUI::CMD_PARTICIPANT_INDEX,
                 'default'    => false
             ),
             array(
                 'permission' => 'write',
-                'cmd'        => ilObjSrVideoInterviewSettingsGUI::CMD_SETTINGS_SHOW,
+                'cmd'        => ilObjSrVideoInterviewExerciseGUI::CMD_EXERCISE_EDIT,
                 'txt'        => $this->txt('edit'),
                 'default'    => false
             ),
