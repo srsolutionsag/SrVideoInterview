@@ -14,6 +14,31 @@ use srag\Plugins\SrVideoInterview\AREntity\ARExercise;
 class ExerciseRepository implements Repository
 {
     /**
+     * build an Exercise from array.
+     *
+     * @param array $args
+     * @return Exercise
+     */
+    protected function buildExercise(array $args = array(
+        'id' => null,
+        'title' => "",
+        'description' => "",
+        'detailed_description' => "",
+        'resource_id' => "",
+        'obj_id' => null
+    )) : Exercise
+    {
+        return new Exercise(
+            $args['id'],
+            $args['title'],
+            $args['description'],
+            $args['detailed_description'],
+            $args['resource_id'],
+            $args['obj_id']
+        );
+    }
+
+    /**
      * @inheritDoc
      */
     public function delete(int $exercise_id) : bool
@@ -81,19 +106,14 @@ class ExerciseRepository implements Repository
     {
         $ar_exercises = ARExercise::where([
             'obj_id' => $obj_id
-        ], "=");
+        ], "=")->getArray();
+
+//        echo var_dump($ar_exercises); exit;
 
         $exercises = [];
-        if (!empty($ar_exercises)) {
+        if (null !== $ar_exercises) {
             foreach ($ar_exercises as $exercise) {
-                array_push($exercises, new Exercise(
-                    $exercise->getId(),
-                    $exercise->getTitle(),
-                    $exercise->getDescription(),
-                    $exercise->getDetailedDescription(),
-                    $exercise->getResourceId(),
-                    $exercise->getObjId()
-                ));
+                $exercises[] = $this->buildExercise($exercise);
             }
 
             return $exercises;
@@ -112,14 +132,14 @@ class ExerciseRepository implements Repository
 
         if (!empty($ar_exercises)) {
             foreach ($ar_exercises as $ar_exercise) {
-                array_push($exercises, new Exercise(
+                $exercises[] = new Exercise(
                     $ar_exercise->getId(),
                     $ar_exercise->getTitle(),
                     $ar_exercise->getDescription(),
                     $ar_exercise->getDetailedDescription(),
                     $ar_exercise->getResourceId(),
                     $ar_exercise->getObjId()
-                ));
+                );
             }
 
             return $exercises;

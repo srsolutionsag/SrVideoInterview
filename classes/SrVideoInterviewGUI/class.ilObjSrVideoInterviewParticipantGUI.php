@@ -16,7 +16,7 @@ class ilObjSrVideoInterviewParticipantGUI extends ilObjSrVideoInterviewGUI
     /**
      * Participant GUI tab-names and translation var
      */
-    const PARTICIPANT_TAB_INDEX  = 'participant_tab_index';
+    const PARTICIPANT_TAB        = 'participant_tab';
 
     /**
      * Participant GUI commands
@@ -50,6 +50,7 @@ class ilObjSrVideoInterviewParticipantGUI extends ilObjSrVideoInterviewGUI
      */
     public function executeCommand() : void
     {
+        $this->tabs->activateTab(self::PARTICIPANT_TAB);
         $cmd = $this->ctrl->getCmd(self::CMD_PARTICIPANT_INDEX);
 
         switch ($cmd)
@@ -58,13 +59,14 @@ class ilObjSrVideoInterviewParticipantGUI extends ilObjSrVideoInterviewGUI
             case self::CMD_PARTICIPANT_ADD:
             case self::CMD_PARTICIPANT_REMOVE:
             case self::CMD_PARTICIPANT_NOTIFY:
-                $this->tabs->activateTab(self::PARTICIPANT_TAB_INDEX);
                 if ($this->access->checkAccess("write", $cmd, $this->ref_id)) {
                     $this->$cmd();
+                } else {
+                    $this->permissionDenied();
                 }
                 break;
             default:
-                $this->permissionDenied();
+                // we should not reach this.
                 break;
         }
     }

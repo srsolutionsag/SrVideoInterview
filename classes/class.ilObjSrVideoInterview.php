@@ -10,5 +10,4 @@ class ilObjSrVideoInterview extends ilObjectPlugin
     {
         $this->type = ilSrVideoInterviewPlugin::PLUGIN_ID;
     }
-
 }

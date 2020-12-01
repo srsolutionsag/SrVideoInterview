@@ -1,10 +1,9 @@
-xvin_tab_settings#:#Einstellungen
-xvin_tab_management#:#Teilnehmendenverwaltung
-xvin_tab_content#:#Inhalt
-xvin_detailed_description#:#Aufgabenstellung
-xvin_back_to#:#Zurück
-xvin_exercise_not_found#:#Diese Aufgabe konnte nicht gefunden werden.
-xvin_exercise_updated#:#Die Aufgabe wurde erfolgreich aktualisiert.
+participant_tab#:#Teilnehmerverwaltung
+exercise_tab#:#Aufgabe
+video_interview_tab#:#Einstellungen
+exercise_detailed_description#:#Aufgabenstellung
+exercise_resource#:#Ressource ID (Video)
+exercise_updated#:#Aufgabe erfolgreich aktualisiert
 
 obj_xvin#:#Video Interview
 objs_xvin#:#Video Interview

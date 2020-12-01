@@ -16,8 +16,7 @@ class ilObjSrVideoInterviewExerciseGUI extends ilObjSrVideoInterviewGUI
     /**
      * Exercise GUI tab-names and translation var
      */
-    const EXERCISE_TAB_INDEX  = 'exercise_tab_index';
-    const EXERCISE_TAB_EDIT   = 'exercise_tab_edit';
+    const EXERCISE_TAB        = 'exercise_tab';
 
     /**
      * Exercise GUI commands
@@ -52,26 +51,29 @@ class ilObjSrVideoInterviewExerciseGUI extends ilObjSrVideoInterviewGUI
      */
     public function executeCommand() : void
     {
+        $this->tabs->activateTab(self::EXERCISE_TAB);
         $cmd = $this->ctrl->getCmd(self::CMD_EXERCISE_INDEX);
 
         switch ($cmd)
         {
             case self::CMD_EXERCISE_INDEX:
             case self::CMD_EXERCISE_SHOW:
-                $this->tabs->activateTab(self::EXERCISE_TAB_INDEX);
                 if ($this->access->checkAccess("read", $cmd, $this->ref_id)) {
                     $this->$cmd();
+                } else {
+                    $this->permissionDenied();
                 }
                 break;
             case self::CMD_EXERCISE_EDIT:
             case self::CMD_EXERCISE_DELETE:
-            $this->tabs->activateTab(self::EXERCISE_TAB_EDIT);
                 if ($this->access->checkAccess("write", $cmd, $this->ref_id)) {
                     $this->$cmd();
+                } else {
+                    $this->permissionDenied();
                 }
                 break;
             default:
-                $this->permissionDenied();
+                // we should not reach this.
                 break;
         }
     }

@@ -53,16 +53,20 @@ class ilObjSrVideoInterviewAnswerGUI extends ilObjSrVideoInterviewGUI
             case self::CMD_ANSWER_ADD:
                 if ($this->access->checkAccess("read", $cmd, $this->ref_id)) {
                     $this->$cmd();
+                } else {
+                    $this->permissionDenied();
                 }
                 break;
             case self::CMD_ANSWER_DELETE:
             case self::CMD_ANSWER_EVALUATE:
                 if ($this->access->checkAccess("write", $cmd, $this->ref_id)) {
                     $this->$cmd();
+                } else {
+                    $this->permissionDenied();
                 }
                 break;
             default:
-                $this->permissionDenied();
+                // we should mot reach this.
                 break;
         }
     }
