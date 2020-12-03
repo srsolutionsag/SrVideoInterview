@@ -1,6 +1,7 @@
 <?php
 
 require_once "./Customizing/global/plugins/Services/Repository/RepositoryObject/SrVideoInterview/classes/class.ilObjSrVideoInterviewGUI.php";
+require_once "./Customizing/global/plugins/Services/Repository/RepositoryObject/SrVideoInterview/classes/SrVideoInterviewGUI/class.ilObjSrVideoInterviewParticipantTableGUI.php";
 
 use srag\Plugins\SrVideoInterview\Repository\ParticipantRepository;
 
@@ -27,11 +28,6 @@ class ilObjSrVideoInterviewParticipantGUI extends ilObjSrVideoInterviewGUI
     const CMD_PARTICIPANT_NOTIFY = 'notifyParticipants';
 
     /**
-     * @var ParticipantRepository
-     */
-    protected $repository;
-
-    /**
      * Initialise ilObjVideoInterviewParticipantGUI
      *
      * @param int $a_ref_id
@@ -40,8 +36,6 @@ class ilObjSrVideoInterviewParticipantGUI extends ilObjSrVideoInterviewGUI
      */
     public function __construct($a_ref_id = 0, $a_id_type = self::REPOSITORY_NODE_ID, $a_parent_node_id = 0)
     {
-        $this->repository = new ParticipantRepository();
-
         parent::__construct($a_ref_id, $a_id_type, $a_parent_node_id);
     }
 
@@ -73,7 +67,13 @@ class ilObjSrVideoInterviewParticipantGUI extends ilObjSrVideoInterviewGUI
 
     protected function showAll() : void
     {
+        // work in progress.
+        $participants = $this->repository->getParticipantsByExerciseId(1);
 
+        // process $participants here to fit table expectations.
+
+        $table_gui = new ilObjSrVideoInterviewParticipantTableGUI($this, self::CMD_PARTICIPANT_INDEX, $participants);
+        $this->tpl->setContent($table_gui->getHTML());
     }
 
     protected function addParticipant() : void

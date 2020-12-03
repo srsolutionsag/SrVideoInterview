@@ -1,9 +1,12 @@
 participant_tab#:#Participant Administration
 exercise_tab#:#Exercise
-video_interview_tab#:#Settings
+settings#:#Settings
 exercise_detailed_description#:#Detailed Description
 exercise_resource#:#Ressource ID (Video)
-exercise_updated#:#Updated Exercise successfully
+exercise_updated#:#Exercise successfully updated
+exercises#:#Exercises
+answer#:#Answer
+back_to#:#Back
 
 obj_xvin#:#Video Interview
 objs_xvin#:#Video Interview

@@ -5,13 +5,18 @@
 //require_once "./Customizing/global/plugins/Services/Repository/RepositoryObject/SrVideoInterview/classes/SrVideoInterviewGUI/class.ilObjSrVideoInterviewParticipantGUI.php";
 
 use ILIAS\UI\Component\Input\Container\Form\Standard;
-use srag\Plugins\SrVideoInterview\Repository\ExerciseRepository;
-use srag\Plugins\SrVideoInterview\VideoInterview\Entity\Exercise;
+use srag\Plugins\SrVideoInterview\Repository\VideoInterviewRepository;
 
 /**
- * Class ilObjSrVideoInterviewGUI
+ * ilObjSrVideoInterviewGUI in general, dispatches a request's next class and command and delegates it accordingly.
+ *
+ * this class is also used as a parent class to all other GUI classes in this plugin. This way, we can share
+ * common dependencies and provide our children with useful helper functions such as permissionDenied() and
+ * objectNotFound(), which display a corresponding toast-message.
+ *
  * @author            Fabian Schmid <fs@studer-raimann.ch>
  * @author            Thibeau Fuhrer <thf@studer-raimann.ch>
+ *
  * @ilCtrl_isCalledBy ilObjSrVideoInterviewGUI: ilRepositoryGUI, ilObjPluginDispatchGUI, ilAdministrationGUI
  * @ilCtrl_Calls      ilObjSrVideoInterviewGUI: ilPermissionGUI, ilInfoScreenGUI, ilObjectCopyGUI, ilCommonActionDispatcherGUI
  * @ilCtrl_Calls      ilObjSrVideoInterviewGUI: ilObjSrVideoInterviewExerciseGUI, ilObjSrVideoInterviewAnswerGUI, ilObjSrVideoInterviewParticipantGUI
@@ -19,14 +24,17 @@ use srag\Plugins\SrVideoInterview\VideoInterview\Entity\Exercise;
 class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
 {
     /**
-     * Repository Object settings tab
+     * Repository Object tab (must be named settings, in order to work properly with commands)
      */
-    const VIDEO_INTERVIEW_TAB = 'video_interview_tab';
+    const VIDEO_INTERVIEW_TAB        = 'settings';
 
     /**
-     * Repository Object commands
+     * Repository Object commands (replace by own methods when implementing m:1)
+     *
+     * @see ilObjectGUI::editObject()
+     * @see ilObjectGUI::updateObject()
      */
-    const CMD_VIDEO_INTERVIEW_EDIT = 'editVideoInterview';
+    const CMD_VIDEO_INTERVIEW_EDIT   = 'editVideoInterview';
     const CMD_VIDEO_INTERVIEW_UPDATE = 'updateVideoInterview';
 
     /**
@@ -50,14 +58,13 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
     protected $ui_renderer;
 
     /**
-     * @TODO: implement and use a general repository with dependencies of the different repositories.
-     *
-     * @var ExerciseRepository
+     * @var VideoInterviewRepository
      */
     protected $repository;
 
     /**
-     * Initialise ilObjSrVideoInterviewGUI
+     * Initialise ilObjSrVideoInterviewGUI and declare further dependencies.
+     *
      * @param int $a_ref_id
      * @param int $a_id_type
      * @param int $a_parent_node_id
@@ -66,7 +73,7 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
     {
         global $DIC;
 
-        $this->repository  = new ExerciseRepository();
+        $this->repository  = new VideoInterviewRepository();
         $this->ui_factory  = $DIC->ui()->factory();
         $this->ui_renderer = $DIC->ui()->renderer();
         $this->refinery    = $DIC->refinery();
@@ -79,7 +86,7 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
      * @inheritDoc
      * @return string
      */
-    public final function getType() : string
+    final public function getType() : string
     {
         return ilSrVideoInterviewPlugin::PLUGIN_ID;
     }
@@ -88,21 +95,22 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
      * @inheritDoc
      * @return string
      */
-    public final function getAfterCreationCmd() : string
+    final public function getAfterCreationCmd() : string
     {
-        return ilObjSrVideoInterviewExerciseGUI::CMD_EXERCISE_INDEX;
+        return ilObjSrVideoInterviewExerciseGUI::CMD_EXERCISE_ADD;
     }
 
     /**
      * @return string
      */
-    public final function getStandardCmd() : string
+    final public function getStandardCmd() : string
     {
         return ilObjSrVideoInterviewExerciseGUI::CMD_EXERCISE_INDEX;
     }
 
     /**
-     * dispatches the next-class and delegates it to the corresponding GUI class.
+     * dispatches a requests next class and delegates it to the responsible class.
+     *
      * @throws ilCtrlException
      */
     public function executeCommand() : void
@@ -134,7 +142,8 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
     }
 
     /**
-     * dispatches the given command and calls the corresponding method.
+     * dispatches repository object commands and calls the responsible parent-method.
+     *
      * @param string $cmd
      */
     public function performCommand(string $cmd) : void
@@ -150,15 +159,15 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
                 }
                 break;
             default:
-                // do nothing, let parent handle $cmd.
+                // we should not reach this.
                 break;
         }
     }
 
     /**
-     * creates object tabs and links the corresponding plugin GUI classes.
+     * adds our repository object tabs according to a users permission.
      */
-    protected function setupTabs() : void
+    final protected function setupTabs() : void
     {
         if ($this->access->checkAccess("read", "", $this->ref_id)) {
             $this->tabs->addTab(
@@ -282,8 +291,8 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
      */
     protected function updateVideoInterview() : void
     {
-        $exercise_id = (int) $this->http->request()->getQueryParams()['exercise_id'];
-        $exercise = $this->repository->get($exercise_id);
+        // assuming we use 1:1 cardinality and can only retrieve one object yet
+        $exercise = $this->repository->getExercisesByObjId($this->obj_id)[0];
         $form = $this->buildVideoInterviewForm()
             ->withRequest($this->http->request())
             ->withAdditionalTransformation(
@@ -316,11 +325,11 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
                 self::class,
                 self::CMD_VIDEO_INTERVIEW_EDIT
             );
-        } else {
-            $this->tpl->setContent(
-                $this->ui_renderer->render($form)
-            );
         }
+
+        $this->tpl->setContent(
+            $this->ui_renderer->render($form)
+        );
     }
 
     /**
@@ -328,7 +337,8 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
      */
     protected function editVideoInterview() : void
     {
-        $exercise = $this->repository->getByObjId($this->obj_id)[0];
+        // assuming we use 1:1 cardinality and can only retrieve one object yet
+        $exercise = $this->repository->getExercisesByObjId($this->obj_id)[0];
         $data = array(
             'title' => $this->object->getTitle(),
             'description' => $this->object->getDescription()
@@ -358,5 +368,13 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
     protected function permissionDenied() : void
     {
         // @TODO: implement permissionDenied() method.
+    }
+
+    /**
+     * renders a "object not found" error toast.
+     */
+    protected function objectNotFound() : void
+    {
+        // @TODO: implement objectNotFound() method.
     }
 }

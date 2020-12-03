@@ -2,7 +2,7 @@
 
 require_once "./Customizing/global/plugins/Services/Repository/RepositoryObject/SrVideoInterview/classes/class.ilObjSrVideoInterviewGUI.php";
 
-use srag\Plugins\SrVideoInterview\Repository\ExerciseRepository;
+use srag\Plugins\SrVideoInterview\VideoInterview\Entity\Exercise;
 
 /**
  * Class ilObjVideoInterviewExerciseGUI
@@ -11,7 +11,7 @@ use srag\Plugins\SrVideoInterview\Repository\ExerciseRepository;
  *
  * @ilCtrl_isCalledBy ilObjVideoInterviewExerciseGUI: ilObjSrVideoInterviewGUI
  */
-class ilObjSrVideoInterviewExerciseGUI extends ilObjSrVideoInterviewGUI
+final class ilObjSrVideoInterviewExerciseGUI extends ilObjSrVideoInterviewGUI
 {
     /**
      * Exercise GUI tab-names and translation var
@@ -28,11 +28,6 @@ class ilObjSrVideoInterviewExerciseGUI extends ilObjSrVideoInterviewGUI
     const CMD_EXERCISE_DELETE = 'deleteExercise';
 
     /**
-     * @var ExerciseRepository
-     */
-    protected $repository;
-
-    /**
      * Initialise ilObjVideoInterviewExerciseGUI
      *
      * @param int $a_ref_id
@@ -41,8 +36,6 @@ class ilObjSrVideoInterviewExerciseGUI extends ilObjSrVideoInterviewGUI
      */
     public function __construct($a_ref_id = 0, $a_id_type = self::REPOSITORY_NODE_ID, $a_parent_node_id = 0)
     {
-        $this->repository = new ExerciseRepository();
-
         parent::__construct($a_ref_id, $a_id_type, $a_parent_node_id);
     }
 
@@ -64,6 +57,7 @@ class ilObjSrVideoInterviewExerciseGUI extends ilObjSrVideoInterviewGUI
                     $this->permissionDenied();
                 }
                 break;
+            case self::CMD_EXERCISE_ADD:
             case self::CMD_EXERCISE_EDIT:
             case self::CMD_EXERCISE_DELETE:
                 if ($this->access->checkAccess("write", $cmd, $this->ref_id)) {
@@ -78,24 +72,130 @@ class ilObjSrVideoInterviewExerciseGUI extends ilObjSrVideoInterviewGUI
         }
     }
 
+    /**
+     * display an existing Exercise and controls depending on user-permission.
+     */
+    protected function showExercise(int $exercise_id) : void
+    {
+
+    }
+
+    /**
+     * displays all existing Exercises for current VideoInterview object.
+     * currently only supports 1:1 cardinality and just shows one entry.
+     */
     protected function showAll() : void
     {
+        $exercises = $this->repository->getExercisesByObjId($this->obj_id);
+        if (null !== $exercises) {
+            $items = array();
+            foreach ($exercises as $exercise) {
+                $this->ctrl->setParameterByClass(
+                    self::class,
+                    'exercise_id',
+                    $exercise->getId()
+                );
 
+                $actions = array(
+                    $this->ui_factory
+                        ->button()
+                        ->shy(
+                            $this->txt('answer'),
+                            $this->ctrl->getLinkTargetByClass(
+                                ilObjSrVideoInterviewAnswerGUI::class,
+                                ilObjSrVideoInterviewAnswerGUI::CMD_ANSWER_ADD,
+                            )
+                        )
+                );
+
+//                not necessary until m:1 is implemented.
+//                if ($this->access->checkAccess("write", self::CMD_EXERCISE_INDEX, $this->ref_id)) {
+//                    $actions[] = $this->ui_factory
+//                        ->button()
+//                        ->shy(
+//                            $this->txt('edit'),
+//                            $this->ctrl->getLinkTargetByClass(
+//                                ilObjSrVideoInterviewGUI::class,
+//                                ilObjSrVideoInterviewGUI::CMD_VIDEO_INTERVIEW_EDIT,
+//                            )
+//                        )
+//                    ;
+//                }
+
+                $items[] = $this->ui_factory
+                    ->item()
+                    ->standard($exercise->getTitle())
+                    ->withDescription($exercise->getDetailedDescription())
+                    ->withProperties(array(
+                        $this->txt('description') => $exercise->getDescription(),
+                        $this->txt('exercise_resource') => $exercise->getResourceId(),
+                    ))
+                    ->withActions(
+                        $this->ui_factory
+                            ->dropdown()
+                            ->standard(array(
+                                $actions
+                            ))
+                    )
+                    ->withLeadImage(
+                        $this->ui_factory
+                            ->image()
+                            ->responsive(
+                                "/Customizing/global/plugins/Services/Repository/RepositoryObject/SrVideoInterview/templates/images/exercise_symbol.svg",
+                                ""
+                            )
+                    )
+                ;
+            }
+
+            $list = $this->ui_factory
+                ->panel()
+                ->listing()
+                ->standard(
+                    $this->txt('exercises'), array(
+                    $this->ui_factory
+                        ->item()
+                        ->group(
+                            "",
+                            $items
+                        )
+                    )
+                )
+            ;
+
+            $this->tpl->setContent(
+                $this->ui_renderer->render($list)
+            );
+        } else {
+            $this->objectNotFound();
+        }
     }
 
-    protected function showExercise() : void
-    {
-
-    }
-
+    /**
+     * create a Exercise with the same object title and description
+     * and store it in the database.
+     */
     protected function addExercise() : void
     {
+        $exercise = new Exercise(
+            null,
+            $this->object->getTitle(),
+            $this->object->getDescription(),
+            "Replace me :).",
+            "",
+            $this->obj_id
+        );
 
+        $this->repository->store($exercise);
+        $this->ctrl->redirectByClass(
+            self::class,
+            self::CMD_EXERCISE_INDEX,
+        );
     }
 
     protected function editExercise() : void
     {
-
+        $this->editVideoInterview();
     }
 
     protected function deleteExercise() : void

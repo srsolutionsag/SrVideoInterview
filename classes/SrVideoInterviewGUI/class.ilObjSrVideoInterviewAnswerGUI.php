@@ -45,6 +45,8 @@ class ilObjSrVideoInterviewAnswerGUI extends ilObjSrVideoInterviewGUI
      */
     public function executeCommand() : void
     {
+        $this->setupBackToTab();
+        $this->tabs->activateTab("should_not_be_an_actual_id");
         $cmd = $this->ctrl->getCmd(self::CMD_ANSWER_SHOW);
 
         switch ($cmd)
@@ -68,6 +70,25 @@ class ilObjSrVideoInterviewAnswerGUI extends ilObjSrVideoInterviewGUI
             default:
                 // we should mot reach this.
                 break;
+        }
+    }
+
+    /**
+     * setup an additional tab when using this class.
+     */
+    final protected function setupBackToTab() : void
+    {
+        if ($this->access->checkAccess("read", "", $this->ref_id)) {
+            $this->tabs->replaceTab(
+                // back-to tab
+                ilObjSrVideoInterviewExerciseGUI::EXERCISE_TAB,
+                'back_to',
+                $this->txt('back_to'),
+                $this->ctrl->getLinkTargetByClass(
+                    ilObjSrVideoInterviewExerciseGUI::class,
+                    ilObjSrVideoInterviewExerciseGUI::CMD_EXERCISE_INDEX
+                )
+            );
         }
     }
 
