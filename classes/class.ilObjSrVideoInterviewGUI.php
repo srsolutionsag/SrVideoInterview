@@ -10,9 +10,9 @@ use srag\Plugins\SrVideoInterview\Repository\VideoInterviewRepository;
 /**
  * ilObjSrVideoInterviewGUI in general, dispatches a request's next class and command and delegates it accordingly.
  *
- * this class is also used as a parent class to all other GUI classes in this plugin. This way, we can share
+ * this class is also used as a parent class to all other GUI classes of this plugin. This way, we can share
  * common dependencies and provide our children with useful helper functions such as permissionDenied() and
- * objectNotFound(), which display a corresponding toast-message.
+ * objectNotFound(), which display a toast-message.
  *
  * @author            Fabian Schmid <fs@studer-raimann.ch>
  * @author            Thibeau Fuhrer <thf@studer-raimann.ch>
@@ -24,12 +24,12 @@ use srag\Plugins\SrVideoInterview\Repository\VideoInterviewRepository;
 class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
 {
     /**
-     * Repository Object tab (must be named settings, in order to work properly with commands)
+     * Repository Object tab (must be named settings, in order to work properly with parent commands below)
      */
     const VIDEO_INTERVIEW_TAB        = 'settings';
 
     /**
-     * Repository Object commands (replace by own methods when implementing m:1)
+     * Repository Object commands (replace by parent methods when implementing m:1)
      *
      * @see ilObjectGUI::editObject()
      * @see ilObjectGUI::updateObject()
@@ -115,6 +115,9 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
      */
     public function executeCommand() : void
     {
+//        $builder = new arBuilder(new \srag\Plugins\SrVideoInterview\AREntity\ARAnswer());
+//        $builder->generateDBUpdateForInstallation();
+
         $this->setupTabs(); // when using setTabs(), tabs cannot be activated.
         $next_class = $this->ctrl->getNextClass($this);
         switch ($next_class) {

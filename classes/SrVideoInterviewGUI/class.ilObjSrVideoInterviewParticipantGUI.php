@@ -3,8 +3,6 @@
 require_once "./Customizing/global/plugins/Services/Repository/RepositoryObject/SrVideoInterview/classes/class.ilObjSrVideoInterviewGUI.php";
 require_once "./Customizing/global/plugins/Services/Repository/RepositoryObject/SrVideoInterview/classes/SrVideoInterviewGUI/class.ilObjSrVideoInterviewParticipantTableGUI.php";
 
-use srag\Plugins\SrVideoInterview\Repository\ParticipantRepository;
-
 /**
  * Class ilObjVideoInterviewParticipantGUI
  *
@@ -67,10 +65,21 @@ class ilObjSrVideoInterviewParticipantGUI extends ilObjSrVideoInterviewGUI
 
     protected function showAll() : void
     {
-        // work in progress.
-        $participants = $this->repository->getParticipantsByExerciseId(1);
+        $participants = $this->repository->getParticipantsByExerciseId(6);
 
         // process $participants here to fit table expectations.
+
+//        $usr = $this->retrieve user object somehow.
+//        $arr = array(
+//            0 => array(
+//                'thumbnail' => "some resource",
+//                'firstname' => $usr->getFirstname(),
+//                'lastname'  => $usr->getLastname(),
+//                'actions'   => ?
+//            ),
+//
+//            ...
+//        );
 
         $table_gui = new ilObjSrVideoInterviewParticipantTableGUI($this, self::CMD_PARTICIPANT_INDEX, $participants);
         $this->tpl->setContent($table_gui->getHTML());

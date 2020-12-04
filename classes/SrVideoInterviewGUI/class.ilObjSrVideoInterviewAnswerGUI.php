@@ -79,10 +79,8 @@ class ilObjSrVideoInterviewAnswerGUI extends ilObjSrVideoInterviewGUI
     final protected function setupBackToTab() : void
     {
         if ($this->access->checkAccess("read", "", $this->ref_id)) {
-            $this->tabs->replaceTab(
-                // back-to tab
-                ilObjSrVideoInterviewExerciseGUI::EXERCISE_TAB,
-                'back_to',
+            $this->tabs->clearTargets();
+            $this->tabs->setBackTarget(
                 $this->txt('back_to'),
                 $this->ctrl->getLinkTargetByClass(
                     ilObjSrVideoInterviewExerciseGUI::class,

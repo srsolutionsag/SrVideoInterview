@@ -102,25 +102,23 @@ class ParticipantRepository implements Repository
      */
     public function getParticipantByExerciseId(int $exercise_id) : ?array
     {
-        $ar_participants = ARParticipant::where([
-            'exercise_id' => $exercise_id
-        ], '=')->getArray();
+        $ar_participants = ARParticipant::innerjoin(
+            'usr_data',
+            "user_id",
+            "usr_id",
+            array(
+                'firstname',
+                'lastname',
+                'login',
+            )
+        )->where([
+            'exercise_id' => $exercise_id,
+        ],
+            '='
+        )->getArray();
 
-        $participants = [];
-        if (null !== $ar_participants) {
-            foreach ($ar_participants as $ar_participant) {
-                $participants[] = new Participant(
-                    $ar_participant->getId(),
-                    (bool) $ar_participant->getFeedbackSent(),
-                    (bool) $ar_participant->getInvitationSent(),
-                    $ar_participant->getExerciseId(),
-                    $ar_participant->getUserId()
-                );
-            }
 
-            return $participants;
-        }
 
-        return null;
+        return $ar_participants ?? null;
     }
 }

@@ -15,6 +15,11 @@ class Answer
     protected $id;
 
     /**
+     * @var int
+     */
+    protected $type;
+
+    /**
      * @var string
      */
     protected $feedback;
@@ -37,7 +42,7 @@ class Answer
      * @param string   $resource_id
      * @param int|null $participant_id
      */
-    public function __construct(int $id = null, string $feedback = "", string $resource_id = "", int $participant_id = null)
+    public function __construct(int $id = null, int $type = 0, string $feedback = "", string $resource_id = "", int $participant_id = null)
     {
         $this->id = $id;
         $this->feedback = $feedback;
@@ -48,7 +53,7 @@ class Answer
     /**
      * @return int
      */
-    public function getId() : int
+    public function getId() : ?int
     {
         return $this->id;
     }
@@ -60,6 +65,24 @@ class Answer
     public function setId(int $id) : Answer
     {
         $this->id = $id;
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getType() : ?int
+    {
+        return $this->type;
+    }
+
+    /**
+     * @param int $type
+     * @return Answer
+     */
+    public function setType(int $type) : Answer
+    {
+        $this->type = $type;
         return $this;
     }
 

@@ -13,6 +13,9 @@ class ARAnswer extends ActiveRecord
 {
     const TABLE_NAME = 'xvin_answer';
 
+    const TYPE_FEEDBACK = 1;
+    const TYPE_ANSWER   = 0;
+
     /**
      * @var int
      *
@@ -26,7 +29,19 @@ class ARAnswer extends ActiveRecord
     protected $id = null;
 
     /**
+     * @var int
+     *
+     * @con_has_field   true
+     * @con_is_notnull  true
+     * @con_fieldtype   int
+     * @con_length      1
+     */
+    protected $type;
+
+    /**
      * @var string
+     *
+     * @TODO: may refactor to $content or $reply or similar.
      *
      * @con_has_field   true
      * @con_is_notnull  false
@@ -86,6 +101,24 @@ class ARAnswer extends ActiveRecord
     public function setId(int $id) : ARAnswer
     {
         $this->id = $id;
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getType() : int
+    {
+        return $this->type;
+    }
+
+    /**
+     * @param int $type
+     * @return ARAnswer
+     */
+    public function setType(int $type) : ARAnswer
+    {
+        $this->type = $type;
         return $this;
     }
 

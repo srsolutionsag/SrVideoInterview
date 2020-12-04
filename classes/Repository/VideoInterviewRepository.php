@@ -104,4 +104,16 @@ final class VideoInterviewRepository
     {
         return $this->participant_repository->getParticipantByExerciseId($exercise_id);
     }
+
+    /**
+     * check if a Participant has already answered an Exercise by their id's.
+     *
+     * @param int $participant_id
+     * @param int $exercise_id
+     * @return bool
+     */
+    public function hasParticipantAnsweredExercise(int $participant_id, int $exercise_id) : bool
+    {
+        return $this->answer_repository->hasParticipantAnsweredExercise($participant_id, $exercise_id);
+    }
 }

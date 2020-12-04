@@ -11,7 +11,7 @@ use srag\Plugins\SrVideoInterview\VideoInterview\Entity\Exercise;
  *
  * @ilCtrl_isCalledBy ilObjVideoInterviewExerciseGUI: ilObjSrVideoInterviewGUI
  */
-final class ilObjSrVideoInterviewExerciseGUI extends ilObjSrVideoInterviewGUI
+class ilObjSrVideoInterviewExerciseGUI extends ilObjSrVideoInterviewGUI
 {
     /**
      * Exercise GUI tab-names and translation var

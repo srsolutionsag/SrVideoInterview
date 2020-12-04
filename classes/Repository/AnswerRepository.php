@@ -37,6 +37,7 @@ class AnswerRepository implements Repository
         }
 
         $ar_answer
+            ->setType($answer->getType())
             ->setFeedback($answer->getFeedback())
             ->setResourceId($answer->getResourceId())
             ->setParticipantId($answer->getParticipantId())
@@ -55,6 +56,7 @@ class AnswerRepository implements Repository
         if (null !== $ar_answer) {
             return new Answer(
                 $ar_answer->getId(),
+                $ar_answer->getType(),
                 $ar_answer->getFeedback(),
                 $ar_answer->getResourceId(),
                 $ar_answer->getParticipantId()
@@ -74,17 +76,38 @@ class AnswerRepository implements Repository
 
         if (!empty($ar_answers)) {
             foreach ($ar_answers as $ar_answer) {
-                array_push($answers, new Answer(
+                $answers[] = new Answer(
                     $ar_answer->getId(),
+                    $ar_answer->getType(),
                     $ar_answer->getFeedback(),
                     $ar_answer->getResourceId(),
                     $ar_answer->getParticipantId()
-                ));
+                );
             }
 
             return $answers;
         }
 
         return null;
+    }
+
+    /**
+     * check if a Participant has already answered an Exercise by their id's.
+     *
+     * @param int $participant_id
+     * @param int $exercise_id
+     * @return bool
+     */
+    public function hasParticipantAnsweredExercise(int $participant_id, int $exercise_id) : bool
+    {
+        $answer = ARAnswer::where(
+            array(
+                'participant_id' => $participant_id,
+                'exercise_id'    => $exercise_id,
+            ),
+            '='
+        )->getArray();
+
+        return empty($answer);
     }
 }
