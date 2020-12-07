@@ -21,14 +21,16 @@ class ComposerStaticInit357b332b054365bb3c0e8d6632cb069c
     );
 
     public static $classMap = array (
+        'ILIAS\\UI\\Implementation\\Component\\Input\\Field\\VideoRecorderInput' => __DIR__ . '/../..' . '/classes/UIComponent/VideoRecorderInput.php',
+        'ILIAS\\UI\\Implementation\\Component\\Input\\Field\\VideoRecorderRenderer' => __DIR__ . '/../..' . '/classes/UIComponent/VideoRecorderRenderer.php',
         'ilObjSrVideoInterview' => __DIR__ . '/../..' . '/classes/class.ilObjSrVideoInterview.php',
         'ilObjSrVideoInterviewAccess' => __DIR__ . '/../..' . '/classes/class.ilObjSrVideoInterviewAccess.php',
-        'ilObjSrVideoInterviewContentGUI' => __DIR__ . '/../..' . '/classes/SrVideoInterviewGUI/class.ilObjSrVideoInterviewContentGUI.php',
+        'ilObjSrVideoInterviewAnswerGUI' => __DIR__ . '/../..' . '/classes/SrVideoInterviewGUI/class.ilObjSrVideoInterviewAnswerGUI.php',
+        'ilObjSrVideoInterviewExerciseGUI' => __DIR__ . '/../..' . '/classes/SrVideoInterviewGUI/class.ilObjSrVideoInterviewExerciseGUI.php',
         'ilObjSrVideoInterviewGUI' => __DIR__ . '/../..' . '/classes/class.ilObjSrVideoInterviewGUI.php',
         'ilObjSrVideoInterviewListGUI' => __DIR__ . '/../..' . '/classes/class.ilObjSrVideoInterviewListGUI.php',
-        'ilObjSrVideoInterviewManagementGUI' => __DIR__ . '/../..' . '/classes/SrVideoInterviewGUI/class.ilObjSrVideoInterviewManagementGUI.php',
-        'ilObjSrVideoInterviewSettingsGUI' => __DIR__ . '/../..' . '/classes/SrVideoInterviewGUI/class.ilObjSrVideoInterviewSettingsGUI.php',
-        'ilSrPermissionDeniedException' => __DIR__ . '/../..' . '/classes/class.ilSrPermissionDeniedException.php',
+        'ilObjSrVideoInterviewParticipantGUI' => __DIR__ . '/../..' . '/classes/SrVideoInterviewGUI/class.ilObjSrVideoInterviewParticipantGUI.php',
+        'ilObjSrVideoInterviewParticipantTableGUI' => __DIR__ . '/../..' . '/classes/SrVideoInterviewGUI/class.ilObjSrVideoInterviewParticipantTableGUI.php',
         'ilSrVideoInterviewPlugin' => __DIR__ . '/../..' . '/classes/class.ilSrVideoInterviewPlugin.php',
         'srag\\Plugins\\SrVideoInterview\\AREntity\\ARAnswer' => __DIR__ . '/../..' . '/classes/AREntity/ARAnswer.php',
         'srag\\Plugins\\SrVideoInterview\\AREntity\\ARExercise' => __DIR__ . '/../..' . '/classes/AREntity/ARExercise.php',
@@ -36,6 +38,7 @@ class ComposerStaticInit357b332b054365bb3c0e8d6632cb069c
         'srag\\Plugins\\SrVideoInterview\\Repository\\AnswerRepository' => __DIR__ . '/../..' . '/classes/Repository/AnswerRepository.php',
         'srag\\Plugins\\SrVideoInterview\\Repository\\ExerciseRepository' => __DIR__ . '/../..' . '/classes/Repository/ExerciseRepository.php',
         'srag\\Plugins\\SrVideoInterview\\Repository\\ParticipantRepository' => __DIR__ . '/../..' . '/classes/Repository/ParticipantRepository.php',
+        'srag\\Plugins\\SrVideoInterview\\Repository\\VideoInterviewRepository' => __DIR__ . '/../..' . '/classes/Repository/VideoInterviewRepository.php',
     );
 
     public static function getInitializer(ClassLoader $loader)

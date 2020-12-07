@@ -1,6 +1,6 @@
 <?php
 $id = "xvin";
-$version = "0.0.9";
+$version = "0.0.10";
 $ilias_min_version = "6.0";
 $ilias_max_version = "6.999";
 $responsible = "studer + raimann ag - Team Core 1";

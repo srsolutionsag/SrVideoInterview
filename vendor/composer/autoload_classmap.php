@@ -6,14 +6,16 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
+    'ILIAS\\UI\\Implementation\\Component\\Input\\Field\\VideoRecorderInput' => $baseDir . '/classes/UIComponent/VideoRecorderInput.php',
+    'ILIAS\\UI\\Implementation\\Component\\Input\\Field\\VideoRecorderRenderer' => $baseDir . '/classes/UIComponent/VideoRecorderRenderer.php',
     'ilObjSrVideoInterview' => $baseDir . '/classes/class.ilObjSrVideoInterview.php',
     'ilObjSrVideoInterviewAccess' => $baseDir . '/classes/class.ilObjSrVideoInterviewAccess.php',
-    'ilObjSrVideoInterviewContentGUI' => $baseDir . '/classes/SrVideoInterviewGUI/class.ilObjSrVideoInterviewContentGUI.php',
+    'ilObjSrVideoInterviewAnswerGUI' => $baseDir . '/classes/SrVideoInterviewGUI/class.ilObjSrVideoInterviewAnswerGUI.php',
+    'ilObjSrVideoInterviewExerciseGUI' => $baseDir . '/classes/SrVideoInterviewGUI/class.ilObjSrVideoInterviewExerciseGUI.php',
     'ilObjSrVideoInterviewGUI' => $baseDir . '/classes/class.ilObjSrVideoInterviewGUI.php',
     'ilObjSrVideoInterviewListGUI' => $baseDir . '/classes/class.ilObjSrVideoInterviewListGUI.php',
-    'ilObjSrVideoInterviewManagementGUI' => $baseDir . '/classes/SrVideoInterviewGUI/class.ilObjSrVideoInterviewManagementGUI.php',
-    'ilObjSrVideoInterviewSettingsGUI' => $baseDir . '/classes/SrVideoInterviewGUI/class.ilObjSrVideoInterviewSettingsGUI.php',
-    'ilSrPermissionDeniedException' => $baseDir . '/classes/class.ilSrPermissionDeniedException.php',
+    'ilObjSrVideoInterviewParticipantGUI' => $baseDir . '/classes/SrVideoInterviewGUI/class.ilObjSrVideoInterviewParticipantGUI.php',
+    'ilObjSrVideoInterviewParticipantTableGUI' => $baseDir . '/classes/SrVideoInterviewGUI/class.ilObjSrVideoInterviewParticipantTableGUI.php',
     'ilSrVideoInterviewPlugin' => $baseDir . '/classes/class.ilSrVideoInterviewPlugin.php',
     'srag\\Plugins\\SrVideoInterview\\AREntity\\ARAnswer' => $baseDir . '/classes/AREntity/ARAnswer.php',
     'srag\\Plugins\\SrVideoInterview\\AREntity\\ARExercise' => $baseDir . '/classes/AREntity/ARExercise.php',
@@ -21,4 +23,5 @@ return array(
     'srag\\Plugins\\SrVideoInterview\\Repository\\AnswerRepository' => $baseDir . '/classes/Repository/AnswerRepository.php',
     'srag\\Plugins\\SrVideoInterview\\Repository\\ExerciseRepository' => $baseDir . '/classes/Repository/ExerciseRepository.php',
     'srag\\Plugins\\SrVideoInterview\\Repository\\ParticipantRepository' => $baseDir . '/classes/Repository/ParticipantRepository.php',
+    'srag\\Plugins\\SrVideoInterview\\Repository\\VideoInterviewRepository' => $baseDir . '/classes/Repository/VideoInterviewRepository.php',
 );

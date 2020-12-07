@@ -5,6 +5,7 @@
 //require_once "./Customizing/global/plugins/Services/Repository/RepositoryObject/SrVideoInterview/classes/SrVideoInterviewGUI/class.ilObjSrVideoInterviewParticipantGUI.php";
 
 use ILIAS\UI\Component\Input\Container\Form\Standard;
+use ILIAS\UI\Implementation\Component\Input\Field\VideoRecorderInput;
 use srag\Plugins\SrVideoInterview\Repository\VideoInterviewRepository;
 
 /**
@@ -272,6 +273,7 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
                 ->text($this->txt('exercise_resource'))
                 ->withValue($values['exercise_resource'])
             ,
+            'exercise_resource_dev' => VideoRecorderInput::getOne('upload url comes here','Video')
         );
 
         return $this->ui_factory
