@@ -42,7 +42,7 @@ class ParticipantRepository implements Repository
         $ar_participant
             ->setFeedbackSent((int) $participant->isFeedbackSent())
             ->setInvitationSent((int) $participant->isInvitationSent())
-            ->setExerciseId($participant->getExerciseId())
+            ->setObjId($participant->getObjId())
             ->setUserId($participant->getUserId())
             ->store()
         ;
@@ -61,7 +61,7 @@ class ParticipantRepository implements Repository
                 $ar_participant->getId(),
                 (bool) $ar_participant->getFeedbackSent(),
                 (bool) $ar_participant->getInvitationSent(),
-                $ar_participant->getExerciseId(),
+                $ar_participant->getObjId(),
                 $ar_participant->getUserId()
             );
         }
@@ -83,7 +83,7 @@ class ParticipantRepository implements Repository
                     $ar_participant->getId(),
                     (bool) $ar_participant->getFeedbackSent(),
                     (bool) $ar_participant->getInvitationSent(),
-                    $ar_participant->getExerciseId(),
+                    $ar_participant->getObjId(),
                     $ar_participant->getUserId()
                 );
             }
@@ -96,11 +96,10 @@ class ParticipantRepository implements Repository
 
     /**
      * retrieve all participants currently added to an exercise by it's id.
-     *
-     * @param int $exercise_id
+     * @param int $obj_id
      * @return array|null
      */
-    public function getParticipantByExerciseId(int $exercise_id) : ?array
+    public function getParticipantByExerciseId(int $obj_id) : ?array
     {
         $ar_participants = ARParticipant::innerjoin(
             'usr_data',
@@ -112,7 +111,7 @@ class ParticipantRepository implements Repository
                 'login',
             )
         )->where([
-            'exercise_id' => $exercise_id,
+            'obj_id' => $obj_id,
         ],
             '='
         )->getArray();

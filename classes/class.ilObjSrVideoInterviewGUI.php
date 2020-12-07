@@ -115,9 +115,6 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
      */
     public function executeCommand() : void
     {
-//        $builder = new arBuilder(new \srag\Plugins\SrVideoInterview\AREntity\ARAnswer());
-//        $builder->generateDBUpdateForInstallation();
-
         $this->setupTabs(); // when using setTabs(), tabs cannot be activated.
         $next_class = $this->ctrl->getNextClass($this);
         switch ($next_class) {

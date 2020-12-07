@@ -41,14 +41,12 @@ class ARAnswer extends ActiveRecord
     /**
      * @var string
      *
-     * @TODO: may refactor to $content or $reply or similar.
-     *
      * @con_has_field   true
      * @con_is_notnull  false
      * @con_fieldtype   clob
      * @con_length      4000
      */
-    protected $feedback = null;
+    protected $content = null;
 
     /**
      * @var string
@@ -59,6 +57,16 @@ class ARAnswer extends ActiveRecord
      * @con_length      250
      */
     protected $resource_id = null;
+
+    /**
+     * @var int
+     *
+     * @con_has_field   true
+     * @con_is_notnull  true
+     * @con_fieldtype   integer
+     * @con_length      8
+     */
+    protected $exercise_id = null;
 
     /**
      * @var int
@@ -125,18 +133,18 @@ class ARAnswer extends ActiveRecord
     /**
      * @return string
      */
-    public function getFeedback() : string
+    public function getContent() : string
     {
-        return $this->feedback;
+        return $this->content;
     }
 
     /**
-     * @param string $feedback
+     * @param string $content
      * @return ARAnswer
      */
-    public function setFeedback(string $feedback) : ARAnswer
+    public function setContent(string $content) : ARAnswer
     {
-        $this->feedback = $feedback;
+        $this->content = $content;
         return $this;
     }
 
@@ -155,6 +163,24 @@ class ARAnswer extends ActiveRecord
     public function setResourceId(string $resource_id) : ARAnswer
     {
         $this->resource_id = $resource_id;
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getExerciseId() : ?int
+    {
+        return $this->exercise_id;
+    }
+
+    /**
+     * @param int $exercise_id
+     * @return ARAnswer
+     */
+    public function setExerciseId(?int $exercise_id) : ARAnswer
+    {
+        $this->exercise_id = $exercise_id;
         return $this;
     }
 

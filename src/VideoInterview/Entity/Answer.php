@@ -22,12 +22,17 @@ class Answer
     /**
      * @var string
      */
-    protected $feedback;
+    protected $content;
 
     /**
      * @var string
      */
     protected $resource_id;
+
+    /**
+     * @var int
+     */
+    protected $exercise_id;
 
     /**
      * @var int
@@ -38,15 +43,18 @@ class Answer
      * Answer constructor.
      *
      * @param int|null $id
-     * @param string   $feedback
+     * @param int      $type
+     * @param string   $content
      * @param string   $resource_id
+     * @param int|null $exercise_id
      * @param int|null $participant_id
      */
-    public function __construct(int $id = null, int $type = 0, string $feedback = "", string $resource_id = "", int $participant_id = null)
+    public function __construct(int $id = null, int $type = 0, string $content = "", string $resource_id = "", int $exercise_id = null, int $participant_id = null)
     {
         $this->id = $id;
-        $this->feedback = $feedback;
+        $this->content = $content;
         $this->resource_id = $resource_id;
+        $this->exercise_id = $exercise_id;
         $this->participant_id = $participant_id;
     }
 
@@ -89,18 +97,18 @@ class Answer
     /**
      * @return string
      */
-    public function getFeedback() : string
+    public function getContent() : string
     {
-        return $this->feedback;
+        return $this->content;
     }
 
     /**
-     * @param string $feedback
+     * @param string $content
      * @return Answer
      */
-    public function setFeedback(string $feedback) : Answer
+    public function setContent(string $content) : Answer
     {
-        $this->feedback = $feedback;
+        $this->content = $content;
         return $this;
     }
 
@@ -119,6 +127,24 @@ class Answer
     public function setResourceId(string $resource_id) : Answer
     {
         $this->resource_id = $resource_id;
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getExerciseId() : ?int
+    {
+        return $this->exercise_id;
+    }
+
+    /**
+     * @param int $exercise_id
+     * @return Answer
+     */
+    public function setExerciseId(?int $exercise_id) : Answer
+    {
+        $this->exercise_id = $exercise_id;
         return $this;
     }
 

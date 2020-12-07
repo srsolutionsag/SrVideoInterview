@@ -8,88 +8,63 @@ use srag\Plugins\SrVideoInterview\Repository\VideoInterviewRepository;
  */
 class ilObjSrVideoInterviewParticipantTableGUI extends ilTable2GUI
 {
-    // necessary?
     const TABLE_NAME = 'participant_table';
+
     /**
-     * @var \ILIAS\DI\UIServices
+     * @var \ILIAS\UI\Factory
      */
-    protected $ui;
+    protected $ui_factory;
+
+    /**
+     * @var \ILIAS\UI\Renderer
+     */
+    protected $ui_renderer;
+
+    /**
+     * @var ilSrVideoInterviewPlugin
+     */
+    protected $plugin;
 
     /**
      * Initialise ilObjSrVideoInterviewParticipantTableGUI
+     *
      * @param        $a_parent_obj
      * @param string $a_parent_cmd
-     * @param array  $data
      * @param string $a_template_context
      */
-    public function __construct($a_parent_obj, $a_parent_cmd = "", $data = array(), $a_template_context = "")
+    public function __construct($a_parent_obj, $a_parent_cmd = "", $a_template_context = "")
     {
         global $DIC;
-        $this->ui = $DIC->ui();
-        $this->setId('test');
-        $this->setPrefix('prefix');
 
-        parent::__construct($a_parent_obj, $a_parent_cmd, $a_template_context);
+        $this->plugin      = ilSrVideoInterviewPlugin::getInstance();
+        $this->ui_factory  = $DIC->ui()->factory();
+        $this->ui_renderer = $DIC->ui()->renderer();
+
+        $this->setId(self::TABLE_NAME);
+        $this->setPrefix(self::TABLE_NAME);
+        $this->setupTableColumns();
         $this->setRowTemplate(
             "tpl.participant_table_row.html",
             "./Customizing/global/plugins/Services/Repository/RepositoryObject/SrVideoInterview"
         );
 
-        $this->addColumns();
-        $this->setData($data);
+        parent::__construct($a_parent_obj, $a_parent_cmd, $a_template_context);
     }
 
     /**
-     * @inheritDoc
-     * @return array
+     * setup table columns publicly in order for language translation to work easily.
      */
-    public function getSelectableColumns() : array
+    public function setupTableColumns() : void
     {
-        return array(
-            'resource' => array(
-                'txt' => 'Thumbnail',
-                'default' => true,
-                'width' => 'auto',
-                'sort_field' => 'thumbnail',
-            ),
-
-            'has_answered' => array(
-                'txt' => 'Answered',
-                'default' => true,
-                'width' => 'auto',
-                'sort_field' => 'has_answered',
-            ),
-
-            'firstname' => array(
-                'txt' => 'Firstname',
-                'default' => true,
-                'width' => 'auto',
-                'sort_field' => 'firstname',
-            ),
-
-            'lastname' => array(
-                'txt' => 'Lastname',
-                'default' => true,
-                'width' => 'auto',
-                'sort_field' => 'lastname',
-            ),
-
-            'actions' => array(
-                'txt' => 'Actions',
-                'default' => true,
-                'width' => '50px',
-            ),
+        $this->addColumn($this->plugin->txt('has_answered'));
+        $this->addColumn($this->plugin->txt('firstname'));
+        $this->addColumn($this->plugin->txt('lastname'));
+        $this->addColumn($this->plugin->txt('email'));
+        $this->addColumn(
+            null,
+            null,
+            "50px"
         );
-    }
-
-    /**
-     * add all selectable columns to the table.
-     */
-    protected function addColumns() : void
-    {
-        foreach ($this->getSelectableColumns() as $k => $v) {
-            $this->addColumn($v['txt'], null);
-        }
     }
 
     /**
@@ -98,24 +73,54 @@ class ilObjSrVideoInterviewParticipantTableGUI extends ilTable2GUI
      */
     protected function fillRow($data) : void
     {
-        // echo var_dump($data); exit;
+        // may display links to all answered exercises of current VideoInterview object here.
+        $this->tpl->setVariable(
+            'HAS_ANSWERED',
+            "not yet implemented."
+        );
 
-        $this->tpl->setVariable('FIRSTNAME', $data['usr_data_firstname']);
-        $this->tpl->setVariable('LASTNAME', $data['usr_data_lastname']);
-        $this->tpl->setVariable('LOGIN', $data['usr_data_login']);
+        $this->tpl->setVariable(
+            'FIRSTNAME',
+            $data['usr_data_firstname']
+        );
 
-        $modal = $this->ui->factory()->modal()->interruptive(
-            "Wollen sie löschen",
-            '#',
-            '#'
-        )->withAffectedItems([$this->ui->factory()->modal()->interruptiveItem(122, 'titel des benutzers')]);
+        $this->tpl->setVariable(
+            'LASTNAME',
+            $data['usr_data_lastname']
+        );
 
-        $actions = $this->ui->factory()->dropdown()->standard([
-            $this->ui->factory()->button()->shy('blabla', '#'),
-            $this->ui->factory()->button()->shy('löschen', '#')->withOnClick($modal->getShowSignal())
-        ]);
+        $this->tpl->setVariable(
+            'EMAIL',
+            $data['usr_data_email']
+        );
 
-        $this->tpl->setVariable('ACTIONS', $this->ui->renderer()->render([$actions, $modal]));
+        $this->ctrl->setParameterByClass(
+            ilObjSrVideoInterviewParticipantGUI::class,
+            'participant_id',
+            $data['id']
+        );
 
+        $remove_link = $this->ctrl->getLinkTargetByClass(
+            ilObjSrVideoInterviewParticipantGUI::class,
+            ilObjSrVideoInterviewParticipantGUI::CMD_PARTICIPANT_REMOVE,
+        );
+
+        $this->tpl->setVariable(
+            'ACTIONS',
+            $this->ui_renderer->render(
+                $this->ui_factory
+                    ->dropdown()
+                    ->standard(array(
+                        $this->ui_factory
+                            ->button()
+                            ->shy(
+                                $this->plugin->txt('remove_participant'),
+                                $remove_link
+                            )
+                        ,
+                    ))
+                ,
+            )
+        );
     }
 }

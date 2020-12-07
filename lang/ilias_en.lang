@@ -7,6 +7,12 @@ exercise_updated#:#Exercise successfully updated
 exercises#:#Exercises
 answer#:#Answer
 back_to#:#Back
+has_answered#:#Answered
+firstname#:#Firstname
+lastname#:#Lastname
+email#:#E-Mail
+actions#:#Aktionen
+remove_participant#:#Remove
 
 obj_xvin#:#Video Interview
 objs_xvin#:#Video Interview

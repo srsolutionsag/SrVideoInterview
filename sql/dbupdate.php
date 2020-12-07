@@ -3,6 +3,9 @@
 <#3>
 <#4>
 <?php
+/**
+ * @var $ilDB ilDBInterface
+ */
 $fields = array(
     'id' => array(
         'notnull' => '1',
@@ -124,5 +127,28 @@ if (! $ilDB->tableExists('xvin_participant')) {
     if (! $ilDB->sequenceExists('xvin_participant')) {
         $ilDB->createSequence('xvin_participant');
     }
+}
+?>
+<#7>
+<?php
+$field = array(
+    'notnull' => '1',
+    'type' => 'integer',
+    'length' => '8',
+);
+if (! $ilDB->tableColumnExists('xvin_answer', 'exercise_id')) {
+    $ilDB->addTableColumn('xvin_answer', 'exercise_id', $field);
+}
+
+if ($ilDB->tableColumnExists('xvin_participant', 'exercise_id') &&
+    ! $ilDB->tableColumnExists('xvin_participant', 'obj_id')
+) {
+    $ilDB->renameTableColumn('xvin_participant', 'exercise_id', 'obj_id');
+}
+
+if ($ilDB->tableColumnExists('xvin_answer', 'feedback') &&
+    ! $ilDB->tableColumnExists('xvin_answer', 'content')
+) {
+    $ilDB->renameTableColumn('xvin_answer', 'feedback', 'content');
 }
 ?>

@@ -1,5 +1,7 @@
 <?php
 
+use srag\CustomInputGUIs\UserTakeOver\MultiSelectSearchNewInputGUI\MultiSelectSearchNewInputGUI;
+
 require_once "./Customizing/global/plugins/Services/Repository/RepositoryObject/SrVideoInterview/classes/class.ilObjSrVideoInterviewGUI.php";
 require_once "./Customizing/global/plugins/Services/Repository/RepositoryObject/SrVideoInterview/classes/SrVideoInterviewGUI/class.ilObjSrVideoInterviewParticipantTableGUI.php";
 
@@ -24,6 +26,12 @@ class ilObjSrVideoInterviewParticipantGUI extends ilObjSrVideoInterviewGUI
     const CMD_PARTICIPANT_ADD    = 'addParticipant';
     const CMD_PARTICIPANT_REMOVE = 'removeParticipant';
     const CMD_PARTICIPANT_NOTIFY = 'notifyParticipants';
+    const CMD_PARTICIPANT_SEARCH = 'searchParticipant';
+
+    /**
+     * @var ilToolbarGUI
+     */
+    protected $toolbar;
 
     /**
      * Initialise ilObjVideoInterviewParticipantGUI
@@ -34,6 +42,10 @@ class ilObjSrVideoInterviewParticipantGUI extends ilObjSrVideoInterviewGUI
      */
     public function __construct($a_ref_id = 0, $a_id_type = self::REPOSITORY_NODE_ID, $a_parent_node_id = 0)
     {
+        global $DIC;
+
+        $this->toolbar = $DIC->toolbar();
+
         parent::__construct($a_ref_id, $a_id_type, $a_parent_node_id);
     }
 
@@ -65,24 +77,74 @@ class ilObjSrVideoInterviewParticipantGUI extends ilObjSrVideoInterviewGUI
 
     protected function showAll() : void
     {
+        $b = new \srag\CustomInputGUIs\TextInputGUI\TextInputGUIWithModernAutoComplete("test", "test");
+        $b->setDisableHtmlAutoComplete(false);
+        $b->setDataSource(
+            $this->ctrl->getLinkTargetByClass(
+                self::class,
+                self::CMD_PARTICIPANT_SEARCH,
+                "",
+                true
+            )
+        );
+
+        $a = new ilTextInputGUI("title", "postvar");
+        $a->setDisableHtmlAutoComplete(true);
+        $a->setDataSource(
+            $this->ctrl->getLinkTargetByClass(
+                self::class,
+                self::CMD_PARTICIPANT_SEARCH,
+                "",
+                true
+            )
+        );
+
+        $data = json_encode(array(
+            1 => 'test1',
+            2 => 'test2',
+            3 => 'test3'
+        ));
+
+//        echo var_dump($data); exit;
+
+        $response = $this->http->response()->withBody(Stream);
+        echo var_dump($response); exit;
+
+        $this->toolbar->addInputItem($b);
+
         $participants = $this->repository->getParticipantsByExerciseId(6);
 
-        // process $participants here to fit table expectations.
+        $table_gui = new ilObjSrVideoInterviewParticipantTableGUI($this, self::CMD_PARTICIPANT_INDEX);
+        $table_gui->setData($participants);
 
-//        $usr = $this->retrieve user object somehow.
-//        $arr = array(
-//            0 => array(
-//                'thumbnail' => "some resource",
-//                'firstname' => $usr->getFirstname(),
-//                'lastname'  => $usr->getLastname(),
-//                'actions'   => ?
-//            ),
-//
-//            ...
-//        );
-
-        $table_gui = new ilObjSrVideoInterviewParticipantTableGUI($this, self::CMD_PARTICIPANT_INDEX, $participants);
         $this->tpl->setContent($table_gui->getHTML());
+    }
+
+    /**
+     * addParticipant()s key-autocomplete ajax data source
+     *
+     * @throws \ILIAS\HTTP\Response\Sender\ResponseSendingException
+     */
+    protected function searchParticipant() : void
+    {
+        $postvar = $this->ctrl->getParameterArrayByClass(
+            self::class,
+            self::CMD_PARTICIPANT_SEARCH,
+        )[0];
+
+        $data = json_encode(array(
+            1 => 'test1',
+            2 => 'test2',
+            3 => 'test3'
+        ));
+
+        $response = $this->http->response()->withBody(ILIAS\Filesystem\Stream\Streams::ofString($data));
+
+
+        $response->withHeader('Content-Type', 'application/json');
+        $this->http->saveResponse($response);
+        $this->http->sendResponse();
+        $this->http->close();
     }
 
     protected function addParticipant() : void

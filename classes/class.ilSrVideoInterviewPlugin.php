@@ -18,12 +18,29 @@ class ilSrVideoInterviewPlugin extends ilRepositoryObjectPlugin
      */
     const PLUGIN_NAME = 'SrVideoInterview';
 
-    public function getPluginName() : string
+    /**
+     * @var ilSrVideoInterviewPlugin
+     */
+    protected static $instance;
+
+    /**
+     * @return static
+     */
+    final public static function getInstance() : self
+    {
+        if (!isset(self::$instance)) {
+            self::$instance = new self();
+        }
+
+        return self::$instance;
+    }
+
+    final public function getPluginName() : string
     {
         return self::PLUGIN_NAME;
     }
 
-    protected function uninstallCustom() : void
+    final protected function uninstallCustom() : void
     {
         // TODO: Implement uninstallCustom() method, remove database tables
     }

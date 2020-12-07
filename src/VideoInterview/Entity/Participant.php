@@ -27,7 +27,7 @@ class Participant
     /**
      * @var int
      */
-    protected $exercise_id;
+    protected $obj_id;
 
     /**
      * @var int
@@ -36,19 +36,18 @@ class Participant
 
     /**
      * Participant constructor.
-     *
      * @param int|null $id
      * @param bool     $feedback_sent
      * @param bool     $invitation_sent
-     * @param int|null $exercise_id
+     * @param int|null $obj_id
      * @param int|null $user_id
      */
-    public function __construct(int $id = null, bool $feedback_sent = false, bool $invitation_sent = false, int $exercise_id = null, int $user_id = null)
+    public function __construct(int $id = null, bool $feedback_sent = false, bool $invitation_sent = false, int $obj_id = null, int $user_id = null)
     {
         $this->id = $id;
         $this->feedback_sent = $feedback_sent;
         $this->invitation_sent = $invitation_sent;
-        $this->exercise_id = $exercise_id;
+        $this->obj_id = $obj_id;
         $this->user_id = $user_id;
     }
 
@@ -109,18 +108,18 @@ class Participant
     /**
      * @return int
      */
-    public function getExerciseId() : int
+    public function getObjId() : int
     {
-        return $this->exercise_id;
+        return $this->obj_id;
     }
 
     /**
-     * @param int $exercise_id
+     * @param int $obj_id
      * @return Participant
      */
-    public function setExerciseId(int $exercise_id) : Participant
+    public function setObjId(int $obj_id) : Participant
     {
-        $this->exercise_id = $exercise_id;
+        $this->obj_id = $obj_id;
         return $this;
     }
 
