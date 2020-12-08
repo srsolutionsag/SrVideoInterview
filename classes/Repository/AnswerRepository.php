@@ -38,8 +38,9 @@ class AnswerRepository implements Repository
 
         $ar_answer
             ->setType($answer->getType())
-            ->setFeedback($answer->getFeedback())
+            ->setContent($answer->getContent())
             ->setResourceId($answer->getResourceId())
+            ->setExerciseId($answer->getExerciseId())
             ->setParticipantId($answer->getParticipantId())
             ->store()
         ;
@@ -57,8 +58,9 @@ class AnswerRepository implements Repository
             return new Answer(
                 $ar_answer->getId(),
                 $ar_answer->getType(),
-                $ar_answer->getFeedback(),
+                $ar_answer->getContent(),
                 $ar_answer->getResourceId(),
+                $ar_answer->getExerciseId(),
                 $ar_answer->getParticipantId()
             );
         }
@@ -79,8 +81,9 @@ class AnswerRepository implements Repository
                 $answers[] = new Answer(
                     $ar_answer->getId(),
                     $ar_answer->getType(),
-                    $ar_answer->getFeedback(),
+                    $ar_answer->getContent(),
                     $ar_answer->getResourceId(),
+                    $ar_answer->getExerciseId(),
                     $ar_answer->getParticipantId()
                 );
             }

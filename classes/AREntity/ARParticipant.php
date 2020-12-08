@@ -49,7 +49,7 @@ class ARParticipant extends ActiveRecord
      * @con_fieldtype   integer
      * @con_length      8
      */
-    protected $exercise_id = null;
+    protected $obj_id = null;
 
     /**
      * @var int
@@ -133,18 +133,18 @@ class ARParticipant extends ActiveRecord
     /**
      * @return int
      */
-    public function getExerciseId() : int
+    public function getObjId() : int
     {
-        return $this->exercise_id;
+        return $this->obj_id;
     }
 
     /**
-     * @param int $exercise_id
+     * @param int $obj_id
      * @return ARParticipant
      */
-    public function setExerciseId(int $exercise_id) : ARParticipant
+    public function setObjId(int $obj_id) : ARParticipant
     {
-        $this->exercise_id = $exercise_id;
+        $this->obj_id = $obj_id;
         return $this;
     }
 

@@ -3,10 +3,19 @@ exercise_tab#:#Aufgabe
 settings#:#Einstellungen
 exercise_detailed_description#:#Aufgabenstellung
 exercise_resource#:#Ressource ID (Video)
-exercise_updated#:#Aufgabe erfolgreich aktualisiert
+exercise_updated#:#Aufgabe wurde erfolgreich aktualisiert
 exercises#:#Aufgaben
 answer#:#Antworten
 back_to#:#Zurück
+has_answered#:#Beantwortet
+firstname#:#Vorname
+lastname#:#Nachname
+email#:#E-Mail
+actions#:#Aktionen
+remove_participant#:#Entfernen
+participant_removed#:#Teilnehmer wurde vom Video Interview entfernt.
+participant_added#:#Teilnehmer wurde diesem Video Interview zugeteilt.
+add_participant#:#Teilnehmer hinzufügen
 
 obj_xvin#:#Video Interview
 objs_xvin#:#Video Interview
