@@ -97,12 +97,12 @@ final class VideoInterviewRepository
     /**
      * retrieve all participants currently added to an exercise by it's id.
      *
-     * @param int $exercise_id
+     * @param int $obj_id
      * @return array|null
      */
-    public function getParticipantsByExerciseId(int $exercise_id) : ?array
+    public function getParticipantsByObjId(int $obj_id) : ?array
     {
-        return $this->participant_repository->getParticipantByExerciseId($exercise_id);
+        return $this->participant_repository->getParticipantsByObjId($obj_id);
     }
 
     /**
@@ -115,5 +115,27 @@ final class VideoInterviewRepository
     public function hasParticipantAnsweredExercise(int $participant_id, int $exercise_id) : bool
     {
         return $this->answer_repository->hasParticipantAnsweredExercise($participant_id, $exercise_id);
+    }
+
+    /**
+     * retrieve an existing Participant by it's id.
+     *
+     * @param int $participant_id
+     * @return Participant|null
+     */
+    public function getParticipantById(int $participant_id) : ?Participant
+    {
+        return $this->participant_repository->get($participant_id);
+    }
+
+    /**
+     * delete an existing Participant by it's id.
+     *
+     * @param int $participant_id
+     * @return bool
+     */
+    public function removeParticipantById(int $participant_id) : bool
+    {
+        return $this->participant_repository->delete($participant_id);
     }
 }

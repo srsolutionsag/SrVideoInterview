@@ -36,14 +36,20 @@ class Participant
 
     /**
      * Participant constructor.
-     * @param int|null $id
-     * @param bool     $feedback_sent
-     * @param bool     $invitation_sent
-     * @param int|null $obj_id
-     * @param int|null $user_id
+     *
+     * @param int|null    $id
+     * @param bool        $feedback_sent
+     * @param bool        $invitation_sent
+     * @param int|null    $obj_id
+     * @param int|null    $user_id
      */
-    public function __construct(int $id = null, bool $feedback_sent = false, bool $invitation_sent = false, int $obj_id = null, int $user_id = null)
-    {
+    public function __construct(
+        int $id = null,
+        bool $feedback_sent = false,
+        bool $invitation_sent = false,
+        int $obj_id = null,
+        int $user_id = null
+    ) {
         $this->id = $id;
         $this->feedback_sent = $feedback_sent;
         $this->invitation_sent = $invitation_sent;

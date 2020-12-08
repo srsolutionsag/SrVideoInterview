@@ -11,8 +11,11 @@ has_answered#:#Answered
 firstname#:#Firstname
 lastname#:#Lastname
 email#:#E-Mail
-actions#:#Aktionen
+actions#:#Actions
 remove_participant#:#Remove
+participant_removed#:#Participant has been removed from this Video Interview.
+participant_added#:#Participant has been added to this Video Interview.
+add_participant#:#Add Participant
 
 obj_xvin#:#Video Interview
 objs_xvin#:#Video Interview

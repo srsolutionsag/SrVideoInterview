@@ -5,6 +5,7 @@ namespace srag\Plugins\SrVideoInterview\Repository;
 use srag\Plugins\SrVideoInterview\VideoInterview\Repository;
 use srag\Plugins\SrVideoInterview\AREntity\ARParticipant;
 use srag\Plugins\SrVideoInterview\VideoInterview\Entity\Participant;
+use SimpleSAML\Module\metarefresh\ARP;
 
 /**
  * Class ParticipantRepository
@@ -13,6 +14,32 @@ use srag\Plugins\SrVideoInterview\VideoInterview\Entity\Participant;
  */
 class ParticipantRepository implements Repository
 {
+    /**
+     * transform ARParticipant array to Participant array
+     *
+     * @param array $ar_participants
+     * @return array|null
+     */
+    protected function transformToParticipant(array $ar_participants) : ?array
+    {
+        $participants = [];
+        if (!empty($ar_participants)) {
+            foreach ($ar_participants as $ar_participant) {
+                $participants[] = new Participant(
+                    $ar_participant['id'],
+                    (bool) $ar_participant['feedback_sent'],
+                    (bool) $ar_participant['invitation_sent'],
+                    $ar_participant['obj_id'],
+                    $ar_participant['user_id'],
+                );
+            }
+
+            return $participants;
+        }
+
+        return null;
+    }
+
     /**
      * @inheritDoc
      */
@@ -55,14 +82,28 @@ class ParticipantRepository implements Repository
      */
     public function get(int $participant_id) : ?Participant
     {
-        $ar_participant = ARParticipant::find($participant_id);
+        $ar_participant = ARParticipant::innerjoin(
+            "usr_data",
+            "user_id",
+            "usr_id",
+            array(
+                'firstname',
+                'lastname',
+                'email'
+            )
+        )->where(array(
+            'id' => $participant_id
+        ),
+            "="
+        )->getArray();
+
         if (null !== $ar_participant) {
             return new Participant(
-                $ar_participant->getId(),
-                (bool) $ar_participant->getFeedbackSent(),
-                (bool) $ar_participant->getInvitationSent(),
-                $ar_participant->getObjId(),
-                $ar_participant->getUserId()
+                $ar_participant['id'],
+                (bool) $ar_participant['feedback_sent'],
+                (bool) $ar_participant['invitation_sent'],
+                $ar_participant['obj_id'],
+                $ar_participant['user_id'],
             );
         }
 
@@ -74,24 +115,18 @@ class ParticipantRepository implements Repository
      */
     public function getAll() : ?array
     {
-        $ar_participants = ARParticipant::get();
-        $participants = [];
+        $ar_participants = ARParticipant::innerjoin(
+            "usr_data",
+            "user_id",
+            "usr_id",
+            array(
+                'firstname',
+                'lastname',
+                'email'
+            )
+        )->getArray();
 
-        if (!empty($ar_participants)) {
-            foreach ($ar_participants as $ar_participant) {
-                $participants[] = new Participant(
-                    $ar_participant->getId(),
-                    (bool) $ar_participant->getFeedbackSent(),
-                    (bool) $ar_participant->getInvitationSent(),
-                    $ar_participant->getObjId(),
-                    $ar_participant->getUserId()
-                );
-            }
-
-            return $participants;
-        }
-
-        return null;
+        return $this->transformToParticipant($ar_participants);
     }
 
     /**
@@ -99,7 +134,7 @@ class ParticipantRepository implements Repository
      * @param int $obj_id
      * @return array|null
      */
-    public function getParticipantByExerciseId(int $obj_id) : ?array
+    public function getParticipantsByObjId(int $obj_id) : ?array
     {
         $ar_participants = ARParticipant::innerjoin(
             'usr_data',
@@ -116,8 +151,32 @@ class ParticipantRepository implements Repository
             '='
         )->getArray();
 
-
-
-        return $ar_participants ?? null;
+        return $ar_participants;
     }
+
+//    /**
+//     * retrieve an array of participants where first-, lastname and email contain a given term.
+//     *
+//     * @param string $term
+//     * @return array|null
+//     */
+//    public function getParticipantsLike(string $term) : ?array
+//    {
+//        global $ilDB;
+//
+//        $statement = "
+//            SELECT p.id, u.firstname, u.lastname, u.email FROM xvin_participant AS p
+//                JOIN usr_data AS u ON p.user_id = u.usr_id
+//                WHERE u.firstname LIKE \"%{$term}%\"
+//                OR u.lastname LIKE \"%{$term}%\"
+//                OR u.email LIKE \"%{$term}%\";
+//        ";
+//
+//        // @TODO: may implement prepared statement here.
+//        $result = $ilDB->fetchAll(
+//            $ilDB->query($statement)
+//        );
+//
+//        return $result ?? null;
+//    }
 }

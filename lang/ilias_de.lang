@@ -13,6 +13,9 @@ lastname#:#Nachname
 email#:#E-Mail
 actions#:#Aktionen
 remove_participant#:#Entfernen
+participant_removed#:#Teilnehmer wurde vom Video Interview entfernt.
+participant_added#:#Teilnehmer wurde diesem Video Interview zugeteilt.
+add_participant#:#Teilnehmer hinzufügen
 
 obj_xvin#:#Video Interview
 objs_xvin#:#Video Interview
