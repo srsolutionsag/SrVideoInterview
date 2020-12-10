@@ -6,8 +6,9 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
+    'ILIAS\\UI\\Implementation\\Component\\Input\\Field\\MultiSelectUserInput' => $baseDir . '/classes/UIComponent/MultiSelectUserInput.php',
+    'ILIAS\\UI\\Implementation\\Component\\Input\\Field\\SrVideoInterviewRenderer' => $baseDir . '/classes/UIComponent/SrVideoInterviewRenderer.php',
     'ILIAS\\UI\\Implementation\\Component\\Input\\Field\\VideoRecorderInput' => $baseDir . '/classes/UIComponent/VideoRecorderInput.php',
-    'ILIAS\\UI\\Implementation\\Component\\Input\\Field\\VideoRecorderRenderer' => $baseDir . '/classes/UIComponent/VideoRecorderRenderer.php',
     'ilObjSrVideoInterview' => $baseDir . '/classes/class.ilObjSrVideoInterview.php',
     'ilObjSrVideoInterviewAccess' => $baseDir . '/classes/class.ilObjSrVideoInterviewAccess.php',
     'ilObjSrVideoInterviewAnswerGUI' => $baseDir . '/classes/SrVideoInterviewGUI/class.ilObjSrVideoInterviewAnswerGUI.php',
@@ -16,7 +17,12 @@ return array(
     'ilObjSrVideoInterviewListGUI' => $baseDir . '/classes/class.ilObjSrVideoInterviewListGUI.php',
     'ilObjSrVideoInterviewParticipantGUI' => $baseDir . '/classes/SrVideoInterviewGUI/class.ilObjSrVideoInterviewParticipantGUI.php',
     'ilObjSrVideoInterviewParticipantTableGUI' => $baseDir . '/classes/SrVideoInterviewGUI/class.ilObjSrVideoInterviewParticipantTableGUI.php',
+    'ilObjSrVideoInterviewUploadHandlerGUI' => $baseDir . '/classes/SrVideoInterviewGUI/class.ilObjSrVideoInterviewUploadHandlerGUI.php',
     'ilSrVideoInterviewPlugin' => $baseDir . '/classes/class.ilSrVideoInterviewPlugin.php',
+    'srag\\CustomInputGUIs\\MultiSelectSearchNewInputGUI\\ObjectChildrenAjaxAutoCompleteCtrl' => $vendorDir . '/srag/custominputguis/src/MultiSelectSearchNewInputGUI/class.ObjectChildrenAjaxAutoCompleteCtrl.php',
+    'srag\\CustomInputGUIs\\MultiSelectSearchNewInputGUI\\ObjectsAjaxAutoCompleteCtrl' => $vendorDir . '/srag/custominputguis/src/MultiSelectSearchNewInputGUI/class.ObjectsAjaxAutoCompleteCtrl.php',
+    'srag\\CustomInputGUIs\\MultiSelectSearchNewInputGUI\\OrgUnitAjaxAutoCompleteCtrl' => $vendorDir . '/srag/custominputguis/src/MultiSelectSearchNewInputGUI/class.OrgUnitAjaxAutoCompleteCtrl.php',
+    'srag\\CustomInputGUIs\\MultiSelectSearchNewInputGUI\\UsersAjaxAutoCompleteCtrl' => $vendorDir . '/srag/custominputguis/src/MultiSelectSearchNewInputGUI/class.UsersAjaxAutoCompleteCtrl.php',
     'srag\\Plugins\\SrVideoInterview\\AREntity\\ARAnswer' => $baseDir . '/classes/AREntity/ARAnswer.php',
     'srag\\Plugins\\SrVideoInterview\\AREntity\\ARExercise' => $baseDir . '/classes/AREntity/ARExercise.php',
     'srag\\Plugins\\SrVideoInterview\\AREntity\\ARParticipant' => $baseDir . '/classes/AREntity/ARParticipant.php',

@@ -49,11 +49,13 @@ il.Plugins.SrVideoInterview = il.Plugins.SrVideoInterview || {};
 			}
 
 		}*/
-
-		var init = function (id, video_recorder_url) {
-			console.log('selecting should be done with the ID of the composnent: ' + id);
-			console.log('recorder url: ' + video_recorder_url)
-			var video = document.querySelector('video');
+		var _settings;
+		var init = function (id, settings) {
+			_settings = settings;
+			cosnole.log(id);
+			console.log('selecting should be done with the ID of the component: ' + id);
+			console.log(_settings)
+			var video = document.querySelector('#' + id + ' video');
 
 			function captureCamera(callback) {
 				navigator.mediaDevices.getUserMedia({audio: true, video: true}).then(function (camera) {
@@ -83,7 +85,7 @@ il.Plugins.SrVideoInterview = il.Plugins.SrVideoInterview || {};
 
 
 				var xhr = new XMLHttpRequest();
-				xhr.open('POST', '/ilias.php?ref_id=76&cmd=data&cmdClass=ilobjsrvideointerviewgui&cmdNode=101:16f&baseClass=ilobjplugindispatchgui', true);
+				xhr.open('POST', _settings.upload_url, true);
 				xhr.send(formData);
 
 

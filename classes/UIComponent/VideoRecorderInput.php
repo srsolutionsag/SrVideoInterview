@@ -2,28 +2,15 @@
 
 namespace ILIAS\UI\Implementation\Component\Input\Field;
 
+use ILIAS\UI\Component\Input\Field\UploadHandler;
+
 /**
  * Class File
  * @package ILIAS\UI\Implementation\Component\Input\Field
  * @author  Fabian Schmid <fs@studer-raimann.ch>
  */
-class VideoRecorderInput extends Input
+class VideoRecorderInput extends File
 {
-
-    protected string $video_recorder_url = '';
-
-    public function withVideoRecoderURL(string $url) : self
-    {
-        $clone                     = clone $this;
-        $clone->video_recorder_url = $url;
-
-        return $clone;
-    }
-
-    public function getVideoRecoderURL() : string
-    {
-        return $this->video_recorder_url;
-    }
 
     protected function getConstraintForRequirement()
     {
@@ -32,7 +19,7 @@ class VideoRecorderInput extends Input
 
     protected function isClientSideValueOk($value) : bool
     {
-        return true;
+        return true; // TODO prüfen, ob $value irgendwas valiudes ist...
     }
 
     public function getUpdateOnLoadCode() : \Closure
@@ -41,11 +28,14 @@ class VideoRecorderInput extends Input
         };
     }
 
-    public static function getOne(string $upload_url, string $lable, string $byline = null) : VideoRecorderInput
-    {
+    public static function getOne(
+        UploadHandler $upload_handler,
+        string $lable,
+        string $byline = null
+    ) : VideoRecorderInput {
         global $DIC;
         $data_factory = new \ILIAS\Data\Factory();
-        $refinery     = new \ILIAS\Refinery\Factory($data_factory, $DIC["lng"]);
+        $refinery = new \ILIAS\Refinery\Factory($data_factory, $DIC["lng"]);
 
         $DIC["ui.signal_generator"];
         $DIC["ui.factory.input.field"];
@@ -54,8 +44,9 @@ class VideoRecorderInput extends Input
         return (new self(
             $data_factory,
             $refinery,
+            $upload_handler,
             $lable,
             $byline
-        ))->withVideoRecoderURL($upload_url);
+        ));
     }
 }

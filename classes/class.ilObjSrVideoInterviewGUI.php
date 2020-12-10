@@ -102,6 +102,7 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
     }
 
     /**
+     * @inheritDoc
      * @return string
      */
     final public function getStandardCmd() : string
@@ -119,6 +120,9 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
         $this->setupTabs(); // when using setTabs(), tabs cannot be activated.
         $next_class = $this->ctrl->getNextClass($this);
         switch ($next_class) {
+            case strtolower(ilObjSrVideoInterviewUploadHandlerGUI::class):
+                $this->ctrl->forwardCommand(new ilObjSrVideoInterviewUploadHandlerGUI());
+                break;
             case '':
             case strtolower(ilObjSrVideoInterviewExerciseGUI::class):
                 if (!$this->getCreationMode()) {
@@ -270,7 +274,7 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
                 ->text($this->txt('exercise_resource'))
                 ->withValue($values['exercise_resource'])
             ,
-            'exercise_resource_dev' => VideoRecorderInput::getOne('upload url comes here','Video')
+            'exercise_resource_dev' => VideoRecorderInput::getOne(new ilObjSrVideoInterviewUploadHandlerGUI(),'Video')
         );
 
         return $this->ui_factory
@@ -290,6 +294,8 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
     /**
      * update VideoInterview repository object and exercise, using the VideoInterview
      * title and description.
+     *
+     * @TODO: move to ExerciseGUI when implementing m:1.
      */
     protected function updateVideoInterview() : void
     {
@@ -336,6 +342,8 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
 
     /**
      * render the VideoInterview object form, including exercise data.
+     *
+     * @TODO: move to ExerciseGUI when implementing m:1
      */
     protected function editVideoInterview() : void
     {
