@@ -28,24 +28,21 @@ class VideoRecorderInput extends File
         };
     }
 
-    public static function getOne(
+    public static function getInstance(
         UploadHandler $upload_handler,
-        string $lable,
+        string $label,
         string $byline = null
     ) : VideoRecorderInput {
         global $DIC;
+
         $data_factory = new \ILIAS\Data\Factory();
         $refinery = new \ILIAS\Refinery\Factory($data_factory, $DIC["lng"]);
-
-        $DIC["ui.signal_generator"];
-        $DIC["ui.factory.input.field"];
-        $DIC["ui.factory.input.container"];
 
         return (new self(
             $data_factory,
             $refinery,
             $upload_handler,
-            $lable,
+            $label,
             $byline
         ));
     }

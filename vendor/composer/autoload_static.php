@@ -55,6 +55,7 @@ class ComposerStaticInit357b332b054365bb3c0e8d6632cb069c
         'srag\\Plugins\\SrVideoInterview\\Repository\\ExerciseRepository' => __DIR__ . '/../..' . '/classes/Repository/ExerciseRepository.php',
         'srag\\Plugins\\SrVideoInterview\\Repository\\ParticipantRepository' => __DIR__ . '/../..' . '/classes/Repository/ParticipantRepository.php',
         'srag\\Plugins\\SrVideoInterview\\Repository\\VideoInterviewRepository' => __DIR__ . '/../..' . '/classes/Repository/VideoInterviewRepository.php',
+        'srag\\Plugins\\SrVideoInterview\\UIComponent\\Loader' => __DIR__ . '/../..' . '/classes/UIComponent/Loader.php',
     );
 
     public static function getInitializer(ClassLoader $loader)

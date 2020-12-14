@@ -33,7 +33,7 @@ class SrVideoInterviewRenderer extends Renderer
      */
     protected function renderInputField(Template $tpl, Input $input, $id, RendererInterface $default_renderer) : string
     {
-        // what to do here?
+        $tpl->setVariable('LABEL', $input->getLabel());
         $tpl->setVariable('ID', $id);
 
         return $tpl->get();
@@ -62,6 +62,7 @@ class SrVideoInterviewRenderer extends Renderer
         $global_template = $DIC->ui()->mainTemplate();
 
         $settings = new stdClass();
+        // @TODO: can be simplified
         if ($component instanceof VideoRecorderInput) {
             $settings->upload_url = $component->getUploadHandler()->getUploadURL();
             $settings->removal_url = $component->getUploadHandler()->getFileRemovalURL();
@@ -75,8 +76,8 @@ class SrVideoInterviewRenderer extends Renderer
                 $global_template,
                 new ilTemplate(
                     self::TEMPLATE_DIR . "tpl.video_recorder_input.html",
-                    false,
-                    false,
+                    true,
+                    true,
                 )
             );
         } elseif ($component instanceof MultiSelectUserInput) {

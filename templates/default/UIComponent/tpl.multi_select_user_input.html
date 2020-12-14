@@ -1,16 +1,17 @@
-<div class="il-sr-multi-select-user-input" id="{ID}">
-    <h1>MultiSelectUserInput ({ID})</h1>
-    <hr />
 
-    <label for="user_search">
-        <span>Find user:</span>
-        <input id="user_search" name="user_search" type="text" value="" placeholder="User ..." />
-    </label>
+<div class="form-inline">
+    <div class="sr-wrapper">
+        <input id="sr-multi-user-search" type="text" name="{POST_VAR}" class="form-control" data-autocomplete_url="{URL_AUTOCOMPLETE}" {REQUIRED} {DISABLED} />
+    </div>
 
-    <label for="user_ids">
-        <span>Selected users:</span>
-        <select name="user_ids" id="user_ids">
-            <option value="USR_ID">USR_DATA</option>
-        </select>
-    </label>
+    <div class="sr-wrapper">
+        <ul id="sr-multi-user-select" class="sr-selected-users-list"></ul>
+    </div>
+
+    <select style="display: none;" name="{POST_VAR}_selected" id="sr-multi-user-select-input" multiple>
+        <!-- display values as follows to submit correctly -->
+        <!-- <option value="{VAL}" selected /> -->
+    </select>
+
+    <input type="submit" class="btn btn-default" name="{POST_VAR}_add" id="sr-multi-user-submit" value="Add Participants" />
 </div>

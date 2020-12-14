@@ -2,55 +2,142 @@
 
 namespace ILIAS\UI\Implementation\Component\Input\Field;
 
-use ILIAS\UI\Component\Input\Field\UploadHandler;
-use ILIAS\Refinery\Constraint;
-use ILIAS\Refinery\Factory;
-use ILIAS\Data\Factory as DataFactory;
-use ilToolbarItem;
+use ilTemplate;
+use ilUtil;
+use ilTextInputGUI;
+use iljQueryUtil;
 
 /**
  * Class File
  * @package ILIAS\UI\Implementation\Component\Input\Field
  * @author  Fabian Schmid <fs@studer-raimann.ch>
  */
-class MultiSelectUserInput extends Input implements ilToolbarItem
+class MultiSelectUserInput extends ilTextInputGUI
 {
+    /**
+     * @var bool
+     */
+    protected static $instantiated = false;
+
     /**
      * MultiSelectUserInput constructor.
      *
-     * @param DataFactory $data_factory
-     * @param Factory     $refinery
-     * @param string      $label
+     * @param string $a_title
+     * @param string $a_postvar
      */
-    public function __construct(DataFactory $data_factory, Factory $refinery, string $label)
+    public function __construct($a_title = "", $a_postvar = "")
     {
-        parent::__construct($data_factory, $refinery, $label, null);
+        parent::__construct($a_title, $a_postvar);
     }
 
-    /**
-     * @inheritDoc
-     */
-    protected function getConstraintForRequirement() : ?Constraint
+    protected static function init() : void
     {
-        return null;
+        global $DIC;
+        
+        $global_tempalte = $DIC->ui()->mainTemplate();
+        $global_tempalte->addJavaScript("./Customizing/global/plugins/Services/Repository/RepositoryObject/SrVideoInterview/js/default/UIComponent/script.multiSelectUserInput.js");
+        $global_tempalte->addCss("./Customizing/global/plugins/Services/Repository/RepositoryObject/SrVideoInterview/css/default/UIComponent/style.multi_select_user_input.css");
+
+        iljQueryUtil::initjQuery();
+        iljQueryUtil::initjQueryUI();
     }
 
-    /**
-     * @inheritDoc
-     */
-    protected function isClientSideValueOk($value) : bool
+    public function render($a_mode = "")
     {
-        // TODO: Implement isClientSideValueOk() method.
-        return true;
-    }
+        /**
+         * @var $lng ilLanguage
+         */
+        $lng = $this->lng;
 
-    /**
-     * @inheritDoc
-     */
-    public function getUpdateOnLoadCode() : \Closure
-    {
-        // TODO: Implement getUpdateOnLoadCode() method.
-        return static function($i) {};
+        $tpl = new ilTemplate(
+            SrVideoInterviewRenderer::TEMPLATE_DIR . "tpl.multi_select_user_input.html",
+            true,
+            true
+        );
+
+        if (strlen($this->getValue())) {
+            $tpl->setCurrentBlock("prop_text_propval");
+            $tpl->setVariable("PROPERTY_VALUE", ilUtil::prepareFormOutput($this->getValue()));
+            $tpl->parseCurrentBlock();
+        }
+        if (strlen($this->getInlineStyle())) {
+            $tpl->setCurrentBlock("stylecss");
+            $tpl->setVariable("CSS_STYLE", ilUtil::prepareFormOutput($this->getInlineStyle()));
+            $tpl->parseCurrentBlock();
+        }
+        if (strlen($this->getCssClass())) {
+            $tpl->setCurrentBlock("classcss");
+            $tpl->setVariable('CLASS_CSS', ilUtil::prepareFormOutput($this->getCssClass()));
+            $tpl->parseCurrentBlock();
+        }
+        if ($this->getSubmitFormOnEnter()) {
+            $tpl->touchBlock("submit_form_on_enter");
+        }
+
+        $tpl->setVariable('PROP_INPUT_TYPE', 'text');
+        $tpl->setVariable("ID", $this->getFieldId());
+        $tpl->setVariable("SIZE", $this->getSize());
+
+        if ($this->getMaxLength() != null) {
+            $tpl->setVariable("MAXLENGTH", $this->getMaxLength());
+        }
+        if (strlen($this->getSuffix())) {
+            $tpl->setVariable("INPUT_SUFFIX", $this->getSuffix());
+        }
+
+        $postvar = $this->getPostVar();
+        if ($this->getMulti() && substr($postvar, -2) != "[]") {
+            $postvar .= "[]";
+        }
+
+        if ($this->getDisabled()) {
+            if ($this->getMulti()) {
+                $value = $this->getMultiValues();
+                $hidden = "";
+                if (is_array($value)) {
+                    foreach ($value as $item) {
+                        $hidden .= $this->getHiddenTag($postvar, $item);
+                    }
+                }
+            } else {
+                $hidden = $this->getHiddenTag($postvar, $this->getValue());
+            }
+            if ($hidden) {
+                $tpl->setVariable("HIDDEN_INPUT", $hidden);
+            }
+            $tpl->setVariable("DISABLED", " disabled=\"disabled\"");
+        } else {
+            $tpl->setVariable("POST_VAR", $postvar);
+        }
+
+        $tpl->setVariable("URL_AUTOCOMPLETE", $this->getDataSource());
+
+        if ($a_mode == "toolbar") {
+            // block-inline hack, see: http://blog.mozilla.com/webdev/2009/02/20/cross-browser-inline-block/
+            // -moz-inline-stack for FF2
+            // zoom 1; *display:inline for IE6 & 7
+            $tpl->setVariable("STYLE_PAR", 'display: -moz-inline-stack; display:inline-block; zoom: 1; *display:inline;');
+        } else {
+            $tpl->setVariable("STYLE_PAR", '');
+        }
+
+        if ($this->isHtmlAutoCompleteDisabled()) {
+            $tpl->setVariable("AUTOCOMPLETE", "autocomplete=\"off\"");
+        }
+
+        if ($this->getRequired()) {
+            $tpl->setVariable("REQUIRED", "required=\"required\"");
+        }
+
+        // multi icons
+        if ($this->getMulti() && !$a_mode && !$this->getDisabled()) {
+            $tpl->touchBlock("inline_in_bl");
+            $tpl->setVariable("MULTI_ICONS", $this->getMultiIconsHTML());
+        }
+
+        $tpl->setVariable("ARIA_LABEL", ilUtil::prepareFormOutput($this->getTitle()));
+
+        return $tpl->get();
     }
 
     /**
@@ -58,25 +145,25 @@ class MultiSelectUserInput extends Input implements ilToolbarItem
      */
     public function getToolbarHTML() : string
     {
-        // TODO: Implement getToolbarHTML() method.
-        return '';
+        return $this->render("text");
     }
 
-    public static function getOne(string $label) : self
+    /**
+     * instantiates a new MultiSelectUserInput.
+     *
+     * @param string $label
+     * @param string $postvar
+     * @return MultiSelectUserInput
+     */
+    public static function getInstance(string $label = "", string $postvar = "") : self
     {
-        global $DIC;
-
-        $data_factory = new \ILIAS\Data\Factory();
-        $refinery = new \ILIAS\Refinery\Factory($data_factory, $DIC["lng"]);
-
-        $DIC["ui.signal_generator"];
-        $DIC["ui.factory.input.field"];
-        $DIC["ui.factory.input.container"];
+        if (!self::$instantiated) {
+            self::init();
+        }
 
         return (new self(
-            $data_factory,
-            $refinery,
-            $label
+            $label,
+            $postvar
         ));
     }
 }

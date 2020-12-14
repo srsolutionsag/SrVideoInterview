@@ -1,0 +1,53 @@
+/**
+ * definitely some ugly css. improve this later and may use less.
+ * (not even sure if this is best-practise, but it works)
+ */
+.sr-wrapper {
+    display: inline-block;
+}
+
+#sr-multi-select-dropdown {
+    position: absolute;
+    list-style-type: none;
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    margin: 0;
+    background: rgb(77, 77, 77);
+}
+
+#sr-multi-select-dropdown li {
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 145px;
+}
+
+#sr-multi-select-dropdown li:hover {
+    background: blue;
+    cursor: pointer;
+}
+
+.sr-selected-users-list {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    width: auto;
+    max-width: 300px;
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sr-selected-users-list li {
+    display: inline-block;
+    height: 22px;
+    padding: 0 2px !important;
+    margin: 2px 1px 0 0 !important;
+    border: 1px solid grey !important;
+    font-size: 14px;
+}
+
+.sr-selected-users-list li span {
+    cursor: pointer;
+}

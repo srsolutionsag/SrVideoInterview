@@ -3,13 +3,8 @@
 require_once('./Customizing/global/plugins/Services/Repository/RepositoryObject/SrVideoInterview/vendor/autoload.php');
 
 use ILIAS\DI\Container;
-use ILIAS\UI\Component\Component;
-use ILIAS\UI\Implementation\Component\Input\Field\VideoRecorderInput;
-use ILIAS\UI\Implementation\Component\Input\Field\SrVideoInterviewRenderer;
 use ILIAS\UI\Implementation\DefaultRenderer;
-use ILIAS\UI\Implementation\Render\Loader;
 use ILIAS\UI\Renderer;
-use ILIAS\UI\Implementation\Component\Input\Field\MultiSelectUserInput;
 
 /**
  * Class ilSrVideoInterviewPlugin is the plugin instance
@@ -63,50 +58,15 @@ class ilSrVideoInterviewPlugin extends ilRepositoryObjectPlugin
     }
 
     /**
-     * this is currently magic to me, needs to be examined.
+     * checks if given Component is a custom one and exchanges the default Renderer if so.
      *
      * @param Container $dic
      * @return Closure
      */
     public function exchangeUIRendererAfterInitialization(\ILIAS\DI\Container $dic) : Closure
     {
-
-
-        $loader = new class($dic) implements Loader {
-            public function __construct(Container $dic)
-            {
-                $this->dic = $dic;
-            }
-
-            public function getRendererFor(Component $component, array $contexts)
-            {
-                if ($component instanceof VideoRecorderInput ||
-                    $component instanceof MultiSelectUserInput
-                ) {
-                    $renderer = new SrVideoInterviewRenderer(
-                        $this->dic['ui.factory'],
-                        $this->dic["ui.template_factory"],
-                        $this->dic["lng"],
-                        $this->dic["ui.javascript_binding"],
-                        $this->dic["refinery"],
-                    );
-
-                    $renderer->registerResources($this->dic["ui.resource_registry"]);
-                    return $renderer;
-                }
-
-                return $this->dic['ui.component_renderer_loader']->getRendererFor($component, $contexts);
-            }
-
-            public function getRendererFactoryFor(Component $component)
-            {
-                return $this->dic['ui.component_renderer_loader']->getRendererFactoryFor($component);
-            }
-
-        };
-
-        return function ($dic) use ($loader) {
-
+        $loader = new \srag\Plugins\SrVideoInterview\UIComponent\Loader($dic);
+        return static function ($dic) use ($loader) {
             return new class($loader) extends DefaultRenderer implements Renderer {
 
             };

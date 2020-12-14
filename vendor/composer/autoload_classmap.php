@@ -30,4 +30,5 @@ return array(
     'srag\\Plugins\\SrVideoInterview\\Repository\\ExerciseRepository' => $baseDir . '/classes/Repository/ExerciseRepository.php',
     'srag\\Plugins\\SrVideoInterview\\Repository\\ParticipantRepository' => $baseDir . '/classes/Repository/ParticipantRepository.php',
     'srag\\Plugins\\SrVideoInterview\\Repository\\VideoInterviewRepository' => $baseDir . '/classes/Repository/VideoInterviewRepository.php',
+    'srag\\Plugins\\SrVideoInterview\\UIComponent\\Loader' => $baseDir . '/classes/UIComponent/Loader.php',
 );

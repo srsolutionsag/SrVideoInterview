@@ -81,13 +81,23 @@ class ilObjSrVideoInterviewParticipantGUI extends ilObjSrVideoInterviewGUI
 
     protected function showAll() : void
     {
-
-        $a = VideoRecorderInput::getOne(new ilObjSrVideoInterviewUploadHandlerGUI(),'Video');
-        $b = MultiSelectUserInput::getOne("test");
-
-        $this->tpl->setContent(
-            $this->ui_renderer->render([$a, $b])
+//        $a = VideoRecorderInput::getInstance(new ilObjSrVideoInterviewUploadHandlerGUI(),'Video');
+        $b = MultiSelectUserInput::getInstance("", "user_data");
+        $b->setDataSource(
+            $this->ctrl->getLinkTargetByClass(
+                self::class,
+                self::CMD_PARTICIPANT_SEARCH,
+                "",
+                true
+            )
         );
+
+
+//        $this->tpl->setContent(
+//            $this->ui_renderer->render([$a])
+//        );
+
+        $this->toolbar->addInputItem($b);
 
         /*$this->toolbar->setPreventDoubleSubmission(true);
         $this->toolbar->setFormAction(
@@ -130,26 +140,32 @@ class ilObjSrVideoInterviewParticipantGUI extends ilObjSrVideoInterviewGUI
 //        $this->tpl->setContent($table_gui->getHTML());
     }
 
-//    /**
-//     * addParticipant()s key-autocomplete ajax data source
-//     */
-//    protected function searchParticipant() : void
-//    {
-//        $term = filter_input(INPUT_GET, "term");
-//        $users = array();
-//        foreach (ilObjUser::searchUsers($term) as $user) {
-//            $users[$user['usr_id']] = "{$user['firstname']}, {$user['lastname']} [{$user['login']} | {$user['usr_id']}]";
-//        }
-//
-//        if (empty($users)) {
-//            $users = array($this->txt('nothing_found'));
-//        }
-//
-//        // since it's not working properly with http->response()
-//        header("Content-Type: application/json; charset=utf-8");
-//        echo json_encode($users);
-//        exit;
-//    }
+    /**
+     * addParticipant()s key-autocomplete ajax data source
+     */
+    protected function searchParticipant() : void
+    {
+        $term = filter_input(INPUT_GET, "term");
+        $users = array();
+        foreach (ilObjUser::searchUsers($term) as $user) {
+            $users[] = array(
+                'label' => "{$user['firstname']} {$user['lastname']} [{$user['login']}]",
+                'value' => $user['usr_id'],
+            );
+        }
+
+        if (empty($users)) {
+            $users = array(
+                'label' => $this->txt('nothing_found'),
+                'value' => "",
+            );
+        }
+
+        // since it's not working properly with http->response()
+        header("Content-Type: application/json; charset=utf-8");
+        echo json_encode($users);
+        exit;
+    }
 //
 //    /**
 //     * add a new participant to a VideoInterview object.
