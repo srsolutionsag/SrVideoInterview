@@ -49,9 +49,9 @@ class AnswerRepository implements Repository
     }
 
     /**
-     * @inheritDoc
+     * @return Answer
      */
-    public function get(int $answer_id) : ?Answer
+    public function get(int $answer_id) : ?object
     {
         $ar_answer = ARAnswer::find($answer_id);
         if (null !== $ar_answer) {

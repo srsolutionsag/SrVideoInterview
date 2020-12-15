@@ -103,7 +103,7 @@ class ilObjSrVideoInterviewExerciseGUI extends ilObjSrVideoInterviewGUI
                             $this->txt('answer'),
                             $this->ctrl->getLinkTargetByClass(
                                 ilObjSrVideoInterviewAnswerGUI::class,
-                                ilObjSrVideoInterviewAnswerGUI::CMD_ANSWER_ADD,
+                                ilObjSrVideoInterviewAnswerGUI::CMD_ANSWER_ADD
                             )
                         )
                 );
@@ -189,7 +189,7 @@ class ilObjSrVideoInterviewExerciseGUI extends ilObjSrVideoInterviewGUI
         $this->repository->store($exercise);
         $this->ctrl->redirectByClass(
             self::class,
-            self::CMD_EXERCISE_INDEX,
+            self::CMD_EXERCISE_INDEX
         );
     }
 

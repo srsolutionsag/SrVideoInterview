@@ -77,7 +77,7 @@ class SrVideoInterviewRenderer extends Renderer
                 new ilTemplate(
                     self::TEMPLATE_DIR . "tpl.video_recorder_input.html",
                     true,
-                    true,
+                    true
                 )
             );
         } elseif ($component instanceof MultiSelectUserInput) {
@@ -88,7 +88,7 @@ class SrVideoInterviewRenderer extends Renderer
                 new ilTemplate(
                     self::TEMPLATE_DIR . "tpl.multi_select_user_input.html",
                     false,
-                    false,
+                    false
                 )
             );
         } else {

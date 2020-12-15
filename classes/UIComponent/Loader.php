@@ -2,11 +2,11 @@
 
 namespace srag\Plugins\SrVideoInterview\UIComponent;
 
-use ILIAS\UI\Implementation\Component\Input\Field\SrVideoInterviewRenderer;
-use ILIAS\UI\Component\Component;
 use ILIAS\DI\Container;
-use ILIAS\UI\Implementation\Component\Input\Field\VideoRecorderInput;
+use ILIAS\UI\Component\Component;
 use ILIAS\UI\Implementation\Component\Input\Field\MultiSelectUserInput;
+use ILIAS\UI\Implementation\Component\Input\Field\SrVideoInterviewRenderer;
+use ILIAS\UI\Implementation\Component\Input\Field\VideoRecorderInput;
 
 /**
  * Class Loader
@@ -31,7 +31,7 @@ class Loader implements \ILIAS\UI\Implementation\Render\Loader
                 $this->dic["ui.template_factory"],
                 $this->dic["lng"],
                 $this->dic["ui.javascript_binding"],
-                $this->dic["refinery"],
+                $this->dic["refinery"]
             );
         }
 
