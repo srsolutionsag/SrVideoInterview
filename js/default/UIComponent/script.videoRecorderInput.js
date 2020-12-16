@@ -2,130 +2,154 @@ il = il || {};
 il.Plugins = il.Plugins || {};
 il.Plugins.SrVideoInterview = il.Plugins.SrVideoInterview || {};
 (function ($, il) {
+
 	il.Plugins.SrVideoInterview = (function ($) {
 
-		/*var initMinial = function (id, video_recorder_url) {
-			const constraints = {
-				video: true,
-				audio: true,
-			};
+		/**
+		 * VideoRecorderInput
+		 *
+		 * @param {string} id
+		 * @param {string} settings
+		 */
+		let init = function (id, settings) {
+			// convert settings back to an object
+			settings = Object.assign(JSON.parse(settings));
+			console.log(settings);
 
+			// obtain the plain HTMLMediaElement (hence no jQuery)
+			let videoContainer = document.querySelector('video');
 
-			function handleSuccess(stream) {
-				console.log(stream);
-				const video = document.querySelector('video');
-				const videoTracks = stream.getVideoTracks();
-				console.log('Got stream with constraints:', constraints);
-				console.log(`Using video device: ${videoTracks[0].label}`);
-				window.stream = stream; // make variable available to browser console
-				video.srcObject = stream;
-			}
+			// obtain recording controls
+			let btnStart = $(`#${id} #btn-start-recording`),
+					btnStop  = $(`#${id} #btn-stop-recording`);
 
-			function handleError(error) {
-				if (error.name === 'ConstraintNotSatisfiedError') {
-					const v = constraints.video;
-					errorMsg(`The resolution ${v.width.exact}x${v.height.exact} px is not supported by your device.`);
-				} else if (error.name === 'PermissionDeniedError') {
-					errorMsg('Permissions have not been granted to use your camera and ' +
-						'microphone, you need to allow the page access to your devices in ' +
-						'order for the demo to work.');
+			// init globally accessible vars
+			let videoRecorder, mediaStream;
+
+			// register recording start
+			btnStart.click(function(e) {
+				e.preventDefault();
+				toggleRecordingControls();
+				startRecording();
+			});
+
+			// register recording stop
+			btnStop.click(function(e) {
+				e.preventDefault();
+				toggleRecordingControls();
+				stopRecording();
+			});
+
+			/**
+			 * helper function to enable stop button and disable start when clicked and vise-versa.
+			 */
+			function toggleRecordingControls() {
+				if (!btnStart.prop('disabled')) {
+					btnStart.attr('disabled', true);
+					btnStop.removeAttr('disabled');
+				} else {
+					btnStart.removeAttr('disabled');
+					btnStop.attr('disabled', true);
 				}
-				errorMsg(`getUserMedia error: ${error.name}`, error);
 			}
 
-			function errorMsg(msg, error) {
-				const errorElement = document.querySelector('#errorMsg');
-				errorElement.innerHTML += `<p>${msg}</p>`;
-				if (typeof error !== 'undefined') {
-					console.error(error);
-				}
-			}
+			/**
+			 * initializes and starts the recording.
+			 *
+			 * @TODO: outsource to different method stubs.
+			 */
+			function startRecording() {
+				// ask for mediaDevices and retrieve their MediaStream(s)
+				navigator.mediaDevices.getUserMedia({
+					audio: true,
+					video: true,
+				}).then(function(stream) {
+					mediaStream = stream;
+					// enable live preview in videoContainer
+					videoContainer.style.display = "block";
+					videoContainer.volume = 0;
+					videoContainer.muted 	= true;
+					videoContainer.srcObject = mediaStream;
 
-
-			try {
-				navigator.mediaDevices.getUserMedia(constraints).then((stream) => handleSuccess(stream));
-			} catch (e) {
-				handleError(e);
-			}
-
-		}*/
-		var _settings;
-		var init = function (id, settings) {
-			_settings = settings;
-			cosnole.log(id);
-			console.log('selecting should be done with the ID of the component: ' + id);
-			console.log(_settings)
-			var video = document.querySelector('#' + id + ' video');
-
-			function captureCamera(callback) {
-				navigator.mediaDevices.getUserMedia({audio: true, video: true}).then(function (camera) {
-					callback(camera);
-				}).catch(function (error) {
-					alert('Unable to capture your camera. Please check console logs.');
-					console.error(error);
-				});
-			}
-
-			function stopRecordingCallback() {
-				video.src = video.srcObject = null;
-				video.muted = false;
-				video.volume = 1;
-
-				var formData = new FormData();
-				formData.append('data', recorder.getBlob());
-
-				/*3 $.ajax({
-				   url: '/ilias.php?ref_id=76&cmd=data&cmdClass=ilobjsrvideointerviewgui&cmdNode=101:16f&baseClass=ilobjplugindispatchgui',
-				   data: formData,
-				   type: 'POST',
-				   contentType: false, // NEEDED, DON'T OMIT THIS (requires jQuery 1.6+)
-				   processData: false, // NEEDED, DON'T OMIT THIS
-				   // ... Other options like success and etc
-				 });*/
-
-
-				var xhr = new XMLHttpRequest();
-				xhr.open('POST', _settings.upload_url, true);
-				xhr.send(formData);
-
-
-				video.src = URL.createObjectURL(recorder.getBlob());
-
-				recorder.camera.stop();
-				recorder.destroy();
-				recorder = null;
-			}
-
-			var recorder; // globally accessible
-
-			document.getElementById('btn-start-recording').onclick = function () {
-				this.disabled = true;
-				captureCamera(function (camera) {
-					video.muted = true;
-					video.volume = 0;
-					video.srcObject = camera;
-
-					recorder = RecordRTC(camera, {
-						// type: 'video',
-						// mimeType: 'video/mp4'
+					videoRecorder = new RecordRTC(mediaStream, {
+						recorderType: MediaStreamRecorder,
+						mimeType: 'video/webm',
+						disableLogs: true,
 					});
 
-					recorder.startRecording();
-
-					// release camera on stopRecording
-					recorder.camera = camera;
-
-					document.getElementById('btn-stop-recording').disabled = false;
+					videoRecorder.startRecording();
+					videoRecorder.camera = mediaStream;
+				}).catch(function(err) {
+					alert("Whoops! Something went wrong, check your console for more details.");
+					console.log(err);
 				});
-			};
+			}
 
-			document.getElementById('btn-stop-recording').onclick = function () {
-				this.disabled = true;
-				recorder.stopRecording(stopRecordingCallback);
-			};
+			/**
+			 * stops the recording and handles the upload of it.
+			 *
+			 * @TODO: outsource to different method stubs.
+			 */
+			function stopRecording() {
+				videoRecorder.stopRecording(async function() {
+					// disable live preview in videoContainer
+					videoContainer.srcObject = null;
+					videoContainer.volume = 1;
+					videoContainer.muted 	= false;
 
+					let video = new File(
+						[videoRecorder.getBlob()],
+						'video_' + id + '.mp4',
+						{
+							type: 'video/mp4'
+						}
+					);
 
-			//
+					let formData = new FormData();
+							formData.append('video-blob', video)
+							formData.append('video-filename', video.name);
+
+					// upload recorded video asynchronously
+					await uploadVideo(formData);
+
+					// we should either download recorded video into container and set hidden-input value
+					// or should call another ajax request which removes the video from the storage service here.
+
+					// destroy recorder
+					videoRecorder.camera.stop();
+					videoRecorder.destroy();
+					videoRecorder = null;
+				});
+			}
+
+			/**
+			 * uploads a recorded video into the storage service and retrieves the id.
+			 *
+			 * @param {FormData} video
+			 * @returns {string|void} fileId
+			 */
+			async function uploadVideo(video) {
+				return $.ajax({
+					url: settings.upload_url,
+					data: video,
+					cache: false,
+					contentType: false,
+					processData: false,
+					type: 'POST',
+					success: async function(response) {
+						response = Object.assign(JSON.parse(response));
+
+						/**
+						 * @TODO: we should either download recorded video into container and set hidden-input value
+						 * 				or should call another ajax request which removes the video from the storage service here.
+						 */
+					},
+					error: function (err) {
+						alert("Whoops! Something went wrong, check your console for more details.");
+						console.log(err);
+					}
+				});
+			}
 		};
 
 		return {

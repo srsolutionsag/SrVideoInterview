@@ -8,10 +8,21 @@
         <ul id="sr-multi-user-select" class="sr-selected-users-list"></ul>
     </div>
 
-    <select style="display: none;" name="{POST_VAR}_selected" id="sr-multi-user-select-input" multiple>
-        <!-- display values as follows to submit correctly -->
-        <!-- <option value="{VAL}" selected /> -->
-    </select>
+    <select style="display: none;" name="{POST_VAR}_selected" id="sr-multi-user-select-input" multiple></select>
+
+    <!--  select should be implemented as follows instead  -->
+
+    <!--    <div style="display: none;">-->
+    <!--        <input type="hidden" name="selected[]">-->
+    <!--        <input type="hidden" name="selected[]">-->
+    <!--        <input type="hidden" name="selected[]">-->
+    <!--        <input type="hidden" name="selected[]">-->
+    <!--        <input type="hidden" name="selected[]">-->
+    <!--        <input type="hidden" name="selected[]">-->
+    <!--        <input type="hidden" name="selected[]">-->
+    <!--        <input type="hidden" name="selected[]">-->
+    <!--        <input type="hidden" name="selected[]">-->
+    <!--    </div>-->
 
     <input type="submit" class="btn btn-default" name="{POST_VAR}_add" id="sr-multi-user-submit" value="Add Participants" />
 </div>

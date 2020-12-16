@@ -9,7 +9,7 @@ function addToSelected(item) {
 
 function removeFromSelected(item) {
   console.log(item);
-  $('#sr-multi-user-select').removeChild($());
+  // $('#sr-multi-user-select').removeChild($());
   $('#sr-multi-user-select-input').removeChild($("input[value='" + item.id + "']"));
 }
 

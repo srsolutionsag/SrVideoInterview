@@ -274,7 +274,11 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
                 ->text($this->txt('exercise_resource'))
                 ->withValue($values['exercise_resource'])
             ,
-            'exercise_resource_dev' => VideoRecorderInput::getInstance(new ilObjSrVideoInterviewUploadHandlerGUI(),'Video')
+            
+            'exercise_resource_dev' => VideoRecorderInput::getInstance(
+                new ilObjSrVideoInterviewUploadHandlerGUI(),
+                'Video'
+            ),
         );
 
         return $this->ui_factory

@@ -6,6 +6,7 @@ use ilTemplate;
 use ilUtil;
 use ilTextInputGUI;
 use iljQueryUtil;
+use ILIAS\UI\Implementation\Component\JavaScriptBindable;
 
 /**
  * Class File
@@ -14,6 +15,11 @@ use iljQueryUtil;
  */
 class MultiSelectUserInput extends ilTextInputGUI
 {
+    /**
+     * @TODO: test this with bindJavascript for unique ID.
+     */
+    use JavaScriptBindable;
+
     /**
      * @var bool
      */

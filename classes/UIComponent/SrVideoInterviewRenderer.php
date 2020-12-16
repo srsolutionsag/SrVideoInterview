@@ -9,11 +9,12 @@ use ILIAS\UI\Implementation\Render\Template;
 use ILIAS\UI\Renderer as RendererInterface;
 use stdClass;
 use ilTemplate;
+use ilTemplateException;
 
 /**
  * Class SrVideoInterviewRenderer
  *
- * @TODO: may outsource SrVideoInterviewRenderer into different Renderers.
+ * @TODO: either implement multiSelectUserInput as UIComponent or remove commented setions for this input.
  *
  * @package ILIAS\UI\Implementation\Component\Input\Field
  *
@@ -52,7 +53,7 @@ class SrVideoInterviewRenderer extends Renderer
      * @param Component         $component
      * @param RendererInterface $default_renderer
      * @return string
-     * @throws \ilTemplateException
+     * @throws ilTemplateException
      */
     public function render(Component $component, RendererInterface $default_renderer) : string
     {
@@ -62,12 +63,13 @@ class SrVideoInterviewRenderer extends Renderer
         $global_template = $DIC->ui()->mainTemplate();
 
         $settings = new stdClass();
-        // @TODO: can be simplified
         if ($component instanceof VideoRecorderInput) {
-            $settings->upload_url = $component->getUploadHandler()->getUploadURL();
-            $settings->removal_url = $component->getUploadHandler()->getFileRemovalURL();
             $settings->file_identifier_key = $component->getUploadHandler()->getFileIdentifierParameterName();
             $settings->accepted_files = implode(',', $component->getAcceptedMimeTypes());
+            $settings->upload_url   = $component->getUploadHandler()->getUploadURL();
+            $settings->removal_url  = $component->getUploadHandler()->getFileRemovalURL();
+            $settings->info_url     = $component->getUploadHandler()->getExistingFileInfoURL();
+            $settings->download_url = $component->getUploadHandler()->getExistingFileDownloadURL();
 
             $registry->register('./Customizing/global/plugins/Services/Repository/RepositoryObject/SrVideoInterview/node_modules/recordrtc/RecordRTC.min.js');
             $registry->register(self::JAVASCRIPT_DIR . "script.videoRecorderInput.js");
@@ -77,22 +79,24 @@ class SrVideoInterviewRenderer extends Renderer
                 new ilTemplate(
                     self::TEMPLATE_DIR . "tpl.video_recorder_input.html",
                     true,
-                    true,
+                    true
                 )
             );
-        } elseif ($component instanceof MultiSelectUserInput) {
-            $registry->register(self::JAVASCRIPT_DIR . "script.multiSelectUserInput.js");
-
-            $input_tpl = new ilTemplateWrapper(
-                $global_template,
-                new ilTemplate(
-                    self::TEMPLATE_DIR . "tpl.multi_select_user_input.html",
-                    false,
-                    false,
-                )
-            );
-        } else {
-            throw new \ilTemplateException("could not determine component type of: " . get_class($component));
+        }
+//        elseif ($component instanceof MultiSelectUserInput) {
+//            $registry->register(self::JAVASCRIPT_DIR . "script.multiSelectUserInput.js");
+//
+//            $input_tpl = new ilTemplateWrapper(
+//                $global_template,
+//                new ilTemplate(
+//                    self::TEMPLATE_DIR . "tpl.multi_select_user_input.html",
+//                    false,
+//                    false
+//                )
+//            );
+//        }
+        else {
+            throw new ilTemplateException("could not determine component type of: " . get_class($component));
         }
 
         $component = $component->withOnLoadCode(
@@ -119,7 +123,7 @@ class SrVideoInterviewRenderer extends Renderer
     {
         return array(
             VideoRecorderInput::class,
-            MultiSelectUserInput::class,
+//            MultiSelectUserInput::class,
         );
     }
 
