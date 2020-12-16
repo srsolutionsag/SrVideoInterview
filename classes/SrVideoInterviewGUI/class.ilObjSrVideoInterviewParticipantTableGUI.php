@@ -102,7 +102,7 @@ class ilObjSrVideoInterviewParticipantTableGUI extends ilTable2GUI
 
         $remove_link = $this->ctrl->getLinkTargetByClass(
             ilObjSrVideoInterviewParticipantGUI::class,
-            ilObjSrVideoInterviewParticipantGUI::CMD_PARTICIPANT_REMOVE,
+            ilObjSrVideoInterviewParticipantGUI::CMD_PARTICIPANT_REMOVE
         );
 
         $this->tpl->setVariable(
@@ -119,7 +119,7 @@ class ilObjSrVideoInterviewParticipantTableGUI extends ilTable2GUI
                             )
                         ,
                     ))
-                ,
+
             )
         );
     }

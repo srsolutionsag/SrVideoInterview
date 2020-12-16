@@ -77,9 +77,9 @@ class ExerciseRepository implements Repository
     }
 
     /**
-     * @inheritDoc
+     * @@return Exercise
      */
-    public function get(int $exercise_id) : ?Exercise
+    public function get(int $exercise_id) : ?object
     {
         $ar_exercise = ARExercise::find($exercise_id);
         if (null !== $ar_exercise) {

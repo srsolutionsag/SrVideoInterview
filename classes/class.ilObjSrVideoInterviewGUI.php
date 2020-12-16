@@ -193,7 +193,7 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
                 $this->txt(self::VIDEO_INTERVIEW_TAB),
                 $this->ctrl->getLinkTargetByClass(
                     self::class,
-                    self::CMD_VIDEO_INTERVIEW_EDIT,
+                    self::CMD_VIDEO_INTERVIEW_EDIT
                 )
             );
 
@@ -203,7 +203,7 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
                 $this->txt(ilObjSrVideoInterviewParticipantGUI::PARTICIPANT_TAB),
                 $this->ctrl->getLinkTargetByClass(
                     ilObjSrVideoInterviewParticipantGUI::class,
-                    ilObjSrVideoInterviewParticipantGUI::CMD_PARTICIPANT_INDEX,
+                    ilObjSrVideoInterviewParticipantGUI::CMD_PARTICIPANT_INDEX
                 )
             );
         }

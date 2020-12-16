@@ -30,7 +30,7 @@ class ParticipantRepository implements Repository
                     (bool) $ar_participant['feedback_sent'],
                     (bool) $ar_participant['invitation_sent'],
                     $ar_participant['obj_id'],
-                    $ar_participant['user_id'],
+                    $ar_participant['user_id']
                 );
             }
 
@@ -78,9 +78,9 @@ class ParticipantRepository implements Repository
     }
 
     /**
-     * @inheritDoc
+     * @return Participant
      */
-    public function get(int $participant_id) : ?Participant
+    public function get(int $participant_id) : ?object
     {
         $ar_participant = ARParticipant::innerjoin(
             "usr_data",
@@ -103,7 +103,7 @@ class ParticipantRepository implements Repository
                 (bool) $ar_participant['feedback_sent'],
                 (bool) $ar_participant['invitation_sent'],
                 $ar_participant['obj_id'],
-                $ar_participant['user_id'],
+                $ar_participant['user_id']
             );
         }
 
