@@ -57,7 +57,6 @@ class ilObjSrVideoInterviewExerciseGUI extends ilObjSrVideoInterviewGUI
                     $this->permissionDenied();
                 }
                 break;
-            case self::CMD_EXERCISE_ADD:
             case self::CMD_EXERCISE_EDIT:
             case self::CMD_EXERCISE_DELETE:
                 if ($this->access->checkAccess("write", $cmd, $this->ref_id)) {
@@ -169,28 +168,6 @@ class ilObjSrVideoInterviewExerciseGUI extends ilObjSrVideoInterviewGUI
         } else {
             $this->objectNotFound();
         }
-    }
-
-    /**
-     * create a Exercise with the same object title and description
-     * and store it in the database.
-     */
-    protected function addExercise() : void
-    {
-        $exercise = new Exercise(
-            null,
-            $this->object->getTitle(),
-            $this->object->getDescription(),
-            "Replace me :).",
-            "",
-            $this->obj_id
-        );
-
-        $this->repository->store($exercise);
-        $this->ctrl->redirectByClass(
-            self::class,
-            self::CMD_EXERCISE_INDEX
-        );
     }
 
     protected function editExercise() : void
