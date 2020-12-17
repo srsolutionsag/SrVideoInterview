@@ -7,6 +7,7 @@
 use ILIAS\UI\Component\Input\Container\Form\Standard;
 use ILIAS\UI\Implementation\Component\Input\Field\VideoRecorderInput;
 use srag\Plugins\SrVideoInterview\Repository\VideoInterviewRepository;
+use ILIAS\MainMenu\Storage\Services;
 
 /**
  * ilObjSrVideoInterviewGUI in general, dispatches a request's next class and command and delegates it accordingly.
@@ -49,6 +50,11 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
     protected $refinery;
 
     /**
+     * @var Services
+     */
+    protected $storage;
+
+    /**
      * @var \ILIAS\UI\Factory
      */
     protected $ui_factory;
@@ -79,6 +85,7 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
         $this->ui_renderer = $DIC->ui()->renderer();
         $this->refinery    = $DIC->refinery();
         $this->http        = $DIC->http();
+        $this->storage     = new Services();
 
         parent::__construct($a_ref_id, $a_id_type, $a_parent_node_id);
     }
@@ -267,17 +274,16 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
                 ->withValue($values['exercise_detailed_description'])
                 ->withRequired(true)
             ,
+//
+//            'test' => $this->ui_factory->input()->field()->file(
+//                new ilObjSrVideoInterviewUploadHandlerGUI(),
+//                "test"
+//            ),
 
-            'exercise_resource' => $this->ui_factory
-                ->input()
-                ->field()
-                ->text($this->txt('exercise_resource'))
-                ->withValue($values['exercise_resource'])
-            ,
-            
-            'exercise_resource_dev' => VideoRecorderInput::getInstance(
+            'exercise_resource' => VideoRecorderInput::getInstance(
                 new ilObjSrVideoInterviewUploadHandlerGUI(),
-                'Video'
+                'Video',
+                'exercise_resource'
             ),
         );
 
@@ -328,7 +334,7 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
                 ->setTitle($this->object->getTitle())
                 ->setDescription($this->object->getDescription())
                 ->setDetailedDescription($data['exercise_detailed_description'])
-                ->setResourceId($data['exercise_resource'])
+//                ->setResourceId($data['exercise_resource'])
             ;
 
             $this->repository->store($exercise);

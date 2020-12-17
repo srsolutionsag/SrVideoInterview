@@ -6,9 +6,7 @@
             "email": "thf@studer-raimann.ch"
         }
     ],
-    "require": {
-        "srag/custominputguis": ">=0.1.0"
-    },
+    "require": {},
     "autoload": {
         "psr-4": {
             "srag\\Plugins\\SrVideoInterview\\": "src/"

@@ -122,13 +122,21 @@ class ilObjSrVideoInterviewExerciseGUI extends ilObjSrVideoInterviewGUI
 //                    ;
 //                }
 
+//                $resource = $this->storage->inline($exercise->getResourceId());
+//                echo var_dump($resource);
+//                exit;
+
                 $items[] = $this->ui_factory
                     ->item()
                     ->standard($exercise->getTitle())
                     ->withDescription($exercise->getDetailedDescription())
                     ->withProperties(array(
                         $this->txt('description') => $exercise->getDescription(),
-                        $this->txt('exercise_resource') => $exercise->getResourceId(),
+//                        $this->txt('exercise_resource') => $this->ui_factory->legacy("
+//                            <video controls playsinline>
+//                                <source src=\"\" />
+//                            </video>
+//                        "),
                     ))
                     ->withActions(
                         $this->ui_factory
@@ -137,14 +145,15 @@ class ilObjSrVideoInterviewExerciseGUI extends ilObjSrVideoInterviewGUI
                                 $actions
                             ))
                     )
-                    ->withLeadImage(
-                        $this->ui_factory
-                            ->image()
-                            ->responsive(
-                                "/Customizing/global/plugins/Services/Repository/RepositoryObject/SrVideoInterview/templates/images/exercise_symbol.svg",
-                                ""
-                            )
-                    )
+//                    ->withLeadImage(
+//                        $this->ui_factory
+//                            ->image()
+//                            ->responsive(
+//                                "/Customizing/global/plugins/Services/Repository/RepositoryObject/SrVideoInterview/templates/images/exercise_symbol.svg",
+//                                ""
+//                            )
+//
+//                    )
                 ;
             }
 
@@ -193,13 +202,20 @@ class ilObjSrVideoInterviewExerciseGUI extends ilObjSrVideoInterviewGUI
         );
     }
 
+    /**
+     * edit an existing Exercise on the Repository Object settings-page.
+     * implement this when m:1 is required.
+     */
     protected function editExercise() : void
     {
         $this->editVideoInterview();
     }
 
+    /**
+     * delete one or all existing Exercises when a VideoInterview is deleted.
+     */
     protected function deleteExercise() : void
     {
-
+        // @TODO: somehow delete (all) exercise(s) when repository-object is deleted.
     }
 }

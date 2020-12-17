@@ -14,7 +14,7 @@ use ilTemplateException;
 /**
  * Class SrVideoInterviewRenderer
  *
- * @TODO: either implement multiSelectUserInput as UIComponent or remove commented setions for this input.
+ * @TODO: either implement multiSelectUserInput as UIComponent or remove commented sections for this input.
  *
  * @package ILIAS\UI\Implementation\Component\Input\Field
  *
@@ -34,6 +34,8 @@ class SrVideoInterviewRenderer extends Renderer
      */
     protected function renderInputField(Template $tpl, Input $input, $id, RendererInterface $default_renderer) : string
     {
+
+        $tpl->setVariable('POST_VAR', $input->getPostVar());
         $tpl->setVariable('LABEL', $input->getLabel());
         $tpl->setVariable('ID', $id);
 
