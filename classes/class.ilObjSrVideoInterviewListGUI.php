@@ -6,7 +6,6 @@ require_once __DIR__ . "/SrVideoInterviewGUI/class.ilObjSrVideoInterviewParticip
 
 /**
  * Class ilObjSrVideoInterviewListGUI
- *
  * @author Fabian Schmid <fs@studer-raimann.ch>
  */
 class ilObjSrVideoInterviewListGUI extends ilObjectPluginListGUI
@@ -19,6 +18,18 @@ class ilObjSrVideoInterviewListGUI extends ilObjectPluginListGUI
     public function initType()
     {
         $this->type = ilSrVideoInterviewPlugin::PLUGIN_ID;
+    }
+
+    public function getProperties()
+    {
+        $parent = parent::getProperties();
+
+        $parent[] = [
+            'property' => $this->txt('status'),
+            'value' => 'My Status'
+        ];
+
+        return $parent;
     }
 
     /**
