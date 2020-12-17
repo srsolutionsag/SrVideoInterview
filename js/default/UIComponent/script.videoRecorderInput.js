@@ -3,6 +3,11 @@ il.Plugins = il.Plugins || {};
 il.Plugins.SrVideoInterview = il.Plugins.SrVideoInterview || {};
 (function ($, il) {
 
+	/**
+	 * @TODO: improve performance by using the same instance when retaking a record.
+	 *
+	 * @type {{init: init}}
+	 */
 	il.Plugins.SrVideoInterview = (function ($) {
 
 		/**
@@ -14,14 +19,15 @@ il.Plugins.SrVideoInterview = il.Plugins.SrVideoInterview || {};
 		let init = function (id, settings) {
 			// convert settings back to an object
 			settings = Object.assign(JSON.parse(settings));
-			console.log(settings);
 
 			// obtain the plain HTMLMediaElement (hence no jQuery)
 			let videoContainer = document.querySelector('video');
 
 			// obtain recording controls
-			let btnStart = $(`#${id} #btn-start-recording`),
-					btnStop  = $(`#${id} #btn-stop-recording`);
+			let btnStart  = $(`#${id} .btn-start-recording`),
+					btnStop   = $(`#${id} .btn-stop-recording`),
+					btnRetake = $(`#${id} .btn-retake-recording`),
+					fileInput = $(`#${id} .resource-id`);
 
 			// init globally accessible vars
 			let videoRecorder, mediaStream;
@@ -29,48 +35,46 @@ il.Plugins.SrVideoInterview = il.Plugins.SrVideoInterview || {};
 			// register recording start
 			btnStart.click(function(e) {
 				e.preventDefault();
-				toggleRecordingControls();
 				startRecording();
 			});
 
 			// register recording stop
 			btnStop.click(function(e) {
 				e.preventDefault();
-				toggleRecordingControls();
 				stopRecording();
 			});
 
-			/**
-			 * helper function to enable stop button and disable start when clicked and vise-versa.
-			 */
-			function toggleRecordingControls() {
-				if (!btnStart.prop('disabled')) {
-					btnStart.attr('disabled', true);
-					btnStop.removeAttr('disabled');
-				} else {
-					btnStart.removeAttr('disabled');
-					btnStop.attr('disabled', true);
-				}
-			}
+			// register recording retake
+			btnRetake.click(async function(e) {
+				e.preventDefault();
+				await removeVideo(fileInput.val());
+				fileInput.val(null);
+
+				startRecording();
+			});
 
 			/**
 			 * initializes and starts the recording.
-			 *
-			 * @TODO: outsource to different method stubs.
 			 */
 			function startRecording() {
+				// manage controls visibility
+				btnStart.attr('disabled', true);
+				btnStop.removeAttr('disabled');
+
 				// ask for mediaDevices and retrieve their MediaStream(s)
 				navigator.mediaDevices.getUserMedia({
 					audio: true,
 					video: true,
 				}).then(function(stream) {
 					mediaStream = stream;
+
 					// enable live preview in videoContainer
 					videoContainer.style.display = "block";
 					videoContainer.volume = 0;
 					videoContainer.muted 	= true;
 					videoContainer.srcObject = mediaStream;
 
+					// initialize recording
 					videoRecorder = new RecordRTC(mediaStream, {
 						recorderType: MediaStreamRecorder,
 						mimeType: 'video/webm',
@@ -86,17 +90,20 @@ il.Plugins.SrVideoInterview = il.Plugins.SrVideoInterview || {};
 			}
 
 			/**
-			 * stops the recording and handles the upload of it.
-			 *
-			 * @TODO: outsource to different method stubs.
+			 * stops the recording and uploads it asynchronously.
 			 */
 			function stopRecording() {
+				// manage controls visibility
+				btnStop.attr('disabled', true);
+
 				videoRecorder.stopRecording(async function() {
 					// disable live preview in videoContainer
 					videoContainer.srcObject = null;
 					videoContainer.volume = 1;
 					videoContainer.muted 	= false;
 
+					// convert recording to mp4
+					// @TODO: prove if mp4 actually works
 					let video = new File(
 						[videoRecorder.getBlob()],
 						'video_' + id + '.mp4',
@@ -109,16 +116,16 @@ il.Plugins.SrVideoInterview = il.Plugins.SrVideoInterview || {};
 							formData.append('video-blob', video)
 							formData.append('video-filename', video.name);
 
-					// upload recorded video asynchronously
 					await uploadVideo(formData);
-
-					// we should either download recorded video into container and set hidden-input value
-					// or should call another ajax request which removes the video from the storage service here.
 
 					// destroy recorder
 					videoRecorder.camera.stop();
 					videoRecorder.destroy();
 					videoRecorder = null;
+
+					// enable retake control
+					btnRetake.css('display', 'inline-block');
+					btnRetake.removeAttr('disabled');
 				});
 			}
 
@@ -126,7 +133,6 @@ il.Plugins.SrVideoInterview = il.Plugins.SrVideoInterview || {};
 			 * uploads a recorded video into the storage service and retrieves the id.
 			 *
 			 * @param {FormData} video
-			 * @returns {string|void} fileId
 			 */
 			async function uploadVideo(video) {
 				return $.ajax({
@@ -136,13 +142,33 @@ il.Plugins.SrVideoInterview = il.Plugins.SrVideoInterview || {};
 					contentType: false,
 					processData: false,
 					type: 'POST',
-					success: async function(response) {
+					success: function(response) {
 						response = Object.assign(JSON.parse(response));
+						videoContainer.src = URL.createObjectURL(videoRecorder.getBlob());
+						fileInput.val(response[settings.file_identifier_key]);
+					},
+					error: function (err) {
+						alert("Whoops! Something went wrong, check your console for more details.");
+						console.log(err);
+					}
+				});
+			}
 
-						/**
-						 * @TODO: we should either download recorded video into container and set hidden-input value
-						 * 				or should call another ajax request which removes the video from the storage service here.
-						 */
+			/**
+			 *
+			 * @param {string} videoId
+			 * @returns {bool|void}
+			 */
+			async function removeVideo(videoId) {
+				return $.ajax({
+					url: settings.removal_url,
+					data: {
+						[settings.file_identifier_key]: videoId,
+					},
+					type: 'GET',
+					success: function(response) {
+						response = Object.assign(JSON.parse(response));
+						console.log(response);
 					},
 					error: function (err) {
 						alert("Whoops! Something went wrong, check your console for more details.");

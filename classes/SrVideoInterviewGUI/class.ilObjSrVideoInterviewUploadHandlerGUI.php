@@ -75,9 +75,7 @@ class ilObjSrVideoInterviewUploadHandlerGUI extends AbstractCtrlAwareUploadHandl
     {
         return $this->ctrl->getLinkTargetByClass(
             self::class,
-            self::CMD_DOWNLOAD,
-            "",
-            true // or false?
+            self::CMD_DOWNLOAD
         );
     }
 
@@ -128,7 +126,14 @@ class ilObjSrVideoInterviewUploadHandlerGUI extends AbstractCtrlAwareUploadHandl
      */
     protected function downloadExistingFile(string $identifier) : void
     {
-        // @TODO: implement download method to display recorded video in container by src attr.
+        $identification = $this->storage->find($identifier);
+
+        if (null !== $identification) {
+            $file = $this->storage->inline($identification);
+            $file->run();
+        }
+
+        // what on err?
     }
 
     /**
