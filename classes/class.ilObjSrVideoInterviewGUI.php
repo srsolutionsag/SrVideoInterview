@@ -7,6 +7,7 @@
 use ILIAS\UI\Component\Input\Container\Form\Standard;
 use ILIAS\UI\Implementation\Component\Input\Field\VideoRecorderInput;
 use srag\Plugins\SrVideoInterview\Repository\VideoInterviewRepository;
+use srag\Plugins\SrVideoInterview\VideoInterview\Entity\Exercise;
 use ILIAS\MainMenu\Storage\Services;
 
 /**
@@ -118,7 +119,7 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
      */
     final public function getAfterCreationCmd() : string
     {
-        return ilObjSrVideoInterviewExerciseGUI::CMD_EXERCISE_ADD;
+        return ilObjSrVideoInterviewExerciseGUI::CMD_EXERCISE_INDEX;
     }
 
     /**
@@ -128,6 +129,29 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
     final public function getStandardCmd() : string
     {
         return ilObjSrVideoInterviewExerciseGUI::CMD_EXERCISE_INDEX;
+    }
+
+    /**
+     * In this version of the plugin we create one excercise for one object and
+     * therefore the excercise is created here in afterSave.
+     * @param ilObject $newObj
+     */
+    public function afterSave(ilObject $newObj)
+    {
+        $form     = $this->initCreateForm($newObj->getType());
+        $form->checkInput();
+        $exercise = new Exercise(
+            null,
+            $newObj->getTitle(),
+            $newObj->getDescription(),
+            $form->getInput('exercise_detailed_description'),
+            "",
+            $newObj->getId()
+        );
+
+        $this->repository->store($exercise);
+
+        parent::afterSave($newObj);
     }
 
     /**
@@ -228,6 +252,16 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
             );
         }
     }
+
+    public function initCreateForm($a_new_type)
+    {
+        $form                          = parent::initCreateForm($a_new_type);
+        $exercise_detailed_description = new ilTextAreaInputGUI($this->txt('exercise_detailed_description'), 'exercise_detailed_description');
+        $form->addItem($exercise_detailed_description);
+
+        return $form;
+    }
+
 
     /**
      * builds a standard form for the video interview repository object.
