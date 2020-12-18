@@ -161,16 +161,21 @@ class ilObjSrVideoInterviewAnswerGUI extends ilObjSrVideoInterviewGUI
                 );
 
                 $tpl = new ilTemplate(self::TEMPLATE_DIR . 'tpl.answer.html', false, false);
+
+                // @TODO: fetch userdata by ilObjUser?
+                $tpl->setVariable('TITLE', "HERE COULD GO THE USERDATA");
                 $tpl->setVariable('VIDEO', $this->getRecordedVideoHTML($answer->getResourceId()));
+
+                // @TODO: hide this when empty
                 $tpl->setVariable('DESCRIPTION_LABEL', $this->txt('additional_content'));
                 $tpl->setVariable('DESCRIPTION', $answer->getContent());
-                $tpl->setVariable('INFO', $this->ui_renderer
-                    ->render(
-                        $this->ui_factory
-                            ->messageBox()
-                            ->info(
-                                $this->txt('already_answered')
-                            )
+
+                $tpl->setVariable('INFO', $this->ui_renderer->render(
+                    $this->ui_factory
+                        ->messageBox()
+                        ->info(
+                            $this->txt('already_answered')
+                        )
                     )
                 );
 
