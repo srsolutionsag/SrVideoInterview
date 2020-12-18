@@ -25,10 +25,12 @@ use ILIAS\MainMenu\Storage\Services;
  */
 class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
 {
+    const TEMPLATE_DIR = './Customizing/global/plugins/Services/Repository/RepositoryObject/SrVideoInterview/templates/default/';
+
     /**
      * Repository Object tab (must be named settings, in order to work properly with parent commands below)
      */
-    const VIDEO_INTERVIEW_TAB        = 'settings';
+    const VIDEO_INTERVIEW_TAB = 'settings';
 
     /**
      * Repository Object commands (replace by parent methods when implementing m:1)
@@ -70,6 +72,15 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
     protected $repository;
 
     /**
+     * @var ilObjSrVideoInterviewUploadHandlerGUI
+     */
+    protected $video_upload_handler;
+    /**
+     * @var ilObjUser
+     */
+    protected $user;
+
+    /**
      * Initialise ilObjSrVideoInterviewGUI and declare further dependencies.
      *
      * @param int $a_ref_id
@@ -80,12 +91,14 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
     {
         global $DIC;
 
+        $this->video_upload_handler = new ilObjSrVideoInterviewUploadHandlerGUI();
         $this->repository  = new VideoInterviewRepository();
+        $this->storage     = new Services();
         $this->ui_factory  = $DIC->ui()->factory();
         $this->ui_renderer = $DIC->ui()->renderer();
         $this->refinery    = $DIC->refinery();
         $this->http        = $DIC->http();
-        $this->storage     = new Services();
+        $this->user        = $DIC->user();
 
         parent::__construct($a_ref_id, $a_id_type, $a_parent_node_id);
     }
@@ -127,15 +140,15 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
         $this->setupTabs(); // when using setTabs(), tabs cannot be activated.
         $next_class = $this->ctrl->getNextClass($this);
         switch ($next_class) {
-            case strtolower(ilObjSrVideoInterviewUploadHandlerGUI::class):
-                $this->ctrl->forwardCommand(new ilObjSrVideoInterviewUploadHandlerGUI());
-                break;
             case '':
             case strtolower(ilObjSrVideoInterviewExerciseGUI::class):
                 if (!$this->getCreationMode()) {
                     $exercise_gui = new ilObjSrVideoInterviewExerciseGUI($this->ref_id);
                     $this->ctrl->forwardCommand($exercise_gui);
                 }
+                break;
+            case strtolower(ilObjSrVideoInterviewUploadHandlerGUI::class):
+                $this->ctrl->forwardCommand($this->video_upload_handler);
                 break;
             case strtolower(ilObjSrVideoInterviewAnswerGUI::class):
                 $answer_gui = new ilObjSrVideoInterviewAnswerGUI($this->ref_id);
@@ -274,17 +287,11 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
                 ->withValue($values['exercise_detailed_description'])
                 ->withRequired(true)
             ,
-//
-//            'test' => $this->ui_factory->input()->field()->file(
-//                new ilObjSrVideoInterviewUploadHandlerGUI(),
-//                "test"
-//            ),
 
             'exercise_resource' => VideoRecorderInput::getInstance(
-                new ilObjSrVideoInterviewUploadHandlerGUI(),
-                'Video',
-                'exercise_resource'
-            ),
+                $this->video_upload_handler,
+                'Video'
+            )->withValue($values['exercise_resource']),
         );
 
         return $this->ui_factory
@@ -334,7 +341,7 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
                 ->setTitle($this->object->getTitle())
                 ->setDescription($this->object->getDescription())
                 ->setDetailedDescription($data['exercise_detailed_description'])
-//                ->setResourceId($data['exercise_resource'])
+                ->setResourceId($data['exercise_resource'] ?? "")
             ;
 
             $this->repository->store($exercise);
@@ -380,6 +387,20 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
                 $this->buildVideoInterviewForm($data)
             )
         );
+    }
+
+    /**
+     * returns html needed to display an existing video File resource.
+     *
+     * @param string $resource_id
+     * @return string
+     */
+    protected function getRecordedVideoHTML(string $resource_id) : string
+    {
+        $download_url = $this->video_upload_handler->getExistingFileDownloadURL();
+        $file_identifier_key = $this->video_upload_handler->getFileIdentifierParameterName();
+
+        return "<video src=\"{$download_url}&{$file_identifier_key}={$resource_id}\" style=\"max-width: 100%;\" controls playsinline></video>";
     }
 
     /**

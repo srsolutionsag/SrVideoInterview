@@ -53,6 +53,7 @@ class Answer
     {
         $this->id = $id;
         $this->content = $content;
+        $this->type = $type;
         $this->resource_id = $resource_id;
         $this->exercise_id = $exercise_id;
         $this->participant_id = $participant_id;

@@ -2,14 +2,13 @@ il = il || {};
 il.Plugins = il.Plugins || {};
 il.Plugins.SrVideoInterview = il.Plugins.SrVideoInterview || {};
 (function ($, il) {
-
 	/**
 	 * @TODO: improve performance by using the same instance when retaking a record.
+	 * @TODO: fix preview error, that doesn't work when retaking an existing recording.
 	 *
 	 * @type {{init: init}}
 	 */
 	il.Plugins.SrVideoInterview = (function ($) {
-
 		/**
 		 * VideoRecorderInput
 		 *
@@ -17,11 +16,14 @@ il.Plugins.SrVideoInterview = il.Plugins.SrVideoInterview || {};
 		 * @param {string} settings
 		 */
 		let init = function (id, settings) {
-			// convert settings back to an object
 			settings = Object.assign(JSON.parse(settings));
+			console.log(settings);
 
 			// obtain the plain HTMLMediaElement (hence no jQuery)
 			let videoContainer = document.querySelector('video');
+
+			// get form submit buttons
+			let btnsSubmit = $('.il-standard-form-cmd > button');
 
 			// obtain recording controls
 			let btnStart  = $(`#${id} .btn-start-recording`),
@@ -31,6 +33,25 @@ il.Plugins.SrVideoInterview = il.Plugins.SrVideoInterview || {};
 
 			// init globally accessible vars
 			let videoRecorder, mediaStream;
+
+			// when retaking an existing, dont delete on first retake.
+			let retakeOnExisting = false;
+
+			// check onload if already a recording exists and load it
+			$(function() {
+				if (fileInput.val()) {
+					retakeOnExisting = true;
+					videoContainer.style.display = "block";
+					videoContainer.volume = 1;
+					videoContainer.muted = false;
+					videoContainer.autoplay = false;
+					videoContainer.src = `${settings.download_url}&${settings.file_identifier_key}=${fileInput.val()}`;
+					btnStart.attr('disabled', true);
+					btnRetake.css('display', 'inline-block');
+					btnRetake.removeAttr('disabled');
+					btnsSubmit.removeAttr('disabled');
+				}
+			});
 
 			// register recording start
 			btnStart.click(function(e) {
@@ -47,19 +68,24 @@ il.Plugins.SrVideoInterview = il.Plugins.SrVideoInterview || {};
 			// register recording retake
 			btnRetake.click(async function(e) {
 				e.preventDefault();
-				await removeVideo(fileInput.val());
-				fileInput.val(null);
+				if (!retakeOnExisting) {
+					retakeOnExisting = false;
+					await removeVideo(fileInput.val());
+				}
 
+				fileInput.val(null);
+				btnRetake.attr('disabled', true);
 				startRecording();
 			});
 
 			/**
 			 * initializes and starts the recording.
 			 */
-			function startRecording() {
+			let startRecording = function() {
 				// manage controls visibility
 				btnStart.attr('disabled', true);
 				btnStop.removeAttr('disabled');
+				btnsSubmit.attr('disabled', true);
 
 				// ask for mediaDevices and retrieve their MediaStream(s)
 				navigator.mediaDevices.getUserMedia({
@@ -71,7 +97,8 @@ il.Plugins.SrVideoInterview = il.Plugins.SrVideoInterview || {};
 					// enable live preview in videoContainer
 					videoContainer.style.display = "block";
 					videoContainer.volume = 0;
-					videoContainer.muted 	= true;
+					videoContainer.muted = true;
+					videoContainer.src = '';
 					videoContainer.srcObject = mediaStream;
 
 					// initialize recording
@@ -92,7 +119,7 @@ il.Plugins.SrVideoInterview = il.Plugins.SrVideoInterview || {};
 			/**
 			 * stops the recording and uploads it asynchronously.
 			 */
-			function stopRecording() {
+			let stopRecording = function() {
 				// manage controls visibility
 				btnStop.attr('disabled', true);
 
@@ -102,13 +129,12 @@ il.Plugins.SrVideoInterview = il.Plugins.SrVideoInterview || {};
 					videoContainer.volume = 1;
 					videoContainer.muted 	= false;
 
-					// convert recording to mp4
-					// @TODO: prove if mp4 actually works
+					// prepare blob-data for upload
 					let video = new File(
 						[videoRecorder.getBlob()],
-						'video_' + id + '.mp4',
+						'video_' + id + '.webm',
 						{
-							type: 'video/mp4'
+							type: 'video/webm'
 						}
 					);
 
@@ -123,18 +149,28 @@ il.Plugins.SrVideoInterview = il.Plugins.SrVideoInterview || {};
 					videoRecorder.destroy();
 					videoRecorder = null;
 
+					// stop media streams (seems to change nothing)
+					// mediaStream.getTracks().forEach(function(track) {
+					// 	track.stop();
+					// });
+
+					mediaStream = null;
+
 					// enable retake control
 					btnRetake.css('display', 'inline-block');
 					btnRetake.removeAttr('disabled');
+
+					btnsSubmit.removeAttr('disabled');
 				});
 			}
 
 			/**
 			 * uploads a recorded video into the storage service and retrieves the id.
 			 *
-			 * @param {FormData} video
+			 * @param video
+			 * @returns {Promise<!jQuery.jqXHR|jQuery>}
 			 */
-			async function uploadVideo(video) {
+			let uploadVideo = async function(video) {
 				return $.ajax({
 					url: settings.upload_url,
 					data: video,
@@ -144,6 +180,7 @@ il.Plugins.SrVideoInterview = il.Plugins.SrVideoInterview || {};
 					type: 'POST',
 					success: function(response) {
 						response = Object.assign(JSON.parse(response));
+						console.log(response);
 						videoContainer.src = URL.createObjectURL(videoRecorder.getBlob());
 						fileInput.val(response[settings.file_identifier_key]);
 					},
@@ -155,11 +192,12 @@ il.Plugins.SrVideoInterview = il.Plugins.SrVideoInterview || {};
 			}
 
 			/**
+			 * remove an uploaded recording by its id.
 			 *
-			 * @param {string} videoId
-			 * @returns {bool|void}
+			 * @param videoId
+			 * @returns {Promise<!jQuery.jqXHR|jQuery>}
 			 */
-			async function removeVideo(videoId) {
+			let removeVideo = async function(videoId) {
 				return $.ajax({
 					url: settings.removal_url,
 					data: {
@@ -183,6 +221,3 @@ il.Plugins.SrVideoInterview = il.Plugins.SrVideoInterview || {};
 		};
 	})($);
 })($, il);
-
-
-

@@ -1,19 +1,18 @@
 
 <div id="{ID}" class="il-video-recorder">
 
-    <!-- will be set asynchronously when stopping a recording -->
-    <input type="hidden" class="resource-id" name="{NAME}" value="" />
+    <input type="hidden" class="resource-id" name="{NAME}" value="{VALUE}" />
 
     <div class="wrapper">
         <!-- container for live-preview and finished recording -->
-        <video style="display: none; margin-bottom: 5px;" controls autoplay playsinline></video>
+        <video style="display: none; margin-bottom: 5px; max-width: 75%;" controls autoplay playsinline></video>
     </div>
 
     <div class="wrapper wrap-controls">
         <!-- buttons could lead to form submissions in certain contexts -->
         <input type="button" class="btn-start-recording btn btn-default" value="Start" />
         <input type="button" class="btn-stop-recording btn btn-default" value="Stop" disabled />
-        <input style="display: none;" type="button" class="btn-retake-recording btn btn-default" value="Retake" disabled />
+        <input style="display: none;" type="button" class="btn-retake-recording btn btn-danger" value="Retake" disabled />
     </div>
 
     <!--    use input type=file for iOS devices later  -->

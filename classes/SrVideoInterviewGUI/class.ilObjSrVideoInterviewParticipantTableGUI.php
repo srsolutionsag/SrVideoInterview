@@ -56,7 +56,7 @@ class ilObjSrVideoInterviewParticipantTableGUI extends ilTable2GUI
      */
     public function setupTableColumns() : void
     {
-        $this->addColumn($this->plugin->txt('has_answered'));
+        $this->addColumn($this->plugin->txt('has_answered')); // display as red or green light
         $this->addColumn($this->plugin->txt('firstname'));
         $this->addColumn($this->plugin->txt('lastname'));
         $this->addColumn($this->plugin->txt('email'));

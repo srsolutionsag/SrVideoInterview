@@ -2,7 +2,11 @@
 
 require_once "./Customizing/global/plugins/Services/Repository/RepositoryObject/SrVideoInterview/classes/class.ilObjSrVideoInterviewGUI.php";
 
-use srag\Plugins\SrVideoInterview\Repository\AnswerRepository;
+use srag\Plugins\SrVideoInterview\VideoInterview\Entity\Answer;
+use ILIAS\UI\Component\Input\Container\Form\Standard;
+use ILIAS\UI\Implementation\Component\Input\Field\VideoRecorderInput;
+use srag\Plugins\SrVideoInterview\VideoInterview\Entity\Participant;
+use srag\Plugins\SrVideoInterview\AREntity\ARAnswer;
 
 /**
  * Class ilObjSrVideoInterviewAnswerGUI
@@ -22,9 +26,9 @@ class ilObjSrVideoInterviewAnswerGUI extends ilObjSrVideoInterviewGUI
     const CMD_ANSWER_EVALUATE = 'evaluateAnswer';
 
     /**
-     * @var AnswerRepository
+     * @var Participant|null
      */
-    protected $repository;
+    protected $current_participant;
 
     /**
      * Initialise ilObjVideoInterviewAnswerGUI
@@ -35,9 +39,15 @@ class ilObjSrVideoInterviewAnswerGUI extends ilObjSrVideoInterviewGUI
      */
     public function __construct($a_ref_id = 0, $a_id_type = self::REPOSITORY_NODE_ID, $a_parent_node_id = 0)
     {
-        $this->repository = new AnswerRepository();
-
         parent::__construct($a_ref_id, $a_id_type, $a_parent_node_id);
+    }
+
+    /**
+     * load dependencies after creation
+     */
+    protected function afterConstructor() : void
+    {
+        $this->current_participant = $this->repository->getParticipantByUserId($this->user->getId());
     }
 
     /**
@@ -90,14 +100,121 @@ class ilObjSrVideoInterviewAnswerGUI extends ilObjSrVideoInterviewGUI
         }
     }
 
+    /**
+     * builds and returns the form to add a new Answer.
+     *
+     * @return Standard
+     */
+    protected function buildAnswerForm() : Standard {
+        return $this->ui_factory
+            ->input()
+            ->container()
+            ->form()
+            ->standard(
+                $this->ctrl->getFormActionByClass(
+                    self::class,
+                    self::CMD_ANSWER_ADD
+                ),
+                array(
+                    'answer_resource' => VideoRecorderInput::getInstance(
+                        $this->video_upload_handler,
+                        $this->txt('answer') . " Video"
+                    ),
+
+                    'answer_content' => $this->ui_factory
+                        ->input()
+                        ->field()
+                        ->textarea(
+                            $this->txt('additional_content')
+                        )
+                    ,
+                )
+            );
+    }
+
     protected function showAnswer() : void
     {
+        $exercise_id = (int) $this->http->request()->getQueryParams()['exercise_id'];
 
+        if (null !== $exercise_id &&
+            null !== $this->current_participant) {
+            if (!$this->repository->hasParticipantAnsweredExercise(
+                $this->current_participant->getId(),
+                $exercise_id
+            )) {
+                $this->ctrl->setParameterByClass(
+                    self::class,
+                    "exercise_id",
+                    $exercise_id
+                );
+
+                $this->tpl->setContent(
+                   $this->ui_renderer->render(
+                       $this->buildAnswerForm()
+                   )
+                );
+            } else {
+                // we can expect this to fetch an answer
+                $answer = $this->repository->getParticipantAnswerForExercise(
+                    $this->current_participant->getId(),
+                    $exercise_id
+                );
+
+                $tpl = new ilTemplate(self::TEMPLATE_DIR . 'tpl.answer.html', false, false);
+                $tpl->setVariable('VIDEO', $this->getRecordedVideoHTML($answer->getResourceId()));
+                $tpl->setVariable('DESCRIPTION_LABEL', $this->txt('additional_content'));
+                $tpl->setVariable('DESCRIPTION', $answer->getContent());
+                $tpl->setVariable('INFO', $this->ui_renderer
+                    ->render(
+                        $this->ui_factory
+                            ->messageBox()
+                            ->info(
+                                $this->txt('already_answered')
+                            )
+                    )
+                );
+
+                $this->tpl->setContent($tpl->get());
+            }
+        } else {
+            $this->permissionDenied();
+        }
     }
 
     protected function addAnswer() : void
     {
+        $exercise_id = (int) $this->http->request()->getQueryParams()['exercise_id'];
+        if (null !== $exercise_id &&
+            null !== $this->current_participant
+        ) {
+            $form = $this->buildAnswerForm()->withRequest($this->http->request());
+            $data = $form->getData();
 
+            if (!empty($data['answer_resource'])) {
+                $this->repository->store(new Answer(
+                    null,
+                    ARAnswer::TYPE_ANSWER,
+                    (string) $data['answer_content'],
+                    $data['answer_resource'],
+                    $exercise_id,
+                    $this->current_participant->getId()
+                ));
+
+                ilUtil::sendSuccess($this->txt('exercise_answered'), true);
+                $this->ctrl->redirectByClass(
+                    ilObjSrVideoInterviewExerciseGUI::class,
+                    ilObjSrVideoInterviewExerciseGUI::CMD_EXERCISE_INDEX
+                );
+            } else {
+                ilUtil::sendFailure($this->txt('answer_not_completed'), true);
+                $this->ctrl->redirectByClass(
+                    self::class,
+                    self::CMD_ANSWER_SHOW
+                );
+            }
+        } else {
+            $this->objectNotFound();
+        }
     }
 
     protected function deleteAnswer() : void

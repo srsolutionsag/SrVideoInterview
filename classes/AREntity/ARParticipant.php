@@ -7,6 +7,8 @@ use ActiveRecord;
 /**
  * Class ARAnswer
  *
+ * @TODO: remove $feedback_sent, since this is a logical check
+ *
  * @author Thibeau Fuhrer <thf@studer-raimann.ch>
  */
 class ARParticipant extends ActiveRecord

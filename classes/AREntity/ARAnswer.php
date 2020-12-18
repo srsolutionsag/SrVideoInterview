@@ -36,7 +36,7 @@ class ARAnswer extends ActiveRecord
      * @con_fieldtype   int
      * @con_length      1
      */
-    protected $type;
+    protected $type = self::TYPE_ANSWER;
 
     /**
      * @var string

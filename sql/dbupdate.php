@@ -140,15 +140,26 @@ if (! $ilDB->tableColumnExists('xvin_answer', 'exercise_id')) {
     $ilDB->addTableColumn('xvin_answer', 'exercise_id', $field);
 }
 
+if ($ilDB->tableColumnExists('xvin_answer', 'feedback') &&
+    ! $ilDB->tableColumnExists('xvin_answer', 'content')
+) {
+    $ilDB->renameTableColumn('xvin_answer', 'feedback', 'content');
+}
+
 if ($ilDB->tableColumnExists('xvin_participant', 'exercise_id') &&
     ! $ilDB->tableColumnExists('xvin_participant', 'obj_id')
 ) {
     $ilDB->renameTableColumn('xvin_participant', 'exercise_id', 'obj_id');
 }
-
-if ($ilDB->tableColumnExists('xvin_answer', 'feedback') &&
-    ! $ilDB->tableColumnExists('xvin_answer', 'content')
-) {
-    $ilDB->renameTableColumn('xvin_answer', 'feedback', 'content');
+?>
+<#8>
+<?php
+$field = array(
+    'notnull' => '1',
+    'type' => 'integer',
+    'length' => '1'
+);
+if (! $ilDB->tableColumnExists('xvin_answer', 'type')) {
+    $ilDB->addTableColumn('xvin_answer', 'type', $field);
 }
 ?>

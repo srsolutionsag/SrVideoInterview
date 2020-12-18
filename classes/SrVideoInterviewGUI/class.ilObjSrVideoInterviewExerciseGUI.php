@@ -3,6 +3,7 @@
 require_once "./Customizing/global/plugins/Services/Repository/RepositoryObject/SrVideoInterview/classes/class.ilObjSrVideoInterviewGUI.php";
 
 use srag\Plugins\SrVideoInterview\VideoInterview\Entity\Exercise;
+use srag\Plugins\SrVideoInterview\AREntity\ARAnswer;
 
 /**
  * Class ilObjVideoInterviewExerciseGUI
@@ -86,94 +87,37 @@ class ilObjSrVideoInterviewExerciseGUI extends ilObjSrVideoInterviewGUI
      */
     protected function showAll() : void
     {
-        $exercises = $this->repository->getExercisesByObjId($this->obj_id);
-        if (null !== $exercises) {
-            $items = array();
-            foreach ($exercises as $exercise) {
-                $this->ctrl->setParameterByClass(
-                    self::class,
-                    'exercise_id',
-                    $exercise->getId()
-                );
+        // assuming 1:1 cardinality.
+        $exercise = $this->repository->getExercisesByObjId($this->obj_id)[0];
+        if (null !== $exercise) {
+            $tpl = new ilTemplate(self::TEMPLATE_DIR . 'tpl.exercise.html', false, false);
 
-                $actions = array(
-                    $this->ui_factory
-                        ->button()
-                        ->shy(
-                            $this->txt('answer'),
-                            $this->ctrl->getLinkTargetByClass(
-                                ilObjSrVideoInterviewAnswerGUI::class,
-                                ilObjSrVideoInterviewAnswerGUI::CMD_ANSWER_ADD
-                            )
-                        )
-                );
+            $this->ctrl->setParameterByClass(
+                ilObjSrVideoInterviewAnswerGUI::class,
+                "exercise_id",
+                $exercise->getId()
+            );
 
-//                not necessary until m:1 is implemented.
-//                if ($this->access->checkAccess("write", self::CMD_EXERCISE_INDEX, $this->ref_id)) {
-//                    $actions[] = $this->ui_factory
-//                        ->button()
-//                        ->shy(
-//                            $this->txt('edit'),
-//                            $this->ctrl->getLinkTargetByClass(
-//                                ilObjSrVideoInterviewGUI::class,
-//                                ilObjSrVideoInterviewGUI::CMD_VIDEO_INTERVIEW_EDIT,
-//                            )
-//                        )
-//                    ;
-//                }
-
-//                $resource = $this->storage->inline($exercise->getResourceId());
-//                echo var_dump($resource);
-//                exit;
-
-                $items[] = $this->ui_factory
-                    ->item()
-                    ->standard($exercise->getTitle())
-                    ->withDescription($exercise->getDetailedDescription())
-                    ->withProperties(array(
-                        $this->txt('description') => $exercise->getDescription(),
-//                        $this->txt('exercise_resource') => $this->ui_factory->legacy("
-//                            <video controls playsinline>
-//                                <source src=\"\" />
-//                            </video>
-//                        "),
-                    ))
-                    ->withActions(
-                        $this->ui_factory
-                            ->dropdown()
-                            ->standard(array(
-                                $actions
-                            ))
-                    )
-//                    ->withLeadImage(
-//                        $this->ui_factory
-//                            ->image()
-//                            ->responsive(
-//                                "/Customizing/global/plugins/Services/Repository/RepositoryObject/SrVideoInterview/templates/images/exercise_symbol.svg",
-//                                ""
-//                            )
-//
-//                    )
-                ;
-            }
-
-            $list = $this->ui_factory
-                ->panel()
-                ->listing()
-                ->standard(
-                    $this->txt('exercises'), array(
-                    $this->ui_factory
-                        ->item()
-                        ->group(
-                            "",
-                            $items
+            $tpl->setVariable('TITLE', $exercise->getTitle());
+            $tpl->setVariable('DESCRIPTION_LABEL', $this->txt('description'));
+            $tpl->setVariable('DESCRIPTION', $exercise->getDescription());
+            $tpl->setVariable('DETAILED_DESCRIPTION_LABEL', $this->txt('exercise_detailed_description'));
+            $tpl->setVariable('DETAILED_DESCRIPTION', $exercise->getDetailedDescription());
+            $tpl->setVariable('VIDEO', $this->getRecordedVideoHTML($exercise->getResourceId()));
+            $tpl->setVariable('ACTION',
+                $this->ui_renderer->render(
+                    $this->ui_factory->button()->primary(
+                        $this->txt('answer'),
+                        $this->ctrl->getLinkTargetByClass(
+                            ilObjSrVideoInterviewAnswerGUI::class,
+                            ilObjSrVideoInterviewAnswerGUI::CMD_ANSWER_SHOW
                         )
                     )
                 )
-            ;
+            );
 
             $this->tpl->setContent(
-                $this->ui_renderer->render($list)
+                $tpl->get()
             );
         } else {
             $this->objectNotFound();

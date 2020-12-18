@@ -34,8 +34,8 @@ class SrVideoInterviewRenderer extends Renderer
      */
     protected function renderInputField(Template $tpl, Input $input, $id, RendererInterface $default_renderer) : string
     {
-
-        $tpl->setVariable('POST_VAR', $input->getPostVar());
+        $tpl->setVariable("NAME", $input->getName());
+        $tpl->setVariable("VALUE", $input->getValue());
         $tpl->setVariable('LABEL', $input->getLabel());
         $tpl->setVariable('ID', $id);
 
@@ -70,7 +70,6 @@ class SrVideoInterviewRenderer extends Renderer
             $settings->accepted_files = implode(',', $component->getAcceptedMimeTypes());
             $settings->upload_url   = $component->getUploadHandler()->getUploadURL();
             $settings->removal_url  = $component->getUploadHandler()->getFileRemovalURL();
-            $settings->info_url     = $component->getUploadHandler()->getExistingFileInfoURL();
             $settings->download_url = $component->getUploadHandler()->getExistingFileDownloadURL();
 
             $registry->register('./Customizing/global/plugins/Services/Repository/RepositoryObject/SrVideoInterview/node_modules/recordrtc/RecordRTC.min.js');

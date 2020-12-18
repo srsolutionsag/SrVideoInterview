@@ -130,6 +130,32 @@ class ParticipantRepository implements Repository
     }
 
     /**
+     * retrieve a Participant by the assigned user id.
+     *
+     * @param int $user_id
+     * @return Participant|null
+     */
+    public function getParticipantByUserId(int $user_id) : ?Participant
+    {
+        $ar_participant = ARParticipant::where(array(
+            'user_id' => $user_id,
+        ), "=")->getArray();
+
+        if (!empty($ar_participant)) {
+            $arr = array_values($ar_participant);
+            return new Participant(
+                $arr[0]['id'],
+                (bool) $arr[0]['feedback_sent'],
+                (bool) $arr[0]['invitation_sent'],
+                $arr[0]['obj_id'],
+                $arr[0]['user_id']
+            );
+        }
+
+        return null;
+    }
+
+    /**
      * retrieve all participants currently added to an exercise by it's id.
      * @param int $obj_id
      * @return array|null

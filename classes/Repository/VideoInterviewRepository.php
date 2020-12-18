@@ -129,6 +129,17 @@ final class VideoInterviewRepository
     }
 
     /**
+     * retrieve a Participant by the assigned user id.
+     *
+     * @param int $user_id
+     * @return Participant|null
+     */
+    public function getParticipantByUserId(int $user_id) : ?Participant
+    {
+        return $this->participant_repository->getParticipantByUserId($user_id);
+    }
+
+    /**
      * delete an existing Participant by it's id.
      *
      * @param int $participant_id
@@ -137,5 +148,17 @@ final class VideoInterviewRepository
     public function removeParticipantById(int $participant_id) : bool
     {
         return $this->participant_repository->delete($participant_id);
+    }
+
+    /**
+     * retrieve an existing answer of a participant for an exercise.
+     *
+     * @param int $participant_id
+     * @param int $exercise_id
+     * @return Answer|null
+     */
+    public function getParticipantAnswerForExercise(int $participant_id, int $exercise_id) : ?Answer
+    {
+        return $this->answer_repository->getParticipantAnswerForExercise($participant_id, $exercise_id);
     }
 }

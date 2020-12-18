@@ -75,7 +75,9 @@ class ilObjSrVideoInterviewUploadHandlerGUI extends AbstractCtrlAwareUploadHandl
     {
         return $this->ctrl->getLinkTargetByClass(
             self::class,
-            self::CMD_DOWNLOAD
+            self::CMD_DOWNLOAD,
+            "",
+            true
         );
     }
 

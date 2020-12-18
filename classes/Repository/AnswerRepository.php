@@ -5,6 +5,7 @@ namespace srag\Plugins\SrVideoInterview\Repository;
 use srag\Plugins\SrVideoInterview\VideoInterview\Repository;
 use srag\Plugins\SrVideoInterview\AREntity\ARAnswer;
 use srag\Plugins\SrVideoInterview\VideoInterview\Entity\Answer;
+use DemeterChain\A;
 
 /**
  * Class AnswerRepository
@@ -107,10 +108,44 @@ class AnswerRepository implements Repository
             array(
                 'participant_id' => $participant_id,
                 'exercise_id'    => $exercise_id,
+                'type'           => ARAnswer::TYPE_ANSWER,
             ),
             '='
         )->getArray();
 
-        return empty($answer);
+        return !empty($answer);
+    }
+
+    /**
+     * retrieve an existing answer of a participant for an exercise.
+     *
+     * @param int $participant_id
+     * @param int $exercise_id
+     * @return Answer|null
+     */
+    public function getParticipantAnswerForExercise(int $participant_id, int $exercise_id) : ?Answer
+    {
+        $ar_answer = ARAnswer::where(
+            array(
+                'participant_id' => $participant_id,
+                'exercise_id'    => $exercise_id,
+                'type'           => ARAnswer::TYPE_ANSWER,
+            ),
+            '='
+        )->getArray();
+
+        if (!empty($ar_answer)) {
+            $arr = array_values($ar_answer);
+            return new Answer(
+                $arr[0]['id'],
+                $arr[0]['type'],
+                $arr[0]['content'],
+                $arr[0]['resource_id'],
+                $arr[0]['exercise_id'],
+                $arr[0]['participant_id']
+            );
+        }
+
+        return null;
     }
 }

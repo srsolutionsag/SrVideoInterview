@@ -18,50 +18,19 @@ use ILIAS\UI\Implementation\Component\Input\InputData;
 class VideoRecorderInput extends File
 {
     /**
-     * @var string
-     */
-    protected $postvar;
-
-    /**
      * VideoRecorderInput constructor.
-     *
      * @param DataFactory   $data_factory
      * @param Factory       $refinery
      * @param UploadHandler $handler
      * @param string        $label
-     * @param string        $postvar
      */
     public function __construct(
         DataFactory $data_factory,
         Factory $refinery,
         C\Input\Field\UploadHandler $handler,
-        string $label,
-        string $postvar
+        string $label
     ) {
-        $this->postvar = $postvar;
-
         parent::__construct($data_factory, $refinery, $handler, $label, null);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function withInput(InputData $input)
-    {
-        $value = $input->getOr($this->getName(), null);
-        if ($value === null) {
-            $this->value = null;
-        }
-
-        return parent::withInput($input);
-    }
-
-    /**
-     * @return string
-     */
-    public function getPostVar() : string
-    {
-        return $this->postvar;
     }
 
     /**
@@ -93,13 +62,11 @@ class VideoRecorderInput extends File
      * get a VideoRecorderInput instance
      * @param UploadHandler $upload_handler
      * @param string        $label
-     * @param string        $postvar
      * @return VideoRecorderInput
      */
     public static function getInstance(
         UploadHandler $upload_handler,
-        string $label,
-        string $postvar
+        string $label
     ) : VideoRecorderInput {
         global $DIC;
 
@@ -110,8 +77,7 @@ class VideoRecorderInput extends File
             $data_factory,
             $refinery,
             $upload_handler,
-            $label,
-            $postvar
+            $label
         ));
     }
 }
