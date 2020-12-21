@@ -29,7 +29,6 @@ class ilObjSrVideoInterviewParticipantGUI extends ilObjSrVideoInterviewGUI
     const CMD_PARTICIPANT_REMOVE = 'removeParticipant';
     const CMD_PARTICIPANT_NOTIFY = 'notifyParticipants';
     const CMD_PARTICIPANT_SEARCH = 'searchParticipant';
-    const CMD_FIND_BY_ROLE = 'findByRole';
     const CMD_ADD_FROM_ROLE = 'addFromRole';
     const CMD_CONFIRM_SEND_INVITATAION = 'confirmSendInvitataion';
 
@@ -61,14 +60,11 @@ class ilObjSrVideoInterviewParticipantGUI extends ilObjSrVideoInterviewGUI
         $this->tabs->activateTab(self::PARTICIPANT_TAB);
         $cmd = $this->ctrl->getCmd(self::CMD_PARTICIPANT_INDEX);
 
-        $next_class = $this->ctrl->getNextClass();
-
         switch ($cmd) {
             case self::CMD_PARTICIPANT_INDEX:
             case self::CMD_PARTICIPANT_ADD:
             case self::CMD_PARTICIPANT_REMOVE:
             case self::CMD_PARTICIPANT_NOTIFY:
-            case self::CMD_FIND_BY_ROLE:
             case self::CMD_PARTICIPANT_SEARCH:
                 if ($this->access->checkAccess("write", $cmd, $this->ref_id)) {
                     $this->$cmd();
@@ -103,16 +99,15 @@ class ilObjSrVideoInterviewParticipantGUI extends ilObjSrVideoInterviewGUI
 
         $by_role = ilLinkButton::getInstance();
         $by_role->setCaption($this->plugin->txt('add_participants_by_role'), false);
-//        $by_role->setUrl($this->ctrl->getLinkTarget($this, self::CMD_FIND_BY_ROLE));
         $by_role->setUrl($this->ctrl->getLinkTargetByClass([self::class, ilRepositorySearchGUI::class]));
         $this->toolbar->addButtonInstance($by_role);
 
         $this->toolbar->addSeparator();
 
-        $by_role = ilLinkButton::getInstance();
-        $by_role->setCaption($this->plugin->txt('send_invitation'), false);
-        $by_role->setUrl($this->ctrl->getLinkTarget($this, self::CMD_CONFIRM_SEND_INVITATAION));
-        $this->toolbar->addButtonInstance($by_role);
+        $invite = ilLinkButton::getInstance();
+        $invite->setCaption($this->plugin->txt('send_invitation'), false);
+        $invite->setUrl($this->ctrl->getLinkTarget($this, self::CMD_CONFIRM_SEND_INVITATAION));
+        $this->toolbar->addButtonInstance($invite);
 
         $table_gui = new ilObjSrVideoInterviewParticipantTableGUI($this, self::CMD_PARTICIPANT_INDEX);
         $table_gui->setData($this->repository->getParticipantsByObjId($this->obj_id));
@@ -150,26 +145,12 @@ class ilObjSrVideoInterviewParticipantGUI extends ilObjSrVideoInterviewGUI
     }
 
     /**
-     * add a new participant to a VideoInterview object.
+     * This is called from the user input in the toolbar
      */
     protected function addParticipant() : void
     {
-        $user_data = $this->http->request()->getParsedBody()['selected'];
-        foreach ($user_data as $user_id) {
-            $this->repository->store(new Participant(
-                null,
-                0,
-                0,
-                $this->obj_id,
-                (int) $user_id
-            ));
-
-        }
-        ilUtil::sendSuccess($this->txt('participant_added'), true);
-        $this->ctrl->redirectByClass(
-            self::class,
-            self::CMD_PARTICIPANT_INDEX
-        );
+        $user_data = (array) $this->http->request()->getParsedBody()['selected'];
+        $this->addParticipantsFromArray($user_data);
 
     }
 
@@ -190,15 +171,21 @@ class ilObjSrVideoInterviewParticipantGUI extends ilObjSrVideoInterviewGUI
         }
     }
 
-    protected function findByRole() : void
+    /**
+     * This is called from ilRepositorySearchGUI
+     * @param array $post
+     */
+    public function addFromRole(array $post) : void
     {
-        $r = new ilRepositorySearchGUI();
-        $this->tpl->setContent($r->getString());
+        $this->addParticipantsFromArray($post);
     }
 
-    public function addFromRole(array $post)
+    /**
+     * @param array $user_data
+     */
+    protected function addParticipantsFromArray(array $user_data) : void
     {
-        foreach ($post as $user_id) {
+        foreach ($user_data as $user_id) {
             $this->repository->store(new Participant(
                 null,
                 0,
