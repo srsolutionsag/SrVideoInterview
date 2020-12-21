@@ -12,6 +12,7 @@ use srag\Plugins\SrVideoInterview\VideoInterview\Entity\Participant;
  * Class ilObjVideoInterviewParticipantGUI
  * @author            Thibeau Fuhrer <thf@studer-raimann.ch>
  * @ilCtrl_isCalledBy ilObjVideoInterviewParticipantGUI: ilObjSrVideoInterviewGUI
+ * @ilCtrl_Calls      ilObjVideoInterviewParticipantGUI: ilRepositorySearchGUI
  */
 class ilObjSrVideoInterviewParticipantGUI extends ilObjSrVideoInterviewGUI
 {
@@ -28,6 +29,9 @@ class ilObjSrVideoInterviewParticipantGUI extends ilObjSrVideoInterviewGUI
     const CMD_PARTICIPANT_REMOVE = 'removeParticipant';
     const CMD_PARTICIPANT_NOTIFY = 'notifyParticipants';
     const CMD_PARTICIPANT_SEARCH = 'searchParticipant';
+    const CMD_FIND_BY_ROLE = 'findByRole';
+    const CMD_ADD_FROM_ROLE = 'addFromRole';
+    const CMD_CONFIRM_SEND_INVITATAION = 'confirmSendInvitataion';
 
     /**
      * @var ilToolbarGUI
@@ -57,11 +61,14 @@ class ilObjSrVideoInterviewParticipantGUI extends ilObjSrVideoInterviewGUI
         $this->tabs->activateTab(self::PARTICIPANT_TAB);
         $cmd = $this->ctrl->getCmd(self::CMD_PARTICIPANT_INDEX);
 
+        $next_class = $this->ctrl->getNextClass();
+
         switch ($cmd) {
             case self::CMD_PARTICIPANT_INDEX:
             case self::CMD_PARTICIPANT_ADD:
             case self::CMD_PARTICIPANT_REMOVE:
             case self::CMD_PARTICIPANT_NOTIFY:
+            case self::CMD_FIND_BY_ROLE:
             case self::CMD_PARTICIPANT_SEARCH:
                 if ($this->access->checkAccess("write", $cmd, $this->ref_id)) {
                     $this->$cmd();
@@ -89,8 +96,23 @@ class ilObjSrVideoInterviewParticipantGUI extends ilObjSrVideoInterviewGUI
 
         $this->toolbar->setFormAction($this->ctrl->getFormAction($this));
         $this->toolbar->addInputItem($b);
-        $this->toolbar->addFormButton($this->plugin->txt('add_participant'), self::CMD_PARTICIPANT_ADD);
+        $this->toolbar->addFormButton($this->plugin->txt('add_participants'), self::CMD_PARTICIPANT_ADD);
         $this->toolbar->setPreventDoubleSubmission(true);
+
+        $this->toolbar->addSeparator();
+
+        $by_role = ilLinkButton::getInstance();
+        $by_role->setCaption($this->plugin->txt('add_participants_by_role'), false);
+//        $by_role->setUrl($this->ctrl->getLinkTarget($this, self::CMD_FIND_BY_ROLE));
+        $by_role->setUrl($this->ctrl->getLinkTargetByClass([self::class, ilRepositorySearchGUI::class]));
+        $this->toolbar->addButtonInstance($by_role);
+
+        $this->toolbar->addSeparator();
+
+        $by_role = ilLinkButton::getInstance();
+        $by_role->setCaption($this->plugin->txt('send_invitation'), false);
+        $by_role->setUrl($this->ctrl->getLinkTarget($this, self::CMD_CONFIRM_SEND_INVITATAION));
+        $this->toolbar->addButtonInstance($by_role);
 
         $table_gui = new ilObjSrVideoInterviewParticipantTableGUI($this, self::CMD_PARTICIPANT_INDEX);
         $table_gui->setData($this->repository->getParticipantsByObjId($this->obj_id));
@@ -168,8 +190,28 @@ class ilObjSrVideoInterviewParticipantGUI extends ilObjSrVideoInterviewGUI
         }
     }
 
-    protected function notifyParticipants() : void
+    protected function findByRole() : void
     {
+        $r = new ilRepositorySearchGUI();
+        $this->tpl->setContent($r->getString());
+    }
 
+    public function addFromRole(array $post)
+    {
+        foreach ($post as $user_id) {
+            $this->repository->store(new Participant(
+                null,
+                0,
+                0,
+                $this->obj_id,
+                (int) $user_id
+            ));
+
+        }
+        ilUtil::sendSuccess($this->txt('participant_added'), true);
+        $this->ctrl->redirectByClass(
+            self::class,
+            self::CMD_PARTICIPANT_INDEX
+        );
     }
 }

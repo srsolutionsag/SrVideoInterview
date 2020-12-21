@@ -22,7 +22,7 @@ use ILIAS\MainMenu\Storage\Services;
  *
  * @ilCtrl_isCalledBy ilObjSrVideoInterviewGUI: ilRepositoryGUI, ilObjPluginDispatchGUI, ilAdministrationGUI
  * @ilCtrl_Calls      ilObjSrVideoInterviewGUI: ilPermissionGUI, ilInfoScreenGUI, ilObjectCopyGUI, ilCommonActionDispatcherGUI
- * @ilCtrl_Calls      ilObjSrVideoInterviewGUI: ilObjSrVideoInterviewExerciseGUI, ilObjSrVideoInterviewAnswerGUI, ilObjSrVideoInterviewParticipantGUI
+ * @ilCtrl_Calls      ilObjSrVideoInterviewGUI: ilObjSrVideoInterviewExerciseGUI, ilObjSrVideoInterviewAnswerGUI, ilObjSrVideoInterviewParticipantGUI, ilRepositorySearchGUI
  */
 class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
 {
@@ -181,6 +181,12 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
             case strtolower(ilObjSrVideoInterviewParticipantGUI::class):
                 $participant_gui = new ilObjSrVideoInterviewParticipantGUI($this->ref_id);
                 $this->ctrl->forwardCommand($participant_gui);
+                break;
+            case strtolower(ilRepositorySearchGUI::class):
+                $search = new ilRepositorySearchGUI();
+                $participant_gui = new ilObjSrVideoInterviewParticipantGUI($this->ref_id);
+                $search->setCallback($participant_gui, ilObjSrVideoInterviewParticipantGUI::CMD_ADD_FROM_ROLE);
+                $this->ctrl->forwardCommand($search);
                 break;
             default:
                 // do nothing, let parent handle $next_class
