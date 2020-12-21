@@ -4,11 +4,11 @@
 //require_once "./Customizing/global/plugins/Services/Repository/RepositoryObject/SrVideoInterview/classes/SrVideoInterviewGUI/class.ilObjSrVideoInterviewExerciseGUI.php";
 //require_once "./Customizing/global/plugins/Services/Repository/RepositoryObject/SrVideoInterview/classes/SrVideoInterviewGUI/class.ilObjSrVideoInterviewParticipantGUI.php";
 
+use ILIAS\MainMenu\Storage\Services;
 use ILIAS\UI\Component\Input\Container\Form\Standard;
 use ILIAS\UI\Implementation\Component\Input\Field\VideoRecorderInput;
 use srag\Plugins\SrVideoInterview\Repository\VideoInterviewRepository;
 use srag\Plugins\SrVideoInterview\VideoInterview\Entity\Exercise;
-use ILIAS\MainMenu\Storage\Services;
 
 /**
  * ilObjSrVideoInterviewGUI in general, dispatches a request's next class and command and delegates it accordingly.
@@ -22,7 +22,7 @@ use ILIAS\MainMenu\Storage\Services;
  *
  * @ilCtrl_isCalledBy ilObjSrVideoInterviewGUI: ilRepositoryGUI, ilObjPluginDispatchGUI, ilAdministrationGUI
  * @ilCtrl_Calls      ilObjSrVideoInterviewGUI: ilPermissionGUI, ilInfoScreenGUI, ilObjectCopyGUI, ilCommonActionDispatcherGUI
- * @ilCtrl_Calls      ilObjSrVideoInterviewGUI: ilObjSrVideoInterviewExerciseGUI, ilObjSrVideoInterviewAnswerGUI, ilObjSrVideoInterviewParticipantGUI
+ * @ilCtrl_Calls      ilObjSrVideoInterviewGUI: ilObjSrVideoInterviewExerciseGUI, ilObjSrVideoInterviewAnswerGUI, ilObjSrVideoInterviewParticipantGUI, ilRepositorySearchGUI
  */
 class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
 {
@@ -181,6 +181,14 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
             case strtolower(ilObjSrVideoInterviewParticipantGUI::class):
                 $participant_gui = new ilObjSrVideoInterviewParticipantGUI($this->ref_id);
                 $this->ctrl->forwardCommand($participant_gui);
+                break;
+            case strtolower(ilRepositorySearchGUI::class):
+                $this->tabs->clearTargets();
+                $this->tabs->setBackTarget($this->plugin->txt('back_to'), $this->ctrl->getLinkTargetByClass(ilObjSrVideoInterviewParticipantGUI::class));
+                $search = new ilRepositorySearchGUI();
+                $participant_gui = new ilObjSrVideoInterviewParticipantGUI($this->ref_id);
+                $search->setCallback($participant_gui, ilObjSrVideoInterviewParticipantGUI::CMD_ADD_FROM_ROLE);
+                $this->ctrl->forwardCommand($search);
                 break;
             default:
                 // do nothing, let parent handle $next_class

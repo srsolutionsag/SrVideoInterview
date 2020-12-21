@@ -42,11 +42,6 @@ class MultiSelectUserInput extends ilTextInputGUI
 
     public function render($a_mode = "")
     {
-        /**
-         * @var $lng ilLanguage
-         */
-        $lng = $this->lng;
-
         $id = str_replace('.', '_', uniqid('input_', true));
 
         $tpl = new ilTemplate(

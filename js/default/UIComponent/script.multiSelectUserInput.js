@@ -11,7 +11,10 @@ il.Plugins.SrMultiUserSearchInputGUI = il.Plugins.SrMultiUserSearchInputGUI || {
 	il.Plugins.SrMultiUserSearchInputGUI = (function ($) {
 		var element,
 			search_field,
-			results,
+			results_list,
+			selected_list,
+			user_template,
+			running = false,
 			hidden_wrapper;
 		/**
 		 * VideoRecorderInput
@@ -23,11 +26,16 @@ il.Plugins.SrMultiUserSearchInputGUI = il.Plugins.SrMultiUserSearchInputGUI || {
 			console.log(id);
 			element = $('#' + id);
 			search_field = element.find('.sr-multi-user-searchfield');
-			results = element.find('.sr-selected-users-list');
+			results_list = element.find('.sr-results-users-list');
+			selected_list = element.find('.sr-selected-users-list');
 			hidden_wrapper = element.find('.sr-multi-user-search-container');
+			user_template = element.find('.sr-multi-user-template');
 
 			// search_field
 			search_field.keyup(async function (e) {
+				if (running) {
+					return;
+				}
 				e.preventDefault();
 				const data = await fetchData(
 					this.dataset.autocomplete_url,
@@ -35,22 +43,45 @@ il.Plugins.SrMultiUserSearchInputGUI = il.Plugins.SrMultiUserSearchInputGUI || {
 				);
 
 				if (data !== "undefined") {
-					console.log(data)
-
-					if (results.length) {
-						results.empty();
+					if (results_list.length) {
+						results_list.empty();
 					}
 					for (let i = 0; i < data.length; i++) {
-						results.append(`<li id="${data[i]['value']}" data-label="${data[i]['label']}" onclick="addToSelected(this)">${data[i]['label']}</li>`);
+						let user_id = data[i]['value'];
+						let label = data[i]['label'];
+						let user = user_template.clone();
+						user.removeAttr('class');
+						user.attr('data-item-id', user_id);
+						user.attr('data-label', label);
+						user.html(label);
+						user.on('click', function () {
+							let user = $(this);
+							user.unbind('click');
+							// append hidden input
+							let input = $(`<input type='hidden' name='selected[]' value='${user.attr('data-item-id')}'/>`);
+							user.append(input);
+							// append close glyph
+							let close = $(`<span>&nbsp; &#10005;</span>`);
+							close.on('click', function () {
+								$(this).parent().remove();
+							});
+							user.append(close);
+							// move to the selected list
+							user.detach();
+							selected_list.append(user);
+							// clear list
+							search_field.value = '';
+							results_list.empty();
+						});
+						results_list.append(user);
 					}
-					// user_search.after(user_search, list);
 				}
 			});
 
 		};
 
 
-		function addToSelected(item) {
+		let addToSelected = function (item) {
 			$('#sr-multi-user-search').value = "";
 			$('#sr-multi-select-dropdown').empty();
 			if (!$('ul > #' + item.id).length) {
@@ -67,6 +98,7 @@ il.Plugins.SrMultiUserSearchInputGUI = il.Plugins.SrMultiUserSearchInputGUI || {
 
 
 		async function fetchData(url, term) {
+			running = true;
 			return $.ajax({
 				type:    'GET',
 				url:     url,
@@ -74,6 +106,7 @@ il.Plugins.SrMultiUserSearchInputGUI = il.Plugins.SrMultiUserSearchInputGUI || {
 					term: term
 				},
 				success: (response) => {
+					running = false;
 					return response;
 				},
 				async:   true

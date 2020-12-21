@@ -16,6 +16,9 @@ remove_participant#:#Remove
 participant_removed#:#Participant has been removed from this Video Interview.
 participant_added#:#Participant has been added to this Video Interview.
 add_participant#:#Add Participant
+add_participants#:#Add Participants
+add_participants_by_role#:#Add by Role
+send_invitation#:#Inform all Participants
 additional_content#:#Additional Comment
 already_answered#:#You have already submitted an answer to this exercise.
 exercise_answered#:#Your Answer has been submitted and sent to your Professor!
@@ -61,3 +64,7 @@ lp_status_3#:#Failed
 lp_status_#:#No state yet.
 lp_status_info#:#Attention: Setting the LP Status will set the LP status of the currently logged in user to the chosen Stauts. THE STATUS OF EVERY OTHER USER WILL BE SET TO NOT ATTEMPTED!
 offline:#:Offline
+
+confirm_send_invitation_text#:#Would you like to send the invitation link to all participants of this object?
+confirm_send_invitation#:#Send invitations
+cancel#:#Cancel

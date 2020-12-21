@@ -6,11 +6,13 @@ require_once "./Customizing/global/plugins/Services/Repository/RepositoryObject/
 //use srag\CustomInputGUIs\TextInputGUI\TextInputGUIWithModernAutoComplete;
 use ILIAS\Filesystem\Stream\Streams;
 use ILIAS\UI\Implementation\Component\Input\Field\MultiSelectUserInput;
+use srag\Plugins\SrVideoInterview\VideoInterview\Entity\Participant;
 
 /**
  * Class ilObjVideoInterviewParticipantGUI
  * @author            Thibeau Fuhrer <thf@studer-raimann.ch>
  * @ilCtrl_isCalledBy ilObjVideoInterviewParticipantGUI: ilObjSrVideoInterviewGUI
+ * @ilCtrl_Calls      ilObjVideoInterviewParticipantGUI: ilRepositorySearchGUI
  */
 class ilObjSrVideoInterviewParticipantGUI extends ilObjSrVideoInterviewGUI
 {
@@ -27,7 +29,9 @@ class ilObjSrVideoInterviewParticipantGUI extends ilObjSrVideoInterviewGUI
     const CMD_PARTICIPANT_REMOVE = 'removeParticipant';
     const CMD_PARTICIPANT_NOTIFY = 'notifyParticipants';
     const CMD_PARTICIPANT_SEARCH = 'searchParticipant';
-    const CMD_PARTICIPANT_RESPOND = 'respondToParticipant';
+    const CMD_ADD_FROM_ROLE = 'addFromRole';
+    const CMD_CONFIRM_SEND_INVITATAION = 'confirmSendInvitataion';
+    const CMD_SEND_INVITATIONS = 'sendInvitations';
 
     /**
      * @var ilToolbarGUI
@@ -63,7 +67,8 @@ class ilObjSrVideoInterviewParticipantGUI extends ilObjSrVideoInterviewGUI
             case self::CMD_PARTICIPANT_REMOVE:
             case self::CMD_PARTICIPANT_NOTIFY:
             case self::CMD_PARTICIPANT_SEARCH:
-            case self::CMD_PARTICIPANT_RESPOND:
+            case self::CMD_CONFIRM_SEND_INVITATAION:
+            case self::CMD_SEND_INVITATIONS:
                 if ($this->access->checkAccess("write", $cmd, $this->ref_id)) {
                     $this->$cmd();
                 } else {
@@ -90,7 +95,22 @@ class ilObjSrVideoInterviewParticipantGUI extends ilObjSrVideoInterviewGUI
 
         $this->toolbar->setFormAction($this->ctrl->getFormAction($this));
         $this->toolbar->addInputItem($b);
+        $this->toolbar->addFormButton($this->plugin->txt('add_participants'), self::CMD_PARTICIPANT_ADD);
         $this->toolbar->setPreventDoubleSubmission(true);
+
+        $this->toolbar->addSeparator();
+
+        $by_role = ilLinkButton::getInstance();
+        $by_role->setCaption($this->plugin->txt('add_participants_by_role'), false);
+        $by_role->setUrl($this->ctrl->getLinkTargetByClass([self::class, ilRepositorySearchGUI::class]));
+        $this->toolbar->addButtonInstance($by_role);
+
+        $this->toolbar->addSeparator();
+
+        $invite = ilLinkButton::getInstance();
+        $invite->setCaption($this->plugin->txt('send_invitation'), false);
+        $invite->setUrl($this->ctrl->getLinkTarget($this, self::CMD_CONFIRM_SEND_INVITATAION));
+        $this->toolbar->addButtonInstance($invite);
 
         $table_gui = new ilObjSrVideoInterviewParticipantTableGUI($this, self::CMD_PARTICIPANT_INDEX);
         $table_gui->setData($this->repository->getParticipantsByObjId($this->obj_id));
@@ -128,38 +148,13 @@ class ilObjSrVideoInterviewParticipantGUI extends ilObjSrVideoInterviewGUI
     }
 
     /**
-     * add a new participant to a VideoInterview object.
+     * This is called from the user input in the toolbar
      */
     protected function addParticipant() : void
     {
+        $user_data = (array) $this->http->request()->getParsedBody()['selected'];
+        $this->addParticipantsFromArray($user_data);
 
-
-        $user_data = $this->http->request()->getParsedBody();
-
-        print_r($user_data);
-        exit;
-
-        // match user_login without brackets from auto-completed string. (ugly)
-        preg_match("/(?<=\[).+?(?=\])/", $user_data, $user_login);
-        $user = ilObjUser::searchUsers($user_login[0])[0];
-
-        $result = $this->repository->store(new Participant(
-            null,
-            0,
-            0,
-            $this->obj_id,
-            $user['usr_id']
-        ));
-
-        if ($result) {
-            ilUtil::sendSuccess($this->txt('participant_added'), true);
-            $this->ctrl->redirectByClass(
-                self::class,
-                self::CMD_PARTICIPANT_INDEX
-            );
-        } else {
-            // may show error toast or something here.
-        }
     }
 
     protected function removeParticipant() : void
@@ -179,13 +174,51 @@ class ilObjSrVideoInterviewParticipantGUI extends ilObjSrVideoInterviewGUI
         }
     }
 
-    protected function respondToParticipant() : void
+    protected function confirmSendInvitataion() : void
     {
+        $confirm = new ilConfirmationGUI();
+        $confirm->setFormAction($this->ctrl->getFormAction($this));
+        $confirm->setHeaderText($this->plugin->txt('confirm_send_invitation_text'));
+        $confirm->setConfirm($this->plugin->txt('confirm_send_invitation'), self::CMD_SEND_INVITATIONS);
+        $confirm->setCancel($this->plugin->txt('cancel'), self::CMD_PARTICIPANT_INDEX);
 
+        $this->tpl->setContent($confirm->getHTML());
     }
 
-    protected function notifyParticipants() : void
+    protected function sendInvitations() : void
     {
+        // todo implement sending inv.
+        $this->tpl->setContent('todo implement sending inv.');
+    }
 
+    /**
+     * This is called from ilRepositorySearchGUI
+     * @param array $post
+     */
+    public function addFromRole(array $post) : void
+    {
+        $this->addParticipantsFromArray($post);
+    }
+
+    /**
+     * @param array $user_data
+     */
+    protected function addParticipantsFromArray(array $user_data) : void
+    {
+        foreach ($user_data as $user_id) {
+            $this->repository->store(new Participant(
+                null,
+                0,
+                0,
+                $this->obj_id,
+                (int) $user_id
+            ));
+
+        }
+        ilUtil::sendSuccess($this->txt('participant_added'), true);
+        $this->ctrl->redirectByClass(
+            self::class,
+            self::CMD_PARTICIPANT_INDEX
+        );
     }
 }
