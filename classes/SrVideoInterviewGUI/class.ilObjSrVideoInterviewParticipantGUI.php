@@ -4,15 +4,12 @@ require_once "./Customizing/global/plugins/Services/Repository/RepositoryObject/
 require_once "./Customizing/global/plugins/Services/Repository/RepositoryObject/SrVideoInterview/classes/class.ilObjSrVideoInterviewGUI.php";
 
 //use srag\CustomInputGUIs\TextInputGUI\TextInputGUIWithModernAutoComplete;
-use srag\Plugins\SrVideoInterview\VideoInterview\Entity\Participant;
-use ILIAS\UI\Implementation\Component\Input\Field\VideoRecorderInput;
+use ILIAS\Filesystem\Stream\Streams;
 use ILIAS\UI\Implementation\Component\Input\Field\MultiSelectUserInput;
 
 /**
  * Class ilObjVideoInterviewParticipantGUI
- *
- * @author Thibeau Fuhrer <thf@studer-raimann.ch>
- *
+ * @author            Thibeau Fuhrer <thf@studer-raimann.ch>
  * @ilCtrl_isCalledBy ilObjVideoInterviewParticipantGUI: ilObjSrVideoInterviewGUI
  */
 class ilObjSrVideoInterviewParticipantGUI extends ilObjSrVideoInterviewGUI
@@ -20,13 +17,13 @@ class ilObjSrVideoInterviewParticipantGUI extends ilObjSrVideoInterviewGUI
     /**
      * Participant GUI tab-names and translation var
      */
-    const PARTICIPANT_TAB        = 'participant_tab';
+    const PARTICIPANT_TAB = 'participant_tab';
 
     /**
      * Participant GUI commands
      */
-    const CMD_PARTICIPANT_INDEX  = 'showAll';
-    const CMD_PARTICIPANT_ADD    = 'addParticipant';
+    const CMD_PARTICIPANT_INDEX = 'showAll';
+    const CMD_PARTICIPANT_ADD = 'addParticipant';
     const CMD_PARTICIPANT_REMOVE = 'removeParticipant';
     const CMD_PARTICIPANT_NOTIFY = 'notifyParticipants';
     const CMD_PARTICIPANT_SEARCH = 'searchParticipant';
@@ -38,7 +35,6 @@ class ilObjSrVideoInterviewParticipantGUI extends ilObjSrVideoInterviewGUI
 
     /**
      * Initialise ilObjVideoInterviewParticipantGUI
-     *
      * @param int $a_ref_id
      * @param int $a_id_type
      * @param int $a_parent_node_id
@@ -60,8 +56,7 @@ class ilObjSrVideoInterviewParticipantGUI extends ilObjSrVideoInterviewGUI
         $this->tabs->activateTab(self::PARTICIPANT_TAB);
         $cmd = $this->ctrl->getCmd(self::CMD_PARTICIPANT_INDEX);
 
-        switch ($cmd)
-        {
+        switch ($cmd) {
             case self::CMD_PARTICIPANT_INDEX:
             case self::CMD_PARTICIPANT_ADD:
             case self::CMD_PARTICIPANT_REMOVE:
@@ -81,8 +76,7 @@ class ilObjSrVideoInterviewParticipantGUI extends ilObjSrVideoInterviewGUI
 
     protected function showAll() : void
     {
-//        $a = VideoRecorderInput::getInstance(new ilObjSrVideoInterviewUploadHandlerGUI(),'Video');
-        $b = MultiSelectUserInput::getInstance("", "user_data");
+        $b = new MultiSelectUserInput("", "user_data");
         $b->setDataSource(
             $this->ctrl->getLinkTargetByClass(
                 self::class,
@@ -92,52 +86,13 @@ class ilObjSrVideoInterviewParticipantGUI extends ilObjSrVideoInterviewGUI
             )
         );
 
-
-//        $this->tpl->setContent(
-//            $this->ui_renderer->render([$a])
-//        );
-
+        $this->toolbar->setFormAction($this->ctrl->getFormAction($this));
         $this->toolbar->addInputItem($b);
+        $this->toolbar->setPreventDoubleSubmission(true);
 
-        /*$this->toolbar->setPreventDoubleSubmission(true);
-        $this->toolbar->setFormAction(
-            $this->ctrl->getFormActionByClass(
-                self::class
-            )
-        );
-
-        $user_field = new TextInputGUIWithModernAutoComplete("", "user_data");
-        $user_field->setDisableHtmlAutoComplete(false);
-        $user_field->setDataSource(
-            $this->ctrl->getLinkTargetByClass(
-                self::class,
-                self::CMD_PARTICIPANT_SEARCH
-            )
-        );
-
-        // new version
-        $user_field = new MultiSelectSearchNewInputGUI('', 'user_data');
-        $user_field->setAjaxAutoCompleteCtrl(new ilObjSrVideoInterviewAjaxCtrl(null));
-
-
-        $submit_button = ilSubmitButton::getInstance();
-        $submit_button->setCaption($this->txt('add_participant'), false);
-        $submit_button->setCommand(
-            self::CMD_PARTICIPANT_ADD
-        );
-
-        $this->toolbar->addInputItem($user_field);
-        $this->toolbar->addButtonInstance($submit_button);*/
-
-//        $this->toolbar->setFormAction(
-//            $this->ctrl->getFormActionByClass(self::class)
-//        );
-//
-//        $table_gui = new ilObjSrVideoInterviewParticipantTableGUI($this, self::CMD_PARTICIPANT_INDEX);
-//        $table_gui->setData($this->repository->getParticipantsByObjId($this->obj_id));
-//
-//        $this->tpl->addJavaScript("./Customizing/global/plugins/Services/Repository/RepositoryObject/SrVideoInterview/js/default/script.userAutoComplete.js");
-//        $this->tpl->setContent($table_gui->getHTML());
+        $table_gui = new ilObjSrVideoInterviewParticipantTableGUI($this, self::CMD_PARTICIPANT_INDEX);
+        $table_gui->setData($this->repository->getParticipantsByObjId($this->obj_id));
+        $this->tpl->setContent($table_gui->getHTML());
     }
 
     /**
@@ -145,7 +100,7 @@ class ilObjSrVideoInterviewParticipantGUI extends ilObjSrVideoInterviewGUI
      */
     protected function searchParticipant() : void
     {
-        $term = filter_input(INPUT_GET, "term");
+        $term  = filter_input(INPUT_GET, "term");
         $users = array();
         foreach (ilObjUser::searchUsers($term) as $user) {
             $users[] = array(
@@ -161,51 +116,54 @@ class ilObjSrVideoInterviewParticipantGUI extends ilObjSrVideoInterviewGUI
             );
         }
 
-        // since it's not working properly with http->response()
-        header("Content-Type: application/json; charset=utf-8");
-        echo json_encode($users);
-        exit;
+        $this->http->saveResponse(
+            $this->http->response()
+                       ->withBody(Streams::ofString(json_encode($users)))
+                       ->withHeader('Content-Type', 'application/json; charset=utf-8')
+        );
+        $this->http->sendResponse();
+        $this->http->close();
     }
-//
-//    /**
-//     * add a new participant to a VideoInterview object.
-//     */
-//    protected function addParticipant() : void
-//    {
-//
-//
-//        $user_data = $this->http->request()->getParsedBody();
-//
-//        print_r($user_data);
-//        exit;
-//
-//        // match user_login without brackets from auto-completed string. (ugly)
-//        preg_match("/(?<=\[).+?(?=\])/", $user_data, $user_login);
-//        $user = ilObjUser::searchUsers($user_login[0])[0];
-//
-//        $result = $this->repository->store(new Participant(
-//            null,
-//            0,
-//            0,
-//            $this->obj_id,
-//            $user['usr_id']
-//        ));
-//
-//        if ($result) {
-//            ilUtil::sendSuccess($this->txt('participant_added'), true);
-//            $this->ctrl->redirectByClass(
-//                self::class,
-//                self::CMD_PARTICIPANT_INDEX
-//            );
-//        } else {
-//            // may show error toast or something here.
-//        }
-//    }
+
+    /**
+     * add a new participant to a VideoInterview object.
+     */
+    protected function addParticipant() : void
+    {
+
+
+        $user_data = $this->http->request()->getParsedBody();
+
+        print_r($user_data);
+        exit;
+
+        // match user_login without brackets from auto-completed string. (ugly)
+        preg_match("/(?<=\[).+?(?=\])/", $user_data, $user_login);
+        $user = ilObjUser::searchUsers($user_login[0])[0];
+
+        $result = $this->repository->store(new Participant(
+            null,
+            0,
+            0,
+            $this->obj_id,
+            $user['usr_id']
+        ));
+
+        if ($result) {
+            ilUtil::sendSuccess($this->txt('participant_added'), true);
+            $this->ctrl->redirectByClass(
+                self::class,
+                self::CMD_PARTICIPANT_INDEX
+            );
+        } else {
+            // may show error toast or something here.
+        }
+    }
 
     protected function removeParticipant() : void
     {
         $participant_id = $this->http->request()->getQueryParams()['participant_id'];
-        $participant = $this->repository->getParticipantById($participant_id);
+        $participant    = $this->repository->getParticipantById($participant_id);
 
         if (null !== $participant) {
             $this->repository->removeParticipantById($participant_id);

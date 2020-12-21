@@ -2,11 +2,10 @@
 
 namespace ILIAS\UI\Implementation\Component\Input\Field;
 
-use ilTemplate;
-use ilUtil;
-use ilTextInputGUI;
 use iljQueryUtil;
-use ILIAS\UI\Implementation\Component\JavaScriptBindable;
+use ilTemplate;
+use ilTextInputGUI;
+use ilUtil;
 
 /**
  * Class File
@@ -15,35 +14,28 @@ use ILIAS\UI\Implementation\Component\JavaScriptBindable;
  */
 class MultiSelectUserInput extends ilTextInputGUI
 {
-    /**
-     * @TODO: test this with bindJavascript for unique ID.
-     */
-    use JavaScriptBindable;
 
     /**
      * @var bool
      */
     protected static $instantiated = false;
+    /**
+     * @var ilTemplate
+     */
+    protected $global_template;
 
     /**
      * MultiSelectUserInput constructor.
-     *
      * @param string $a_title
      * @param string $a_postvar
      */
     public function __construct($a_title = "", $a_postvar = "")
     {
-        parent::__construct($a_title, $a_postvar);
-    }
-
-    protected static function init() : void
-    {
         global $DIC;
-        
-        $global_tempalte = $DIC->ui()->mainTemplate();
-        $global_tempalte->addJavaScript("./Customizing/global/plugins/Services/Repository/RepositoryObject/SrVideoInterview/js/default/UIComponent/script.multiSelectUserInput.js");
-        $global_tempalte->addCss("./Customizing/global/plugins/Services/Repository/RepositoryObject/SrVideoInterview/css/default/UIComponent/style.multi_select_user_input.css");
-
+        parent::__construct($a_title, $a_postvar);
+        $this->global_template = $DIC->ui()->mainTemplate();
+        $this->global_template->addJavaScript("./Customizing/global/plugins/Services/Repository/RepositoryObject/SrVideoInterview/js/default/UIComponent/script.multiSelectUserInput.js");
+        $this->global_template->addCss("./Customizing/global/plugins/Services/Repository/RepositoryObject/SrVideoInterview/css/default/UIComponent/style.multi_select_user_input.css");
         iljQueryUtil::initjQuery();
         iljQueryUtil::initjQueryUI();
     }
@@ -54,6 +46,8 @@ class MultiSelectUserInput extends ilTextInputGUI
          * @var $lng ilLanguage
          */
         $lng = $this->lng;
+
+        $id = str_replace('.', '_', uniqid('input_', true));
 
         $tpl = new ilTemplate(
             SrVideoInterviewRenderer::TEMPLATE_DIR . "tpl.multi_select_user_input.html",
@@ -81,7 +75,8 @@ class MultiSelectUserInput extends ilTextInputGUI
         }
 
         $tpl->setVariable('PROP_INPUT_TYPE', 'text');
-        $tpl->setVariable("ID", $this->getFieldId());
+        $tpl->setVariable("ID", $id);
+        $this->global_template->addOnLoadCode("il.Plugins.SrMultiUserSearchInputGUI.init('{$id}');");
         $tpl->setVariable("SIZE", $this->getSize());
 
         if ($this->getMaxLength() != null) {
@@ -98,7 +93,7 @@ class MultiSelectUserInput extends ilTextInputGUI
 
         if ($this->getDisabled()) {
             if ($this->getMulti()) {
-                $value = $this->getMultiValues();
+                $value  = $this->getMultiValues();
                 $hidden = "";
                 if (is_array($value)) {
                     foreach ($value as $item) {
@@ -156,17 +151,12 @@ class MultiSelectUserInput extends ilTextInputGUI
 
     /**
      * instantiates a new MultiSelectUserInput.
-     *
      * @param string $label
      * @param string $postvar
      * @return MultiSelectUserInput
      */
     public static function getInstance(string $label = "", string $postvar = "") : self
     {
-        if (!self::$instantiated) {
-            self::init();
-        }
-
         return (new self(
             $label,
             $postvar
