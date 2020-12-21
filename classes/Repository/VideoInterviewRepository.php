@@ -32,7 +32,7 @@ final class VideoInterviewRepository
     private $participant_repository;
 
     /**
-     * Initialise VidoInterviewRepository
+     * Initialise VideoInterviewRepository
      */
     public function __construct()
     {
@@ -95,13 +95,19 @@ final class VideoInterviewRepository
     }
 
     /**
-     * retrieve all participants currently added to an exercise by it's id.
+     * retrieve all Participants assigned to a VideoInterview by it's obj_id. retrieve
+     * participants as an array instead of Participant objects by enabling $array_data.
      *
-     * @param int $obj_id
+     * @param int  $obj_id
+     * @param bool $array_data
      * @return array|null
      */
-    public function getParticipantsByObjId(int $obj_id) : ?array
+    public function getParticipantsByObjId(int $obj_id, bool $array_data = false) : ?array
     {
+        if ($array_data) {
+            return $this->participant_repository->getParticipantsArrayDataByObjId($obj_id);
+        }
+
         return $this->participant_repository->getParticipantsByObjId($obj_id);
     }
 
@@ -134,9 +140,9 @@ final class VideoInterviewRepository
      * @param int $user_id
      * @return Participant|null
      */
-    public function getParticipantByUserId(int $user_id) : ?Participant
+    public function getParticipantForObjByUserId(int $obj_id, int $user_id) : ?Participant
     {
-        return $this->participant_repository->getParticipantByUserId($user_id);
+        return $this->participant_repository->getParticipantForObjByUserId($obj_id, $user_id);
     }
 
     /**

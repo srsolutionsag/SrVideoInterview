@@ -104,16 +104,13 @@ class AnswerRepository implements Repository
      */
     public function hasParticipantAnsweredExercise(int $participant_id, int $exercise_id) : bool
     {
-        $answer = ARAnswer::where(
-            array(
-                'participant_id' => $participant_id,
-                'exercise_id'    => $exercise_id,
-                'type'           => ARAnswer::TYPE_ANSWER,
-            ),
-            '='
-        )->getArray();
+        $ar_answer = ARAnswer::where(array(
+            'participant_id' => $participant_id,
+            'exercise_id'    => $exercise_id,
+            'type'           => ARAnswer::TYPE_ANSWER,
+        ),'=')->first();
 
-        return !empty($answer);
+        return (null !== $ar_answer);
     }
 
     /**
@@ -125,24 +122,20 @@ class AnswerRepository implements Repository
      */
     public function getParticipantAnswerForExercise(int $participant_id, int $exercise_id) : ?Answer
     {
-        $ar_answer = ARAnswer::where(
-            array(
-                'participant_id' => $participant_id,
-                'exercise_id'    => $exercise_id,
-                'type'           => ARAnswer::TYPE_ANSWER,
-            ),
-            '='
-        )->getArray();
+        $ar_answer = ARAnswer::where(array(
+            'participant_id' => $participant_id,
+            'exercise_id'    => $exercise_id,
+            'type'           => ARAnswer::TYPE_ANSWER,
+        ),'=')->first();
 
-        if (!empty($ar_answer)) {
-            $arr = array_values($ar_answer);
+        if (null !== $ar_answer) {
             return new Answer(
-                $arr[0]['id'],
-                $arr[0]['type'],
-                $arr[0]['content'],
-                $arr[0]['resource_id'],
-                $arr[0]['exercise_id'],
-                $arr[0]['participant_id']
+                $ar_answer->getId(),
+                $ar_answer->getType(),
+                $ar_answer->getContent(),
+                $ar_answer->getResourceId(),
+                $ar_answer->getExerciseId(),
+                $ar_answer->getParticipantId()
             );
         }
 

@@ -67,7 +67,7 @@ class ilObjSrVideoInterviewExerciseGUI extends ilObjSrVideoInterviewGUI
                 }
                 break;
             default:
-                // we should not reach this.
+                $this->objectNotFound();
                 break;
         }
     }
@@ -138,6 +138,6 @@ class ilObjSrVideoInterviewExerciseGUI extends ilObjSrVideoInterviewGUI
      */
     protected function deleteExercise() : void
     {
-        // @TODO: somehow delete (all) exercise(s) when repository-object is deleted.
+        // @TODO: implement this in ilObjSrVideoInterview::doDelete()
     }
 }

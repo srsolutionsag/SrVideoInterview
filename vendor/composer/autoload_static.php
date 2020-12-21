@@ -10,6 +10,8 @@ class ComposerStaticInit357b332b054365bb3c0e8d6632cb069c
         's' => 
         array (
             'srag\\Plugins\\SrVideoInterview\\' => 30,
+            'srag\\DIC\\' => 9,
+            'srag\\CustomInputGUIs\\' => 21,
         ),
     );
 
@@ -17,6 +19,14 @@ class ComposerStaticInit357b332b054365bb3c0e8d6632cb069c
         'srag\\Plugins\\SrVideoInterview\\' => 
         array (
             0 => __DIR__ . '/../..' . '/src',
+        ),
+        'srag\\DIC\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/srag/dic/src',
+        ),
+        'srag\\CustomInputGUIs\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/srag/custominputguis/src',
         ),
     );
 
@@ -34,6 +44,10 @@ class ComposerStaticInit357b332b054365bb3c0e8d6632cb069c
         'ilObjSrVideoInterviewParticipantTableGUI' => __DIR__ . '/../..' . '/classes/SrVideoInterviewGUI/class.ilObjSrVideoInterviewParticipantTableGUI.php',
         'ilObjSrVideoInterviewUploadHandlerGUI' => __DIR__ . '/../..' . '/classes/SrVideoInterviewGUI/class.ilObjSrVideoInterviewUploadHandlerGUI.php',
         'ilSrVideoInterviewPlugin' => __DIR__ . '/../..' . '/classes/class.ilSrVideoInterviewPlugin.php',
+        'srag\\CustomInputGUIs\\MultiSelectSearchNewInputGUI\\ObjectChildrenAjaxAutoCompleteCtrl' => __DIR__ . '/..' . '/srag/custominputguis/src/MultiSelectSearchNewInputGUI/class.ObjectChildrenAjaxAutoCompleteCtrl.php',
+        'srag\\CustomInputGUIs\\MultiSelectSearchNewInputGUI\\ObjectsAjaxAutoCompleteCtrl' => __DIR__ . '/..' . '/srag/custominputguis/src/MultiSelectSearchNewInputGUI/class.ObjectsAjaxAutoCompleteCtrl.php',
+        'srag\\CustomInputGUIs\\MultiSelectSearchNewInputGUI\\OrgUnitAjaxAutoCompleteCtrl' => __DIR__ . '/..' . '/srag/custominputguis/src/MultiSelectSearchNewInputGUI/class.OrgUnitAjaxAutoCompleteCtrl.php',
+        'srag\\CustomInputGUIs\\MultiSelectSearchNewInputGUI\\UsersAjaxAutoCompleteCtrl' => __DIR__ . '/..' . '/srag/custominputguis/src/MultiSelectSearchNewInputGUI/class.UsersAjaxAutoCompleteCtrl.php',
         'srag\\Plugins\\SrVideoInterview\\AREntity\\ARAnswer' => __DIR__ . '/../..' . '/classes/AREntity/ARAnswer.php',
         'srag\\Plugins\\SrVideoInterview\\AREntity\\ARExercise' => __DIR__ . '/../..' . '/classes/AREntity/ARExercise.php',
         'srag\\Plugins\\SrVideoInterview\\AREntity\\ARParticipant' => __DIR__ . '/../..' . '/classes/AREntity/ARParticipant.php',

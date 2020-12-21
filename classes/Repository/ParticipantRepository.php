@@ -24,7 +24,6 @@ class ParticipantRepository implements Repository
             foreach ($ar_participants as $ar_participant) {
                 $participants[] = new Participant(
                     $ar_participant['id'],
-                    (bool) $ar_participant['feedback_sent'],
                     (bool) $ar_participant['invitation_sent'],
                     $ar_participant['obj_id'],
                     $ar_participant['user_id']
@@ -71,8 +70,7 @@ class ParticipantRepository implements Repository
         }
 
         $ar_participant
-            ->setFeedbackSent((int) $participant->isFeedbackSent())
-            ->setInvitationSent((int) $participant->isInvitationSent())
+            ->setInvitationSent($participant->isInvitationSent())
             ->setObjId($participant->getObjId())
             ->setUserId($participant->getUserId())
             ->update();
@@ -85,28 +83,14 @@ class ParticipantRepository implements Repository
      */
     public function get(int $participant_id) : ?object
     {
-        $ar_participant = ARParticipant::innerjoin(
-            "usr_data",
-            "user_id",
-            "usr_id",
-            array(
-                'firstname',
-                'lastname',
-                'email'
-            )
-        )->where(array(
-            'id' => $participant_id
-        ),
-            "="
-        )->getArray();
+        $ar_participant = ARParticipant::find($participant_id);
 
         if (null !== $ar_participant) {
             return new Participant(
-                $ar_participant['id'],
-                (bool) $ar_participant['feedback_sent'],
-                (bool) $ar_participant['invitation_sent'],
-                $ar_participant['obj_id'],
-                $ar_participant['user_id']
+                $ar_participant->getId(),
+                $ar_participant->isInvitationSent(),
+                $ar_participant->getObjId(),
+                $ar_participant->getUserId()
             );
         }
 
@@ -114,6 +98,8 @@ class ParticipantRepository implements Repository
     }
 
     /**
+     * @TODO: unnecessary user_data provided.
+     *
      * @inheritDoc
      */
     public function getAll() : ?array
@@ -133,24 +119,25 @@ class ParticipantRepository implements Repository
     }
 
     /**
-     * retrieve a Participant by the assigned user id.
+     * retrieve a Participant for a VideoInterview by the assigned user id.
+     *
+     * @param int $obj_id
      * @param int $user_id
      * @return Participant|null
      */
-    public function getParticipantByUserId(int $user_id) : ?Participant
+    public function getParticipantForObjByUserId(int $obj_id, int $user_id) : ?Participant
     {
         $ar_participant = ARParticipant::where(array(
+            'obj_id' => $obj_id,
             'user_id' => $user_id,
-        ), "=")->getArray();
+        ), "=")->first();
 
-        if (!empty($ar_participant)) {
-            $arr = array_values($ar_participant);
+        if (null !== $ar_participant) {
             return new Participant(
-                $arr[0]['id'],
-                (bool) $arr[0]['feedback_sent'],
-                (bool) $arr[0]['invitation_sent'],
-                $arr[0]['obj_id'],
-                $arr[0]['user_id']
+                $ar_participant->getId(),
+                $ar_participant->isInvitationSent(),
+                $ar_participant->getObjId(),
+                $ar_participant->getUserId()
             );
         }
 
@@ -158,53 +145,44 @@ class ParticipantRepository implements Repository
     }
 
     /**
-     * retrieve all participants currently added to an exercise by it's id.
+     * retrieve all Participants assigned to a VideoInterview by it's obj_id.
+     *
      * @param int $obj_id
-     * @return array|null
+     * @return Participant[]|null
      */
     public function getParticipantsByObjId(int $obj_id) : ?array
     {
-        $ar_participants = ARParticipant::innerjoin(
-            'usr_data',
-            "user_id",
-            "usr_id",
-            array(
-                'firstname',
-                'lastname',
-                'login',
-            )
-        )->where([
+        $ar_participants = ARParticipant::where(array(
             'obj_id' => $obj_id,
-        ],
-            '='
-        )->getArray();
+        ),'=')->get();
 
-        return $ar_participants;
+        if (null !== $ar_participants) {
+            $participants = array();
+            foreach ($ar_participants as $participant) {
+                $participants[] = new Participant(
+                    $participant->getId(),
+                    $participant->isInvitationSent(),
+                    $participant->getObjId(),
+                    $participant->getUserId()
+                );
+            }
+
+            return $participants;
+        }
+
+        return null;
     }
 
-//    /**
-//     * retrieve an array of participants where first-, lastname and email contain a given term.
-//     *
-//     * @param string $term
-//     * @return array|null
-//     */
-//    public function getParticipantsLike(string $term) : ?array
-//    {
-//        global $ilDB;
-//
-//        $statement = "
-//            SELECT p.id, u.firstname, u.lastname, u.email FROM xvin_participant AS p
-//                JOIN usr_data AS u ON p.user_id = u.usr_id
-//                WHERE u.firstname LIKE \"%{$term}%\"
-//                OR u.lastname LIKE \"%{$term}%\"
-//                OR u.email LIKE \"%{$term}%\";
-//        ";
-//
-//        // @TODO: may implement prepared statement here.
-//        $result = $ilDB->fetchAll(
-//            $ilDB->query($statement)
-//        );
-//
-//        return $result ?? null;
-//    }
+    /**
+     * retrieve all Participants assigned to a VideoInterview by it's obj_id as an array.
+     *
+     * @param int $obj_id
+     * @return array|null
+     */
+    public function getParticipantsArrayDataByObjId(int $obj_id) : ?array
+    {
+        return ARParticipant::where(array(
+            'obj_id' => $obj_id,
+        ), '=')->getArray();
+    }
 }

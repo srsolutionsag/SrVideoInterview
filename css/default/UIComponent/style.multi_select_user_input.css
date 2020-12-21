@@ -1,3 +1,16 @@
+
+/**
+ * !! table styles, move to a general stylesheet later, but for now it works
+ * since this input is always used with the table. !!
+ */
+.sr-status-light {
+	height: 15px;
+	width: 15px;
+	border-radius: 50%;
+	padding: 0;
+	margin: 2px;
+}
+
 /**
  * definitely some ugly css. improve this later and may use less.
  * (not even sure if this is best-practise, but it works)

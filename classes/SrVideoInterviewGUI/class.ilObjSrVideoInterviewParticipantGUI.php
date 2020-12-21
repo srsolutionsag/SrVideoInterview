@@ -27,11 +27,12 @@ class ilObjSrVideoInterviewParticipantGUI extends ilObjSrVideoInterviewGUI
     const CMD_PARTICIPANT_INDEX  = 'showAll';
     const CMD_PARTICIPANT_ADD    = 'addParticipant';
     const CMD_PARTICIPANT_REMOVE = 'removeParticipant';
-    const CMD_PARTICIPANT_NOTIFY = 'notifyParticipants';
+    const CMD_PARTICIPANT_NOTIFY = 'notifyParticipant';
     const CMD_PARTICIPANT_SEARCH = 'searchParticipant';
-    const CMD_ADD_FROM_ROLE = 'addFromRole';
+    const CMD_ADD_FROM_ROLE      = 'addFromRole';
+    const CMD_SEND_INVITATIONS   = 'sendInvitations';
     const CMD_CONFIRM_SEND_INVITATAION = 'confirmSendInvitataion';
-    const CMD_SEND_INVITATIONS = 'sendInvitations';
+    const CMD_PARTICIPANT_BROADCAST = 'nofityAllParticipants';
 
     /**
      * @var ilToolbarGUI
@@ -83,8 +84,9 @@ class ilObjSrVideoInterviewParticipantGUI extends ilObjSrVideoInterviewGUI
 
     protected function showAll() : void
     {
-        $b = new MultiSelectUserInput("", "user_data");
-        $b->setDataSource(
+        // setup participants toolbar
+        $multi_select_user_input = new MultiSelectUserInput("", "user_data");
+        $multi_select_user_input->setDataSource(
             $this->ctrl->getLinkTargetByClass(
                 self::class,
                 self::CMD_PARTICIPANT_SEARCH,
@@ -94,26 +96,22 @@ class ilObjSrVideoInterviewParticipantGUI extends ilObjSrVideoInterviewGUI
         );
 
         $this->toolbar->setFormAction($this->ctrl->getFormAction($this));
-        $this->toolbar->addInputItem($b);
+        $this->toolbar->addInputItem($multi_select_user_input);
         $this->toolbar->addFormButton($this->plugin->txt('add_participants'), self::CMD_PARTICIPANT_ADD);
         $this->toolbar->setPreventDoubleSubmission(true);
-
         $this->toolbar->addSeparator();
-
         $by_role = ilLinkButton::getInstance();
         $by_role->setCaption($this->plugin->txt('add_participants_by_role'), false);
         $by_role->setUrl($this->ctrl->getLinkTargetByClass([self::class, ilRepositorySearchGUI::class]));
         $this->toolbar->addButtonInstance($by_role);
-
         $this->toolbar->addSeparator();
-
         $invite = ilLinkButton::getInstance();
         $invite->setCaption($this->plugin->txt('send_invitation'), false);
         $invite->setUrl($this->ctrl->getLinkTarget($this, self::CMD_CONFIRM_SEND_INVITATAION));
         $this->toolbar->addButtonInstance($invite);
 
+        // setup participants data-table
         $table_gui = new ilObjSrVideoInterviewParticipantTableGUI($this, self::CMD_PARTICIPANT_INDEX);
-        $table_gui->setData($this->repository->getParticipantsByObjId($this->obj_id));
         $this->tpl->setContent($table_gui->getHTML());
     }
 
@@ -143,6 +141,7 @@ class ilObjSrVideoInterviewParticipantGUI extends ilObjSrVideoInterviewGUI
                        ->withBody(Streams::ofString(json_encode($users)))
                        ->withHeader('Content-Type', 'application/json; charset=utf-8')
         );
+
         $this->http->sendResponse();
         $this->http->close();
     }
@@ -154,7 +153,6 @@ class ilObjSrVideoInterviewParticipantGUI extends ilObjSrVideoInterviewGUI
     {
         $user_data = (array) $this->http->request()->getParsedBody()['selected'];
         $this->addParticipantsFromArray($user_data);
-
     }
 
     protected function removeParticipant() : void
@@ -208,13 +206,13 @@ class ilObjSrVideoInterviewParticipantGUI extends ilObjSrVideoInterviewGUI
         foreach ($user_data as $user_id) {
             $this->repository->store(new Participant(
                 null,
-                0,
-                0,
+                false,
                 $this->obj_id,
                 (int) $user_id
             ));
 
         }
+
         ilUtil::sendSuccess($this->txt('participant_added'), true);
         $this->ctrl->redirectByClass(
             self::class,

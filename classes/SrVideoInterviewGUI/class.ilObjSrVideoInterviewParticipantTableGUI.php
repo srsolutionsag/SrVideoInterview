@@ -26,6 +26,11 @@ class ilObjSrVideoInterviewParticipantTableGUI extends ilTable2GUI
     protected $plugin;
 
     /**
+     * @var VideoInterviewRepository
+     */
+    protected $repository;
+
+    /**
      * Initialise ilObjSrVideoInterviewParticipantTableGUI
      *
      * @param        $a_parent_obj
@@ -37,6 +42,7 @@ class ilObjSrVideoInterviewParticipantTableGUI extends ilTable2GUI
         global $DIC;
 
         $this->plugin      = ilSrVideoInterviewPlugin::getInstance();
+        $this->repository  = new VideoInterviewRepository();
         $this->ui_factory  = $DIC->ui()->factory();
         $this->ui_renderer = $DIC->ui()->renderer();
 
@@ -49,17 +55,18 @@ class ilObjSrVideoInterviewParticipantTableGUI extends ilTable2GUI
         );
 
         parent::__construct($a_parent_obj, $a_parent_cmd, $a_template_context);
+        $this->gatherTableData();
     }
 
     /**
      * setup table columns publicly in order for language translation to work easily.
      */
-    public function setupTableColumns() : void
+    protected function setupTableColumns() : void
     {
-        $this->addColumn($this->plugin->txt('has_answered')); // display as red or green light
         $this->addColumn($this->plugin->txt('firstname'));
         $this->addColumn($this->plugin->txt('lastname'));
         $this->addColumn($this->plugin->txt('email'));
+        $this->addColumn($this->plugin->txt('has_answered'));
         $this->addColumn(
             null,
             null,
@@ -68,77 +75,84 @@ class ilObjSrVideoInterviewParticipantTableGUI extends ilTable2GUI
     }
 
     /**
-     * @inheritDoc
-     * @param array $data
+     * gather all participants for the parents repository object id (VideoInterview).
      */
-    protected function fillRow($data) : void
+    protected function gatherTableData() : void
     {
-        // for 1:1 cardinality, display green/red lights
-        $this->tpl->setVariable(
-            'HAS_ANSWERED',
-            "not yet implemented."
-        );
+        $this->setData($this->repository->getParticipantsByObjId($this->parent_obj->obj_id, true));
+    }
 
-        $this->tpl->setVariable(
-            'FIRSTNAME',
-            $data['usr_data_firstname']
-        );
+    /**
+     * @inheritDoc
+     * @param array $participant
+     */
+    protected function fillRow($participant) : void
+    {
+        $user = new ilObjUser($participant['user_id']);
 
-        $this->tpl->setVariable(
-            'LASTNAME',
-            $data['usr_data_lastname']
-        );
+        // @TODO: implement this passively and m:1 compatible
+        $exercise = $this->repository->getExercisesByObjId($this->parent_obj->obj_id)[0];
 
-        $this->tpl->setVariable(
-            'EMAIL',
-            $data['usr_data_email']
-        );
+        $status_light = ($this->repository->hasParticipantAnsweredExercise($participant['id'], $exercise->getId())) ?
+            'green' : 'red'
+        ;
+
+        $this->tpl->setVariable('FIRSTNAME', $user->getFirstname());
+        $this->tpl->setVariable('LASTNAME', $user->getLastname());
+        $this->tpl->setVariable('EMAIL', $user->getEmail());
+
+        $this->tpl->setVariable('HAS_ANSWERED', $this->ui_renderer->render(
+            $this->ui_factory
+                ->legacy("<div class=\"sr-status-light\" style=\"background: {$status_light}\"></div>")
+        ));
 
         $this->ctrl->setParameterByClass(
             ilObjSrVideoInterviewParticipantGUI::class,
             'participant_id',
-            $data['id']
+            $participant['id']
         );
 
-        $remove_link = $this->ctrl->getLinkTargetByClass(
-            ilObjSrVideoInterviewParticipantGUI::class,
-            ilObjSrVideoInterviewParticipantGUI::CMD_PARTICIPANT_REMOVE
+        $actions = array(
+            'remove' => $this->ui_factory
+                ->button()
+                ->shy(
+                    $this->plugin->txt('remove_participant'),
+                    $this->ctrl->getLinkTargetByClass(
+                        ilObjSrVideoInterviewParticipantGUI::class,
+                        ilObjSrVideoInterviewParticipantGUI::CMD_PARTICIPANT_REMOVE
+                    )
+                )
+            ,
+
+            'nofity' => $this->ui_factory
+                ->button()
+                ->shy(
+                    $this->plugin->txt('nofity_participant'),
+                    $this->ctrl->getLinkTargetByClass(
+                        ilObjSrVideoInterviewParticipantGUI::class,
+                        ilObjSrVideoInterviewParticipantGUI::CMD_PARTICIPANT_NOTIFY
+                    )
+                )
+            ,
         );
 
-        $respond_link = $this->ctrl->getLinkTargetByClass(
-            ilObjSrVideoInterviewParticipantGUI::class,
-            ilObjSrVideoInterviewParticipantGUI::CMD_PARTICIPANT_RESPOND
-        );
+        if ($this->repository->hasParticipantAnsweredExercise($participant['id'], $exercise->getId())) {
+            $actions[] = $this->ui_factory
+                ->button()
+                ->shy(
+                    $this->plugin->txt('show_answer'),
+                    $this->ctrl->getLinkTargetByClass(
+                        ilObjSrVideoInterviewAnswerGUI::class,
+                        ilObjSrVideoInterviewAnswerGUI::CMD_ANSWER_SHOW_TUT
+                    )
+                )
+            ;
+        }
 
-        $show_answer_link = $this->ctrl->getLinkTargetByClass(
-            ilObjSrVideoInterviewAnswerGUI::class,
-            ilObjSrVideoInterviewAnswerGUI::CMD_ANSWER_SHOW
-        );
-
-        $this->tpl->setVariable(
-            'ACTIONS',
-            $this->ui_renderer->render(
-                $this->ui_factory
-                    ->dropdown()
-                    ->standard(array(
-                        $this->ui_factory
-                            ->button()
-                            ->primary(
-                                $this->plugin->txt('respond_to_participant'),
-                                $respond_link
-                            )
-                        ,
-
-                        $this->ui_factory
-                            ->button()
-                            ->shy(
-                                $this->plugin->txt('remove_participant'),
-                                $remove_link
-                            )
-                        ,
-                    ))
-
-            )
-        );
+        $this->tpl->setVariable('ACTIONS', $this->ui_renderer->render(
+            $this->ui_factory
+                ->dropdown()
+                ->standard($actions)
+        ));
     }
 }

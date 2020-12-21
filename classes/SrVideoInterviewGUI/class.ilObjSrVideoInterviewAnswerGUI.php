@@ -48,7 +48,7 @@ class ilObjSrVideoInterviewAnswerGUI extends ilObjSrVideoInterviewGUI
      */
     protected function afterConstructor() : void
     {
-        $this->current_participant = $this->repository->getParticipantByUserId($this->user->getId());
+        $this->current_participant = $this->repository->getParticipantForObjByUserId($this->obj_id, $this->user->getId());
     }
 
     /**
@@ -145,7 +145,7 @@ class ilObjSrVideoInterviewAnswerGUI extends ilObjSrVideoInterviewGUI
            $answer = $this->repository->getParticipantAnswerForExercise($participant_id, $exercise_id);
 
            if (null !== $answer) {
-               $this->displayAnswer($answer);
+               $this->renderAnswer($answer);
            }
         }
 
@@ -156,30 +156,37 @@ class ilObjSrVideoInterviewAnswerGUI extends ilObjSrVideoInterviewGUI
      * @param Answer $answer
      * @throws ilTemplateException
      */
-    protected function displayAnswer(Answer $answer) : void
+    protected function renderAnswer(Answer $answer) : void
     {
         $tpl = new ilTemplate(self::TEMPLATE_DIR . 'tpl.answer.html', false, false);
 
-        $answer->getParticipantId();
+        // @TODO: implement this passively later
+        $participant = $this->repository->getParticipantById($answer->getParticipantId());
+        $user = new ilObjUser($participant->getUserId());
 
-        $user = new ilObjUser();
-
-        // @TODO: fetch userdata by ilObjUser?
-        $tpl->setVariable('TITLE', "HERE COULD GO THE USERDATA");
+        $tpl->setVariable('TITLE', "[{$user->getLogin()}] {$user->getFirstname()} {$user->getLastname()}'s {$this->txt('answer')}");
         $tpl->setVariable('VIDEO', $this->getRecordedVideoHTML($answer->getResourceId()));
 
-        // @TODO: hide this when empty
-        $tpl->setVariable('DESCRIPTION_LABEL', $this->txt('additional_content'));
-        $tpl->setVariable('DESCRIPTION', $answer->getContent());
+        if ('' !== $answer->getContent()) {
+            $tpl->addBlock("ANSWER_CONTENT_BLOCK", "ANSWER_CONTENT_BLOCK", "
+                <div>
+                    <h4>{$this->txt('additional_content')}</h4>
+                    <p>{$answer->getContent()}</p>
+                    <br />
+                </div>
+            ");
+        }
 
-        $tpl->setVariable('INFO', $this->ui_renderer->render(
-            $this->ui_factory
-                ->messageBox()
-                ->info(
-                    $this->txt('already_answered')
+        if ($this->current_participant !== $participant) {
+            $tpl->addBlock("ANSWER_INFO_BLOCK", "ANSWER_INFO_BLOCK", $this->ui_renderer->render(
+                $this->ui_factory
+                    ->messageBox()
+                    ->info(
+                        $this->txt('already_answered')
+                    )
                 )
-            )
-        );
+            );
+        }
 
         $this->tpl->setContent($tpl->get());
     }
@@ -206,13 +213,13 @@ class ilObjSrVideoInterviewAnswerGUI extends ilObjSrVideoInterviewGUI
                    )
                 );
             } else {
-                // we can expect this to fetch an answer
+                // @TODO: implement this passively later
                 $answer = $this->repository->getParticipantAnswerForExercise(
                     $this->current_participant->getId(),
                     $exercise_id
                 );
 
-                $this->displayAnswer($answer);
+                $this->renderAnswer($answer);
             }
         }
 

@@ -163,3 +163,9 @@ if (! $ilDB->tableColumnExists('xvin_answer', 'type')) {
     $ilDB->addTableColumn('xvin_answer', 'type', $field);
 }
 ?>
+<#9>
+<?php
+if ($ilDB->tableColumnExists('xvin_participant', 'feedback_sent')) {
+    $ilDB->dropTableColumn('xvin_participant', 'feedback_sent');
+}
+?>
