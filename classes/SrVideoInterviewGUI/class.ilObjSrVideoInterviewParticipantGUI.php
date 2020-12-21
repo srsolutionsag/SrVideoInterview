@@ -31,6 +31,7 @@ class ilObjSrVideoInterviewParticipantGUI extends ilObjSrVideoInterviewGUI
     const CMD_PARTICIPANT_SEARCH = 'searchParticipant';
     const CMD_ADD_FROM_ROLE = 'addFromRole';
     const CMD_CONFIRM_SEND_INVITATAION = 'confirmSendInvitataion';
+    const CMD_SEND_INVITATIONS = 'sendInvitations';
 
     /**
      * @var ilToolbarGUI
@@ -66,6 +67,8 @@ class ilObjSrVideoInterviewParticipantGUI extends ilObjSrVideoInterviewGUI
             case self::CMD_PARTICIPANT_REMOVE:
             case self::CMD_PARTICIPANT_NOTIFY:
             case self::CMD_PARTICIPANT_SEARCH:
+            case self::CMD_CONFIRM_SEND_INVITATAION:
+            case self::CMD_SEND_INVITATIONS:
                 if ($this->access->checkAccess("write", $cmd, $this->ref_id)) {
                     $this->$cmd();
                 } else {
@@ -169,6 +172,23 @@ class ilObjSrVideoInterviewParticipantGUI extends ilObjSrVideoInterviewGUI
         } else {
             // may show error toast or something here.
         }
+    }
+
+    protected function confirmSendInvitataion() : void
+    {
+        $confirm = new ilConfirmationGUI();
+        $confirm->setFormAction($this->ctrl->getFormAction($this));
+        $confirm->setHeaderText($this->plugin->txt('confirm_send_invitation_text'));
+        $confirm->setConfirm($this->plugin->txt('confirm_send_invitation'), self::CMD_SEND_INVITATIONS);
+        $confirm->setCancel($this->plugin->txt('cancel'), self::CMD_PARTICIPANT_INDEX);
+
+        $this->tpl->setContent($confirm->getHTML());
+    }
+
+    protected function sendInvitations() : void
+    {
+        // todo implement sending inv.
+        $this->tpl->setContent('todo implement sending inv.');
     }
 
     /**

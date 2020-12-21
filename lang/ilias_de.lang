@@ -51,3 +51,7 @@ content#:#Inhalt
 copy#:#Kopieren
 edit#:#Bearbeiten
 export#:#Exportieren
+
+confirm_send_invitation_text#:#Möchten Sie allen Teilnehmenden dieses Objektes den Einladungslink zusenden?
+confirm_send_invitation#:#Einladungen versenden
+cancel#:#Abbrechen

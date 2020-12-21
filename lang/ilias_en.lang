@@ -63,3 +63,7 @@ lp_status_3#:#Failed
 lp_status_#:#No state yet.
 lp_status_info#:#Attention: Setting the LP Status will set the LP status of the currently logged in user to the chosen Stauts. THE STATUS OF EVERY OTHER USER WILL BE SET TO NOT ATTEMPTED!
 offline:#:Offline
+
+confirm_send_invitation_text#:#Would you like to send the invitation link to all participants of this object?
+confirm_send_invitation#:#Send invitations
+cancel#:#Cancel
