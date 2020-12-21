@@ -24,6 +24,7 @@ class ilObjSrVideoInterviewAnswerGUI extends ilObjSrVideoInterviewGUI
     const CMD_ANSWER_ADD      = 'addAnswer';
     const CMD_ANSWER_DELETE   = 'deleteAnswer';
     const CMD_ANSWER_EVALUATE = 'evaluateAnswer';
+    const CMD_ANSWER_SHOW_TUT = 'showAnswerForEvaluation';
 
     /**
      * @var Participant|null
@@ -71,6 +72,7 @@ class ilObjSrVideoInterviewAnswerGUI extends ilObjSrVideoInterviewGUI
                 break;
             case self::CMD_ANSWER_DELETE:
             case self::CMD_ANSWER_EVALUATE:
+            case self::CMD_ANSWER_SHOW_TUT:
                 if ($this->access->checkAccess("write", $cmd, $this->ref_id)) {
                     $this->$cmd();
                 } else {
@@ -78,7 +80,7 @@ class ilObjSrVideoInterviewAnswerGUI extends ilObjSrVideoInterviewGUI
                 }
                 break;
             default:
-                // we should mot reach this.
+                $this->objectNotFound();
                 break;
         }
     }
@@ -132,6 +134,56 @@ class ilObjSrVideoInterviewAnswerGUI extends ilObjSrVideoInterviewGUI
             );
     }
 
+    protected function showAnswerForEvaluation() : void
+    {
+        $exercise_id = (int) $this->http->request()->getQueryParams()['exercise_id'];
+        $participant_id = (int) $this->http->request()->getQueryParams()['participant_id'];
+
+        if (null !== $exercise_id &&
+            null !== $participant_id
+        ) {
+           $answer = $this->repository->getParticipantAnswerForExercise($participant_id, $exercise_id);
+
+           if (null !== $answer) {
+               $this->displayAnswer($answer);
+           }
+        }
+
+        $this->objectNotFound();
+    }
+
+    /**
+     * @param Answer $answer
+     * @throws ilTemplateException
+     */
+    protected function displayAnswer(Answer $answer) : void
+    {
+        $tpl = new ilTemplate(self::TEMPLATE_DIR . 'tpl.answer.html', false, false);
+
+        $answer->getParticipantId();
+
+        $user = new ilObjUser();
+
+        // @TODO: fetch userdata by ilObjUser?
+        $tpl->setVariable('TITLE', "HERE COULD GO THE USERDATA");
+        $tpl->setVariable('VIDEO', $this->getRecordedVideoHTML($answer->getResourceId()));
+
+        // @TODO: hide this when empty
+        $tpl->setVariable('DESCRIPTION_LABEL', $this->txt('additional_content'));
+        $tpl->setVariable('DESCRIPTION', $answer->getContent());
+
+        $tpl->setVariable('INFO', $this->ui_renderer->render(
+            $this->ui_factory
+                ->messageBox()
+                ->info(
+                    $this->txt('already_answered')
+                )
+            )
+        );
+
+        $this->tpl->setContent($tpl->get());
+    }
+
     protected function showAnswer() : void
     {
         $exercise_id = (int) $this->http->request()->getQueryParams()['exercise_id'];
@@ -160,35 +212,17 @@ class ilObjSrVideoInterviewAnswerGUI extends ilObjSrVideoInterviewGUI
                     $exercise_id
                 );
 
-                $tpl = new ilTemplate(self::TEMPLATE_DIR . 'tpl.answer.html', false, false);
-
-                // @TODO: fetch userdata by ilObjUser?
-                $tpl->setVariable('TITLE', "HERE COULD GO THE USERDATA");
-                $tpl->setVariable('VIDEO', $this->getRecordedVideoHTML($answer->getResourceId()));
-
-                // @TODO: hide this when empty
-                $tpl->setVariable('DESCRIPTION_LABEL', $this->txt('additional_content'));
-                $tpl->setVariable('DESCRIPTION', $answer->getContent());
-
-                $tpl->setVariable('INFO', $this->ui_renderer->render(
-                    $this->ui_factory
-                        ->messageBox()
-                        ->info(
-                            $this->txt('already_answered')
-                        )
-                    )
-                );
-
-                $this->tpl->setContent($tpl->get());
+                $this->displayAnswer($answer);
             }
-        } else {
-            $this->permissionDenied();
         }
+
+        $this->permissionDenied();
     }
 
     protected function addAnswer() : void
     {
         $exercise_id = (int) $this->http->request()->getQueryParams()['exercise_id'];
+
         if (null !== $exercise_id &&
             null !== $this->current_participant
         ) {

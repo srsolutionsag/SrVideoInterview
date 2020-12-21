@@ -208,7 +208,7 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
                 }
                 break;
             default:
-                // we should not reach this.
+                $this->objectNotFound();
                 break;
         }
     }

@@ -73,7 +73,7 @@ class ilObjSrVideoInterviewParticipantTableGUI extends ilTable2GUI
      */
     protected function fillRow($data) : void
     {
-        // may display links to all answered exercises of current VideoInterview object here.
+        // for 1:1 cardinality, display green/red lights
         $this->tpl->setVariable(
             'HAS_ANSWERED',
             "not yet implemented."
@@ -105,12 +105,30 @@ class ilObjSrVideoInterviewParticipantTableGUI extends ilTable2GUI
             ilObjSrVideoInterviewParticipantGUI::CMD_PARTICIPANT_REMOVE
         );
 
+        $respond_link = $this->ctrl->getLinkTargetByClass(
+            ilObjSrVideoInterviewParticipantGUI::class,
+            ilObjSrVideoInterviewParticipantGUI::CMD_PARTICIPANT_RESPOND
+        );
+
+        $show_answer_link = $this->ctrl->getLinkTargetByClass(
+            ilObjSrVideoInterviewAnswerGUI::class,
+            ilObjSrVideoInterviewAnswerGUI::CMD_ANSWER_SHOW
+        );
+
         $this->tpl->setVariable(
             'ACTIONS',
             $this->ui_renderer->render(
                 $this->ui_factory
                     ->dropdown()
                     ->standard(array(
+                        $this->ui_factory
+                            ->button()
+                            ->primary(
+                                $this->plugin->txt('respond_to_participant'),
+                                $respond_link
+                            )
+                        ,
+
                         $this->ui_factory
                             ->button()
                             ->shy(

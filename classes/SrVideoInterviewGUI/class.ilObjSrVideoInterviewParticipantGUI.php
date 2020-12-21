@@ -22,11 +22,12 @@ class ilObjSrVideoInterviewParticipantGUI extends ilObjSrVideoInterviewGUI
     /**
      * Participant GUI commands
      */
-    const CMD_PARTICIPANT_INDEX = 'showAll';
-    const CMD_PARTICIPANT_ADD = 'addParticipant';
+    const CMD_PARTICIPANT_INDEX  = 'showAll';
+    const CMD_PARTICIPANT_ADD    = 'addParticipant';
     const CMD_PARTICIPANT_REMOVE = 'removeParticipant';
     const CMD_PARTICIPANT_NOTIFY = 'notifyParticipants';
     const CMD_PARTICIPANT_SEARCH = 'searchParticipant';
+    const CMD_PARTICIPANT_RESPOND = 'respondToParticipant';
 
     /**
      * @var ilToolbarGUI
@@ -62,6 +63,7 @@ class ilObjSrVideoInterviewParticipantGUI extends ilObjSrVideoInterviewGUI
             case self::CMD_PARTICIPANT_REMOVE:
             case self::CMD_PARTICIPANT_NOTIFY:
             case self::CMD_PARTICIPANT_SEARCH:
+            case self::CMD_PARTICIPANT_RESPOND:
                 if ($this->access->checkAccess("write", $cmd, $this->ref_id)) {
                     $this->$cmd();
                 } else {
@@ -69,7 +71,7 @@ class ilObjSrVideoInterviewParticipantGUI extends ilObjSrVideoInterviewGUI
                 }
                 break;
             default:
-                // we should not reach this.
+                $this->objectNotFound();
                 break;
         }
     }
@@ -175,6 +177,11 @@ class ilObjSrVideoInterviewParticipantGUI extends ilObjSrVideoInterviewGUI
         } else {
             // may show error toast or something here.
         }
+    }
+
+    protected function respondToParticipant() : void
+    {
+
     }
 
     protected function notifyParticipants() : void
