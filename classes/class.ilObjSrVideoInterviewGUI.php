@@ -434,7 +434,9 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
         $download_url = $this->video_upload_handler->getExistingFileDownloadURL();
         $file_identifier_key = $this->video_upload_handler->getFileIdentifierParameterName();
 
-        return "<video src=\"{$download_url}&{$file_identifier_key}={$resource_id}\" style=\"max-width: 100%;\" controls playsinline></video>";
+        $this->tpl->addCss("./Customizing/global/plugins/Services/Repository/RepositoryObject/SrVideoInterview/css/default/UIComponent/style.video_recorder_input.css");
+
+        return "<div class=\"sr-video-wrapper\"><video src=\"{$download_url}&{$file_identifier_key}={$resource_id}\" controls playsinline></video></div>";
     }
 
     /**

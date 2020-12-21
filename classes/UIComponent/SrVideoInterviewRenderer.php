@@ -72,6 +72,7 @@ class SrVideoInterviewRenderer extends Renderer
             $settings->removal_url  = $component->getUploadHandler()->getFileRemovalURL();
             $settings->download_url = $component->getUploadHandler()->getExistingFileDownloadURL();
 
+            $global_template->addCss("./Customizing/global/plugins/Services/Repository/RepositoryObject/SrVideoInterview/css/default/UIComponent/style.video_recorder_input.css");
             $registry->register('./Customizing/global/plugins/Services/Repository/RepositoryObject/SrVideoInterview/node_modules/recordrtc/RecordRTC.min.js');
             $registry->register(self::JAVASCRIPT_DIR . "script.videoRecorderInput.js");
 

@@ -1,0 +1,21 @@
+
+/**
+ * for 4:3 aspect-ratio
+ */
+.sr-video-wrapper {
+    position: relative;
+    width: 100%;
+    padding-top: 75%;
+    margin-bottom: 5px;
+}
+
+.sr-video-wrapper video {
+    position: absolute;
+    display: inline-block;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+}
