@@ -2,21 +2,18 @@
 
 namespace srag\Plugins\SrVideoInterview\Repository;
 
-use srag\Plugins\SrVideoInterview\VideoInterview\Repository;
 use srag\Plugins\SrVideoInterview\AREntity\ARParticipant;
 use srag\Plugins\SrVideoInterview\VideoInterview\Entity\Participant;
-use SimpleSAML\Module\metarefresh\ARP;
+use srag\Plugins\SrVideoInterview\VideoInterview\Repository;
 
 /**
  * Class ParticipantRepository
- *
  * @author Thibeau Fuhrer <thf@studer-raimann.ch>
  */
 class ParticipantRepository implements Repository
 {
     /**
      * transform ARParticipant array to Participant array
-     *
      * @param array $ar_participants
      * @return array|null
      */
@@ -59,13 +56,18 @@ class ParticipantRepository implements Repository
      */
     public function store(object $participant) : bool
     {
-        if (!$participant instanceof Participant) return false;
-        $ar_participant = ARParticipant::find($participant->getId());
-        if (null === $ar_participant || $participant->getId() === null) {
-            $ar_participant = new ARParticipant();
-            $ar_participant->setObjId($participant->getObjId());
-            $ar_participant->setUserId($participant->getUserId());
-            $ar_participant->create();
+        if (!$participant instanceof Participant) {
+            return false;
+        }
+        $ar_participant = ARParticipant::where(['user_id' => $participant->getUserId(), 'obj_id' => $participant->getObjId()])->first();
+        if (!$ar_participant instanceof ARParticipant) {
+            $ar_participant = ARParticipant::find($participant->getId());
+            if (null === $ar_participant || $participant->getId() === null) {
+                $ar_participant = new ARParticipant();
+                $ar_participant->setObjId($participant->getObjId());
+                $ar_participant->setUserId($participant->getUserId());
+                $ar_participant->create();
+            }
         }
 
         $ar_participant
@@ -73,8 +75,7 @@ class ParticipantRepository implements Repository
             ->setInvitationSent((int) $participant->isInvitationSent())
             ->setObjId($participant->getObjId())
             ->setUserId($participant->getUserId())
-            ->update()
-        ;
+            ->update();
 
         return true;
     }
@@ -133,7 +134,6 @@ class ParticipantRepository implements Repository
 
     /**
      * retrieve a Participant by the assigned user id.
-     *
      * @param int $user_id
      * @return Participant|null
      */
