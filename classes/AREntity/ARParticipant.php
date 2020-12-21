@@ -81,7 +81,7 @@ class ARParticipant extends ActiveRecord
     /**
      * @return int
      */
-    public function getId() : int
+    public function getId() : ?int
     {
         return $this->id;
     }

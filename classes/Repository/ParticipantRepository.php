@@ -61,9 +61,11 @@ class ParticipantRepository implements Repository
     {
         if (!$participant instanceof Participant) return false;
         $ar_participant = ARParticipant::find($participant->getId());
-        if (null === $ar_participant) {
+        if (null === $ar_participant || $participant->getId() === null) {
             $ar_participant = new ARParticipant();
-            $ar_participant->setId($participant->getId());
+            $ar_participant->setObjId($participant->getObjId());
+            $ar_participant->setUserId($participant->getUserId());
+            $ar_participant->create();
         }
 
         $ar_participant
@@ -71,7 +73,7 @@ class ParticipantRepository implements Repository
             ->setInvitationSent((int) $participant->isInvitationSent())
             ->setObjId($participant->getObjId())
             ->setUserId($participant->getUserId())
-            ->store()
+            ->update()
         ;
 
         return true;
