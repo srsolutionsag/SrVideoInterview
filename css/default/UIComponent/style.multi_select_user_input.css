@@ -51,6 +51,9 @@
 	background-color: #ffffff;
 }
 
+.sr-selected-users-list li span {
+	cursor: pointer;
+}
 
 /*
 #sr-multi-select-dropdown {

@@ -14,11 +14,6 @@ use ilUtil;
  */
 class MultiSelectUserInput extends ilTextInputGUI
 {
-
-    /**
-     * @var bool
-     */
-    protected static $instantiated = false;
     /**
      * @var ilTemplate
      */

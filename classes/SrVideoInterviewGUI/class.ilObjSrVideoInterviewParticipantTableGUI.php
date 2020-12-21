@@ -127,7 +127,7 @@ class ilObjSrVideoInterviewParticipantTableGUI extends ilTable2GUI
             'nofity' => $this->ui_factory
                 ->button()
                 ->shy(
-                    $this->plugin->txt('nofity_participant'),
+                    $this->plugin->txt('notify_participant'),
                     $this->ctrl->getLinkTargetByClass(
                         ilObjSrVideoInterviewParticipantGUI::class,
                         ilObjSrVideoInterviewParticipantGUI::CMD_PARTICIPANT_NOTIFY

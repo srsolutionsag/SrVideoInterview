@@ -1,21 +1,17 @@
 <?php
 
-//require_once "./Customizing/global/plugins/Services/Repository/RepositoryObject/SrVideoInterview/classes/SrVideoInterviewGUI/class.ilObjSrVideoInterviewAnswerGUI.php";
-//require_once "./Customizing/global/plugins/Services/Repository/RepositoryObject/SrVideoInterview/classes/SrVideoInterviewGUI/class.ilObjSrVideoInterviewExerciseGUI.php";
-//require_once "./Customizing/global/plugins/Services/Repository/RepositoryObject/SrVideoInterview/classes/SrVideoInterviewGUI/class.ilObjSrVideoInterviewParticipantGUI.php";
-
-use ILIAS\MainMenu\Storage\Services;
-use ILIAS\UI\Component\Input\Container\Form\Standard;
 use ILIAS\UI\Implementation\Component\Input\Field\VideoRecorderInput;
 use srag\Plugins\SrVideoInterview\Repository\VideoInterviewRepository;
 use srag\Plugins\SrVideoInterview\VideoInterview\Entity\Exercise;
+use ILIAS\UI\Component\Input\Container\Form\Standard;
+use ILIAS\MainMenu\Storage\Services;
 
 /**
  * ilObjSrVideoInterviewGUI in general, dispatches a request's next class and command and delegates it accordingly.
  *
  * this class is also used as a parent class to all other GUI classes of this plugin. This way, we can share
  * common dependencies and provide our children with useful helper functions such as permissionDenied() and
- * objectNotFound(), which display a toast-message.
+ * objectNotFound().
  *
  * @author            Fabian Schmid <fs@studer-raimann.ch>
  * @author            Thibeau Fuhrer <thf@studer-raimann.ch>
@@ -26,10 +22,15 @@ use srag\Plugins\SrVideoInterview\VideoInterview\Entity\Exercise;
  */
 class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
 {
+    /**
+     * @var string plugin template dir
+     */
     const TEMPLATE_DIR = './Customizing/global/plugins/Services/Repository/RepositoryObject/SrVideoInterview/templates/default/';
+    const CSS_DIR      = './Customizing/global/plugins/Services/Repository/RepositoryObject/SrVideoInterview/css/default/';
+    const JS_DIR       = './Customizing/global/plugins/Services/Repository/RepositoryObject/SrVideoInterview/js/default/';
 
     /**
-     * Repository Object tab (must be named settings, in order to work properly with parent commands below)
+     * @var string repository object tab (must be called settings, to work properly with parent commands)
      */
     const VIDEO_INTERVIEW_TAB = 'settings';
 
@@ -76,6 +77,7 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
      * @var ilObjSrVideoInterviewUploadHandlerGUI
      */
     protected $video_upload_handler;
+
     /**
      * @var ilObjUser
      */
@@ -134,11 +136,12 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
     /**
      * In this version of the plugin we create one excercise for one object and
      * therefore the excercise is created here in afterSave.
+     *
      * @param ilObject $newObj
      */
     public function afterSave(ilObject $newObj)
     {
-        $form     = $this->initCreateForm($newObj->getType());
+        $form = $this->initCreateForm($newObj->getType());
         $form->checkInput();
         $exercise = new Exercise(
             null,

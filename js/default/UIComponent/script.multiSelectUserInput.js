@@ -3,9 +3,6 @@ il.Plugins = il.Plugins || {};
 il.Plugins.SrMultiUserSearchInputGUI = il.Plugins.SrMultiUserSearchInputGUI || {};
 (function ($, il) {
 	/**
-	 * @TODO: improve performance by using the same instance when retaking a record.
-	 * @TODO: fix preview error, that doesn't work when retaking an existing recording.
-	 *
 	 * @type {{init: init}}
 	 */
 	il.Plugins.SrMultiUserSearchInputGUI = (function ($) {

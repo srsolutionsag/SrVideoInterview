@@ -99,11 +99,13 @@ class ilObjSrVideoInterviewParticipantGUI extends ilObjSrVideoInterviewGUI
         $this->toolbar->addInputItem($multi_select_user_input);
         $this->toolbar->addFormButton($this->plugin->txt('add_participants'), self::CMD_PARTICIPANT_ADD);
         $this->toolbar->setPreventDoubleSubmission(true);
+
         $this->toolbar->addSeparator();
         $by_role = ilLinkButton::getInstance();
         $by_role->setCaption($this->plugin->txt('add_participants_by_role'), false);
         $by_role->setUrl($this->ctrl->getLinkTargetByClass([self::class, ilRepositorySearchGUI::class]));
         $this->toolbar->addButtonInstance($by_role);
+
         $this->toolbar->addSeparator();
         $invite = ilLinkButton::getInstance();
         $invite->setCaption($this->plugin->txt('send_invitation'), false);
@@ -185,7 +187,7 @@ class ilObjSrVideoInterviewParticipantGUI extends ilObjSrVideoInterviewGUI
 
     protected function sendInvitations() : void
     {
-        // todo implement sending inv.
+        // @TODO: implement sending inv.
         $this->tpl->setContent('todo implement sending inv.');
     }
 

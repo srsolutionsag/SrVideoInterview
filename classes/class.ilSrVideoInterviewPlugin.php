@@ -1,13 +1,15 @@
 <?php
 
-require_once('./Customizing/global/plugins/Services/Repository/RepositoryObject/SrVideoInterview/vendor/autoload.php');
+require_once './Customizing/global/plugins/Services/Repository/RepositoryObject/SrVideoInterview/vendor/autoload.php';
 
-use ILIAS\DI\Container;
+use srag\Plugins\SrVideoInterview\UIComponent\Loader;
 use ILIAS\UI\Implementation\DefaultRenderer;
+use ILIAS\DI\Container;
 use ILIAS\UI\Renderer;
 
 /**
- * Class ilSrVideoInterviewPlugin is the plugin instance
+ * ilSrVideoInterviewPlugin is a singleton plugin instance, which is primarily used
+ * to provide a global txt() method, that
  *
  * @author Fabian Schmid <fs@studer-raimann.ch>
  */
@@ -65,7 +67,7 @@ class ilSrVideoInterviewPlugin extends ilRepositoryObjectPlugin
      */
     public function exchangeUIRendererAfterInitialization(\ILIAS\DI\Container $dic) : Closure
     {
-        $loader = new \srag\Plugins\SrVideoInterview\UIComponent\Loader($dic);
+        $loader = new Loader($dic);
         return static function ($dic) use ($loader) {
             return new class($loader) extends DefaultRenderer implements Renderer {
 
