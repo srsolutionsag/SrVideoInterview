@@ -6,6 +6,7 @@ require_once "./Customizing/global/plugins/Services/Repository/RepositoryObject/
 //use srag\CustomInputGUIs\TextInputGUI\TextInputGUIWithModernAutoComplete;
 use ILIAS\Filesystem\Stream\Streams;
 use ILIAS\UI\Implementation\Component\Input\Field\MultiSelectUserInput;
+use srag\Plugins\SrVideoInterview\VideoInterview\Entity\Participant;
 
 /**
  * Class ilObjVideoInterviewParticipantGUI
@@ -88,6 +89,7 @@ class ilObjSrVideoInterviewParticipantGUI extends ilObjSrVideoInterviewGUI
 
         $this->toolbar->setFormAction($this->ctrl->getFormAction($this));
         $this->toolbar->addInputItem($b);
+        $this->toolbar->addFormButton($this->plugin->txt('add_participant'), self::CMD_PARTICIPANT_ADD);
         $this->toolbar->setPreventDoubleSubmission(true);
 
         $table_gui = new ilObjSrVideoInterviewParticipantTableGUI($this, self::CMD_PARTICIPANT_INDEX);
@@ -130,34 +132,23 @@ class ilObjSrVideoInterviewParticipantGUI extends ilObjSrVideoInterviewGUI
      */
     protected function addParticipant() : void
     {
+        $user_data = $this->http->request()->getParsedBody()['selected'];
+        foreach ($user_data as $user_id) {
+            $this->repository->store(new Participant(
+                null,
+                0,
+                0,
+                $this->obj_id,
+                (int) $user_id
+            ));
 
-
-        $user_data = $this->http->request()->getParsedBody();
-
-        print_r($user_data);
-        exit;
-
-        // match user_login without brackets from auto-completed string. (ugly)
-        preg_match("/(?<=\[).+?(?=\])/", $user_data, $user_login);
-        $user = ilObjUser::searchUsers($user_login[0])[0];
-
-        $result = $this->repository->store(new Participant(
-            null,
-            0,
-            0,
-            $this->obj_id,
-            $user['usr_id']
-        ));
-
-        if ($result) {
-            ilUtil::sendSuccess($this->txt('participant_added'), true);
-            $this->ctrl->redirectByClass(
-                self::class,
-                self::CMD_PARTICIPANT_INDEX
-            );
-        } else {
-            // may show error toast or something here.
         }
+        ilUtil::sendSuccess($this->txt('participant_added'), true);
+        $this->ctrl->redirectByClass(
+            self::class,
+            self::CMD_PARTICIPANT_INDEX
+        );
+
     }
 
     protected function removeParticipant() : void

@@ -3,9 +3,43 @@
  * (not even sure if this is best-practise, but it works)
  */
 .sr-wrapper {
-    display: inline-block;
+	display: inline-block;
 }
 
+.sr-results-users-list {
+	list-style: none;
+	position: absolute;
+	background-color: white;
+	padding: 0;
+	top: 36px;
+}
+
+.sr-results-users-list li {
+	padding: 5px;
+	width: 100%;
+    border-bottom: 1px solid #cacaca;
+}
+
+.sr-results-users-list li:hover {
+	background-color: #b3d6f5;
+}
+
+.sr-selected-users-list {
+	display: inline-block;
+	padding: 0px;
+}
+.sr-selected-users-list li {
+	display: inline-block;
+	padding: 2px 10px;
+	margin-right: 3px !important;
+	border: 1px solid #a5a5a5 !important;
+	border-radius: 10px;
+	font-size: 0.8em;
+	background-color: #ffffff;
+}
+
+
+/*
 #sr-multi-select-dropdown {
     position: absolute;
     list-style-type: none;
@@ -51,3 +85,5 @@
 .sr-selected-users-list li span {
     cursor: pointer;
 }
+*/
+
