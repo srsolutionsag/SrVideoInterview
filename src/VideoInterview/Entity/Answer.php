@@ -30,6 +30,11 @@ class Answer
     protected $resource_id;
 
     /**
+     * @var string
+     */
+    protected $thumbnail_id;
+
+    /**
      * @var int
      */
     protected $exercise_id;
@@ -49,12 +54,13 @@ class Answer
      * @param int|null $exercise_id
      * @param int|null $participant_id
      */
-    public function __construct(int $id = null, int $type = 0, string $content = "", string $resource_id = "", int $exercise_id = null, int $participant_id = null)
+    public function __construct(int $id = null, int $type = 0, string $content = "", string $resource_id = "", string $thumbnail_id = "", int $exercise_id = null, int $participant_id = null)
     {
         $this->id = $id;
         $this->content = $content;
         $this->type = $type;
         $this->resource_id = $resource_id;
+        $this->thumbnail_id = $thumbnail_id;
         $this->exercise_id = $exercise_id;
         $this->participant_id = $participant_id;
     }
@@ -98,16 +104,16 @@ class Answer
     /**
      * @return string
      */
-    public function getContent() : string
+    public function getContent() : ?string
     {
         return $this->content;
     }
 
     /**
-     * @param string $content
+     * @param string|null $content
      * @return Answer
      */
-    public function setContent(string $content) : Answer
+    public function setContent(?string $content) : Answer
     {
         $this->content = $content;
         return $this;
@@ -116,18 +122,36 @@ class Answer
     /**
      * @return string
      */
-    public function getResourceId() : string
+    public function getResourceId() : ?string
     {
         return $this->resource_id;
     }
 
     /**
-     * @param string $resource_id
+     * @param string|null $resource_id
      * @return Answer
      */
-    public function setResourceId(string $resource_id) : Answer
+    public function setResourceId(?string $resource_id) : Answer
     {
         $this->resource_id = $resource_id;
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getThumbnailId() : ?string
+    {
+        return $this->thumbnail_id;
+    }
+
+    /**
+     * @param string|null $thumbnail_id
+     * @return Answer
+     */
+    public function setThumbnailId(?string $thumbnail_id) : Answer
+    {
+        $this->thumbnail_id = $thumbnail_id;
         return $this;
     }
 
@@ -143,7 +167,7 @@ class Answer
      * @param int $exercise_id
      * @return Answer
      */
-    public function setExerciseId(?int $exercise_id) : Answer
+    public function setExerciseId(int $exercise_id) : Answer
     {
         $this->exercise_id = $exercise_id;
         return $this;

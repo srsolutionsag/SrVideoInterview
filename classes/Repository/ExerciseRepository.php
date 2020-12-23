@@ -25,6 +25,7 @@ class ExerciseRepository implements Repository
         'description' => "",
         'detailed_description' => "",
         'resource_id' => "",
+        'thumbnail_id' => "",
         'obj_id' => null
     )) : Exercise
     {
@@ -34,6 +35,7 @@ class ExerciseRepository implements Repository
             $args['description'],
             $args['detailed_description'],
             $args['resource_id'],
+            $args['thumbnail_id'],
             $args['obj_id']
         );
     }
@@ -69,6 +71,7 @@ class ExerciseRepository implements Repository
             ->setDescription($exercise->getDescription())
             ->setDetailedDescription($exercise->getDetailedDescription())
             ->setResourceId($exercise->getResourceId())
+            ->setThumbnailId($exercise->getThumbnailId())
             ->setObjId($exercise->getObjId())
             ->store()
         ;
@@ -89,6 +92,7 @@ class ExerciseRepository implements Repository
                 $ar_exercise->getDescription(),
                 $ar_exercise->getDetailedDescription(),
                 $ar_exercise->getResourceId(),
+                $ar_exercise->getThumbnailId(),
                 $ar_exercise->getObjId()
             );
         }
@@ -107,8 +111,6 @@ class ExerciseRepository implements Repository
         $ar_exercises = ARExercise::where([
             'obj_id' => $obj_id
         ], "=")->getArray();
-
-//        echo var_dump($ar_exercises); exit;
 
         $exercises = [];
         if (null !== $ar_exercises) {
@@ -138,6 +140,7 @@ class ExerciseRepository implements Repository
                     $ar_exercise->getDescription(),
                     $ar_exercise->getDetailedDescription(),
                     $ar_exercise->getResourceId(),
+                    $ar_exercise->getThumbnailId(),
                     $ar_exercise->getObjId()
                 );
             }

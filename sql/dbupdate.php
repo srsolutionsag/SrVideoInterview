@@ -169,3 +169,19 @@ if ($ilDB->tableColumnExists('xvin_participant', 'feedback_sent')) {
     $ilDB->dropTableColumn('xvin_participant', 'feedback_sent');
 }
 ?>
+<#10>
+<?php
+$field = array(
+    'notnull' => 'false',
+    'type' => 'string',
+    'length' => '250'
+);
+if (! $ilDB->tableColumnExists('xvin_answer', 'thumbnail_id')) {
+    $ilDB->addTableColumn('xvin_answer', 'thumbnail_id', $field);
+}
+
+if (! $ilDB->tableColumnExists('xvin_exercise', 'thumbnail_id')) {
+    $ilDB->addTableColumn('xvin_exercise', 'thumbnail_id', $field);
+}
+?>
+

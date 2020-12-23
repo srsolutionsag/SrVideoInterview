@@ -41,6 +41,7 @@ class AnswerRepository implements Repository
             ->setType($answer->getType())
             ->setContent($answer->getContent())
             ->setResourceId($answer->getResourceId())
+            ->setThumbnailId($answer->getThumbnailId())
             ->setExerciseId($answer->getExerciseId())
             ->setParticipantId($answer->getParticipantId())
             ->store()
@@ -61,6 +62,7 @@ class AnswerRepository implements Repository
                 $ar_answer->getType(),
                 $ar_answer->getContent(),
                 $ar_answer->getResourceId(),
+                $ar_answer->getThumbnailId(),
                 $ar_answer->getExerciseId(),
                 $ar_answer->getParticipantId()
             );
@@ -84,6 +86,7 @@ class AnswerRepository implements Repository
                     $ar_answer->getType(),
                     $ar_answer->getContent(),
                     $ar_answer->getResourceId(),
+                    $ar_answer->getThumbnailId(),
                     $ar_answer->getExerciseId(),
                     $ar_answer->getParticipantId()
                 );
@@ -134,6 +137,7 @@ class AnswerRepository implements Repository
                 $ar_answer->getType(),
                 $ar_answer->getContent(),
                 $ar_answer->getResourceId(),
+                $ar_answer->getThumbnailId(),
                 $ar_answer->getExerciseId(),
                 $ar_answer->getParticipantId()
             );

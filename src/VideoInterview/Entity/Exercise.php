@@ -35,27 +35,33 @@ class Exercise
     protected $resource_id;
 
     /**
+     * @var string
+     */
+    protected $thumbnail_id;
+
+    /**
      * @var int
      */
     protected $obj_id;
 
     /**
      * Exercise constructor.
-     *
      * @param int|null $id
      * @param string   $title
      * @param string   $description
      * @param string   $detailed_description
      * @param string   $resource_id
+     * @param string   $thumbnail_id
      * @param int|null $obj_id
      */
-    public function __construct(int $id = null, string $title = "", string $description = "", $detailed_description = "", string $resource_id = "", int $obj_id = null)
+    public function __construct(int $id = null, string $title = "", string $description = "", $detailed_description = "", string $resource_id = "", string $thumbnail_id = "", int $obj_id = null)
     {
         $this->id = $id;
         $this->title = $title;
         $this->description = $description;
         $this->detailed_description = $detailed_description;
         $this->resource_id = $resource_id;
+        $this->thumbnail_id = $thumbnail_id;
         $this->obj_id = $obj_id;
     }
 
@@ -146,6 +152,24 @@ class Exercise
     public function setResourceId(string $resource_id) : Exercise
     {
         $this->resource_id = $resource_id;
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getThumbnailId() : ?string
+    {
+        return $this->thumbnail_id;
+    }
+
+    /**
+     * @param string|null $thumbnail_id
+     * @return Exercise
+     */
+    public function setThumbnailId(?string $thumbnail_id) : Exercise
+    {
+        $this->thumbnail_id = $thumbnail_id;
         return $this;
     }
 

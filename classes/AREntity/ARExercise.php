@@ -66,6 +66,16 @@ class ARExercise extends ActiveRecord
     protected $resource_id = null;
 
     /**
+     * @var string
+     *
+     * @con_has_field   true
+     * @con_is_notnull  false
+     * @con_fieldtype   text
+     * @con_length      250
+     */
+    protected $thumbnail_id = null;
+
+    /**
      * @var int
      *
      * @con_has_field   true
@@ -178,6 +188,24 @@ class ARExercise extends ActiveRecord
     public function setResourceId(string $resource_id) : ARExercise
     {
         $this->resource_id = $resource_id;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getThumbnailId() : ?string
+    {
+        return $this->thumbnail_id;
+    }
+
+    /**
+     * @param string $thumbnail_id
+     * @return ARExercise
+     */
+    public function setThumbnailId(?string $thumbnail_id) : ARExercise
+    {
+        $this->thumbnail_id = $thumbnail_id;
         return $this;
     }
 

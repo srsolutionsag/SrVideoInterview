@@ -1,5 +1,6 @@
 <?php
 
+use FFMpeg\FFMpeg;
 use ILIAS\FileUpload\DTO\UploadResult;
 use ILIAS\FileUpload\Handler\AbstractCtrlAwareUploadHandler;
 use ILIAS\FileUpload\Handler\BasicFileInfoResult;
@@ -150,6 +151,8 @@ class ilObjSrVideoInterviewUploadHandlerGUI extends AbstractCtrlAwareUploadHandl
         $array = $this->upload->getResults();
         $result = end($array);
         if ($result instanceof UploadResult && $result->isOK()) {
+            $ffmpeg = FFMpeg::create();
+
             $i = $this->storage->upload($result, $this->stakeholder);
             $status = HandlerResultInterface::STATUS_OK;
             $identifier = $i->serialize();

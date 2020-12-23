@@ -59,6 +59,16 @@ class ARAnswer extends ActiveRecord
     protected $resource_id = null;
 
     /**
+     * @var string
+     *
+     * @con_has_field   true
+     * @con_is_notnull  false
+     * @con_fieldtype   text
+     * @con_length      250
+     */
+    protected $thumbnail_id = null;
+
+    /**
      * @var int
      *
      * @con_has_field   true
@@ -133,7 +143,7 @@ class ARAnswer extends ActiveRecord
     /**
      * @return string
      */
-    public function getContent() : string
+    public function getContent() : ?string
     {
         return $this->content;
     }
@@ -142,7 +152,7 @@ class ARAnswer extends ActiveRecord
      * @param string $content
      * @return ARAnswer
      */
-    public function setContent(string $content) : ARAnswer
+    public function setContent(?string $content) : ARAnswer
     {
         $this->content = $content;
         return $this;
@@ -157,12 +167,30 @@ class ARAnswer extends ActiveRecord
     }
 
     /**
-     * @param string $resource_id
+     * @param string|null $resource_id
      * @return ARAnswer
      */
-    public function setResourceId(string $resource_id) : ARAnswer
+    public function setResourceId(?string $resource_id) : ARAnswer
     {
         $this->resource_id = $resource_id;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getThumbnailId() : ?string
+    {
+        return $this->thumbnail_id;
+    }
+
+    /**
+     * @param string|null $thumbnail_id
+     * @return ARAnswer
+     */
+    public function setThumbnailId(?string $thumbnail_id) : ARAnswer
+    {
+        $this->thumbnail_id = $thumbnail_id;
         return $this;
     }
 
@@ -178,7 +206,7 @@ class ARAnswer extends ActiveRecord
      * @param int $exercise_id
      * @return ARAnswer
      */
-    public function setExerciseId(?int $exercise_id) : ARAnswer
+    public function setExerciseId(int $exercise_id) : ARAnswer
     {
         $this->exercise_id = $exercise_id;
         return $this;
