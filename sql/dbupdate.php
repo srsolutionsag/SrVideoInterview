@@ -173,7 +173,7 @@ if ($ilDB->tableColumnExists('xvin_participant', 'feedback_sent')) {
 <?php
 $field = array(
     'notnull' => 'false',
-    'type' => 'string',
+    'type' => 'text',
     'length' => '250'
 );
 if (! $ilDB->tableColumnExists('xvin_answer', 'thumbnail_id')) {

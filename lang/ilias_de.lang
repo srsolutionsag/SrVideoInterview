@@ -26,6 +26,13 @@ answer_not_completed#:#Deine Antwort muss eine Videoaufnahme beinhalten.
 respond_to_participant#:#Feedback erfassen
 show_answer#:#Antwort ansehen
 notify_participant#:#Benachrichtigen
+invitation_sent#:#Benachrichtigt
+invitation_title#:#Einladung zum VideoInterview
+invitation_message#:#Du wurdest zu einem neuen VideoInterview hinzugefügt!
+participant_already_invited#:#Dieser Teilnehmer hat bereits eine Benachrichtigung erhalten.
+participant_invited#:#Benachrichtigung(en) versendet
+no_participants#:#Es wurden noch keine Teilnehmer hinzugefügt.
+general_error#:#Ups, etwas ist schief gelaufen.
 
 obj_xvin#:#Video Interview
 objs_xvin#:#Video Interview

@@ -26,6 +26,13 @@ answer_not_completed#:#Your Answer must include a video recording.
 respond_to_participant#:#Send feedback
 show_answer#:#Show answer
 notify_participant#:#Notify
+invitation_sent#:#Notified
+invitation_title#:#VideoInterview Invitation
+invitation_message#:#You've been added to a new VideInterview!
+participant_already_invited#:#This Participant already received a notification.
+participant_invited#:#Notification(s) sent
+no_participants#:#No Participants added yet.
+general_error#:#Whoops, something went wrong.
 
 obj_xvin#:#Video Interview
 objs_xvin#:#Video Interview

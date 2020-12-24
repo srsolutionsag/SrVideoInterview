@@ -30,9 +30,8 @@ class ilObjSrVideoInterviewParticipantGUI extends ilObjSrVideoInterviewGUI
     const CMD_PARTICIPANT_NOTIFY = 'notifyParticipant';
     const CMD_PARTICIPANT_SEARCH = 'searchParticipant';
     const CMD_ADD_FROM_ROLE      = 'addFromRole';
-    const CMD_SEND_INVITATIONS   = 'sendInvitations';
+    const CMD_PARTICIPANT_BROADCAST = 'notifyAllParticipants';
     const CMD_CONFIRM_SEND_INVITATAION = 'confirmSendInvitataion';
-    const CMD_PARTICIPANT_BROADCAST = 'nofityAllParticipants';
 
     /**
      * @var ilToolbarGUI
@@ -69,7 +68,7 @@ class ilObjSrVideoInterviewParticipantGUI extends ilObjSrVideoInterviewGUI
             case self::CMD_PARTICIPANT_NOTIFY:
             case self::CMD_PARTICIPANT_SEARCH:
             case self::CMD_CONFIRM_SEND_INVITATAION:
-            case self::CMD_SEND_INVITATIONS:
+            case self::CMD_PARTICIPANT_BROADCAST:
                 if ($this->access->checkAccess("write", $cmd, $this->ref_id)) {
                     $this->$cmd();
                 } else {
@@ -161,17 +160,101 @@ class ilObjSrVideoInterviewParticipantGUI extends ilObjSrVideoInterviewGUI
     {
         $participant_id = $this->http->request()->getQueryParams()['participant_id'];
         $participant    = $this->repository->getParticipantById($participant_id);
-
-        if (null !== $participant) {
-            $this->repository->removeParticipantById($participant_id);
+        if (null !== $participant &&
+            $this->repository->removeParticipantById($participant_id)
+        ) {
             ilUtil::sendSuccess($this->txt('participant_removed'), true);
             $this->ctrl->redirectByClass(
                 self::class,
                 self::CMD_PARTICIPANT_INDEX
             );
-        } else {
-            // may show error toast or something here.
         }
+
+        ilUtil::sendFailure($this->txt('general_error'), true);
+        $this->ctrl->redirectByClass(
+            self::class,
+            self::CMD_PARTICIPANT_INDEX
+        );
+    }
+
+    protected function sendMailTo(string $recipients) : array
+    {
+        $mail = new \ilMail($this->user->getId());
+        return $mail->enqueue(
+            $recipients,
+            '',
+            '',
+            $this->txt('invitation_title'),
+            $this->txt('invitation_message'),
+            array()
+        );
+    }
+
+    protected function notifyParticipant() : void
+    {
+        $participant_id = $this->http->request()->getQueryParams()['participant_id'];
+        $participant    = $this->repository->getParticipantById($participant_id);
+
+        if (null !== $participant) {
+            // skip notification when invitation has already been sent.
+            if ($participant->isInvitationSent()) {
+                ilUtil::sendFailure($this->txt('participant_already_invited'), true);
+                $this->ctrl->redirectByClass(
+                    self::class,
+                    self::CMD_PARTICIPANT_INDEX
+                );
+            }
+
+            $user = new ilObjUser($participant->getUserId());
+            if (empty($this->sendMailTo($user->getLogin()))) {
+                $participant->setInvitationSent(true);
+                $this->repository->store($participant);
+
+                ilUtil::sendSuccess($this->txt('participant_invited'), true);
+                $this->ctrl->redirectByClass(
+                    self::class,
+                    self::CMD_PARTICIPANT_INDEX
+                );
+            }
+        }
+
+        ilUtil::sendFailure($this->txt('general_error'), true);
+        $this->ctrl->redirectByClass(
+            self::class,
+            self::CMD_PARTICIPANT_INDEX
+        );
+    }
+
+    protected function notifyAllParticipants() : void
+    {
+        $participants = $this->repository->getParticipantsByObjId($this->obj_id);
+        if (null !== $participants) {
+            $errors = array();
+            foreach ($participants as $participant) {
+                $user = new ilObjUser($participant->getUserId());
+                $error = $this->sendMailTo($user->getLogin());
+                if (empty($error)) {
+                    $participant->setInvitationSent(true);
+                    $this->repository->store($participant);
+                } else {
+                    $errors[] = $error;
+                }
+            }
+
+            if (empty($errors)) {
+                ilUtil::sendSuccess($this->txt('participant_invited'), true);
+                $this->ctrl->redirectByClass(
+                    self::class,
+                    self::CMD_PARTICIPANT_INDEX
+                );
+            }
+        }
+
+        ilUtil::sendFailure($this->txt('general_error'), true);
+        $this->ctrl->redirectByClass(
+            self::class,
+            self::CMD_PARTICIPANT_INDEX
+        );
     }
 
     protected function confirmSendInvitataion() : void
@@ -179,16 +262,10 @@ class ilObjSrVideoInterviewParticipantGUI extends ilObjSrVideoInterviewGUI
         $confirm = new ilConfirmationGUI();
         $confirm->setFormAction($this->ctrl->getFormAction($this));
         $confirm->setHeaderText($this->plugin->txt('confirm_send_invitation_text'));
-        $confirm->setConfirm($this->plugin->txt('confirm_send_invitation'), self::CMD_SEND_INVITATIONS);
+        $confirm->setConfirm($this->plugin->txt('confirm_send_invitation'), self::CMD_PARTICIPANT_BROADCAST);
         $confirm->setCancel($this->plugin->txt('cancel'), self::CMD_PARTICIPANT_INDEX);
 
         $this->tpl->setContent($confirm->getHTML());
-    }
-
-    protected function sendInvitations() : void
-    {
-        // @TODO: implement sending inv.
-        $this->tpl->setContent('todo implement sending inv.');
     }
 
     /**

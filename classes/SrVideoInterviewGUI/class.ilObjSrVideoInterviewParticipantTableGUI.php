@@ -67,6 +67,7 @@ class ilObjSrVideoInterviewParticipantTableGUI extends ilTable2GUI
         $this->addColumn($this->plugin->txt('lastname'));
         $this->addColumn($this->plugin->txt('email'));
         $this->addColumn($this->plugin->txt('has_answered'));
+        $this->addColumn($this->plugin->txt('invitation_sent'));
         $this->addColumn(
             null,
             null,
@@ -93,7 +94,11 @@ class ilObjSrVideoInterviewParticipantTableGUI extends ilTable2GUI
         // @TODO: implement this passively and m:1 compatible
         $exercise = $this->repository->getExercisesByObjId($this->parent_obj->obj_id)[0];
 
-        $status_light = ($this->repository->hasParticipantAnsweredExercise($participant['id'], $exercise->getId())) ?
+        $status_light_answered = ($this->repository->hasParticipantAnsweredExercise($participant['id'], $exercise->getId())) ?
+            'green' : 'red'
+        ;
+
+        $status_light_invited = ($participant['invitation_sent']) ?
             'green' : 'red'
         ;
 
@@ -103,7 +108,12 @@ class ilObjSrVideoInterviewParticipantTableGUI extends ilTable2GUI
 
         $this->tpl->setVariable('HAS_ANSWERED', $this->ui_renderer->render(
             $this->ui_factory
-                ->legacy("<div class=\"sr-status-light\" style=\"background: {$status_light}\"></div>")
+                ->legacy("<div class=\"sr-status-light\" style=\"background: {$status_light_answered}\"></div>")
+        ));
+
+        $this->tpl->setVariable('INVITATION_SENT', $this->ui_renderer->render(
+            $this->ui_factory
+                ->legacy("<div class=\"sr-status-light\" style=\"background: {$status_light_invited}\"></div>")
         ));
 
         $this->ctrl->setParameterByClass(
