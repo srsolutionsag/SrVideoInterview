@@ -204,17 +204,17 @@ class ilObjSrVideoInterviewParticipantGUI extends ilObjSrVideoInterviewGUI
 
     /**
      * adds new Participants to the current VideoInterview by an array of user-id's
-     * if they don't exist and redirects success/failure.
+     * if they don't exist and redirects on success/failure.
      *
      * @param array $user_ids
      */
-    protected function addParticipantsByIds(array $user_ids) : void
+    protected function addParticipantsForUserIds(array $user_ids) : void
     {
         if (!empty($user_ids)) {
             $errors = array();
             foreach ($user_ids as $user_id) {
                 $participant = $this->repository->getParticipantForObjByUserId($this->obj_id, $user_id);
-                if (null !== $participant) {
+                if (null === $participant) {
                     $errors[] = $this->repository->store(new Participant(
                         null,
                         false,
@@ -284,7 +284,7 @@ class ilObjSrVideoInterviewParticipantGUI extends ilObjSrVideoInterviewGUI
      */
     protected function addParticipant() : void
     {
-        $this->addParticipantsByIds(
+        $this->addParticipantsForUserIds(
             (array) $this->http->request()->getParsedBody()['selected']
         );
     }
@@ -299,7 +299,7 @@ class ilObjSrVideoInterviewParticipantGUI extends ilObjSrVideoInterviewGUI
      */
     public function addParticipantsByRole(array $user_ids) : void
     {
-        $this->addParticipantsByIds($user_ids);
+        $this->addParticipantsForUserIds($user_ids);
     }
 
     /**
