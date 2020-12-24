@@ -9,9 +9,14 @@ use srag\Plugins\SrVideoInterview\VideoInterview\Entity\Participant;
 use srag\Plugins\SrVideoInterview\AREntity\ARAnswer;
 
 /**
- * Class ilObjSrVideoInterviewAnswerGUI
+ * ilObjSrVideoInterviewAnswerGUI is responsible for managing Participant Answers.
+ *
+ * this class manages Participant Answers to Exercises, which also contains a professors
+ * feedback (Answer) to a Participants Answer.
  *
  * @author Thibeau Fuhrer <thf@studer-raimann.ch>
+ *
+ * @TODO: may refactor professor/participant Answer view.
  *
  * @ilCtrl_isCalledBy ilObjVideoInterviewAnswerGUI: ilObjSrVideoInterviewGUI
  */
@@ -32,7 +37,7 @@ class ilObjSrVideoInterviewAnswerGUI extends ilObjSrVideoInterviewGUI
     protected $current_participant;
 
     /**
-     * Initialise ilObjVideoInterviewAnswerGUI
+     * Initialise ilObjVideoInterviewAnswerGUI an load further dependencies.
      *
      * @param int $a_ref_id
      * @param int $a_id_type
@@ -44,7 +49,7 @@ class ilObjSrVideoInterviewAnswerGUI extends ilObjSrVideoInterviewGUI
     }
 
     /**
-     * load dependencies after creation
+     * load further dependencies that depend on the initialised parent.
      */
     protected function afterConstructor() : void
     {
@@ -86,9 +91,11 @@ class ilObjSrVideoInterviewAnswerGUI extends ilObjSrVideoInterviewGUI
     }
 
     /**
-     * setup an additional tab when using this class.
+     * replaces all tabs of the parent-object and adds a back-to tab.
+     *
+     * @see ilObjSrVideoInterviewGUI::setupTabs()
      */
-    final protected function setupBackToTab() : void
+    protected function setupBackToTab() : void
     {
         if ($this->access->checkAccess("read", "", $this->ref_id)) {
             $this->tabs->clearTargets();
@@ -103,7 +110,47 @@ class ilObjSrVideoInterviewAnswerGUI extends ilObjSrVideoInterviewGUI
     }
 
     /**
-     * builds and returns the form to add a new Answer.
+     * renders an Answer and adds it to the main template.
+     *
+     * @param Answer $answer
+     * @throws ilTemplateException
+     */
+    protected function renderAnswer(Answer $answer) : void
+    {
+        $tpl = new ilTemplate(self::TEMPLATE_DIR . 'tpl.answer.html', false, false);
+
+        $participant = $this->repository->getParticipantById($answer->getParticipantId());
+        $user = new ilObjUser($participant->getUserId());
+
+        $tpl->setVariable('TITLE', "[{$user->getLogin()}] {$user->getFirstname()} {$user->getLastname()}'s {$this->txt('answer')}");
+        $tpl->setVariable('VIDEO', $this->getRecordedVideoHTML($answer->getResourceId()));
+
+        if ('' !== $answer->getContent()) {
+            $tpl->addBlock("ANSWER_CONTENT_BLOCK", "ANSWER_CONTENT_BLOCK", "
+                <div>
+                    <h4>{$this->txt('additional_content')}</h4>
+                    <p>{$answer->getContent()}</p>
+                    <br />
+                </div>
+            ");
+        }
+
+        if ($this->current_participant !== $participant) {
+            $tpl->addBlock("ANSWER_INFO_BLOCK", "ANSWER_INFO_BLOCK", $this->ui_renderer->render(
+                $this->ui_factory
+                    ->messageBox()
+                    ->info(
+                        $this->txt('already_answered')
+                    )
+            )
+            );
+        }
+
+        $this->tpl->setContent($tpl->get());
+    }
+
+    /**
+     * builds and returns the Answer form with corresponding input-fields.
      *
      * @return Standard
      */
@@ -134,6 +181,11 @@ class ilObjSrVideoInterviewAnswerGUI extends ilObjSrVideoInterviewGUI
             );
     }
 
+    /**
+     * displays an existing answer for the professor to evaluate.
+     *
+     * @throws ilTemplateException
+     */
     protected function showAnswerForEvaluation() : void
     {
         $exercise_id = (int) $this->http->request()->getQueryParams()['exercise_id'];
@@ -142,9 +194,7 @@ class ilObjSrVideoInterviewAnswerGUI extends ilObjSrVideoInterviewGUI
         if (null !== $exercise_id &&
             null !== $participant_id
         ) {
-           $answer = $this->repository->getParticipantAnswerForExercise($participant_id, $exercise_id);
-
-           if (null !== $answer) {
+           if (null !== ($answer = $this->repository->getParticipantAnswerForExercise($participant_id, $exercise_id))) {
                $this->renderAnswer($answer);
            }
         }
@@ -153,48 +203,13 @@ class ilObjSrVideoInterviewAnswerGUI extends ilObjSrVideoInterviewGUI
     }
 
     /**
-     * @param Answer $answer
+     * displays the Answer form for a Participant.
+     *
      * @throws ilTemplateException
      */
-    protected function renderAnswer(Answer $answer) : void
-    {
-        $tpl = new ilTemplate(self::TEMPLATE_DIR . 'tpl.answer.html', false, false);
-
-        // @TODO: implement this passively later
-        $participant = $this->repository->getParticipantById($answer->getParticipantId());
-        $user = new ilObjUser($participant->getUserId());
-
-        $tpl->setVariable('TITLE', "[{$user->getLogin()}] {$user->getFirstname()} {$user->getLastname()}'s {$this->txt('answer')}");
-        $tpl->setVariable('VIDEO', $this->getRecordedVideoHTML($answer->getResourceId()));
-
-        if ('' !== $answer->getContent()) {
-            $tpl->addBlock("ANSWER_CONTENT_BLOCK", "ANSWER_CONTENT_BLOCK", "
-                <div>
-                    <h4>{$this->txt('additional_content')}</h4>
-                    <p>{$answer->getContent()}</p>
-                    <br />
-                </div>
-            ");
-        }
-
-        if ($this->current_participant !== $participant) {
-            $tpl->addBlock("ANSWER_INFO_BLOCK", "ANSWER_INFO_BLOCK", $this->ui_renderer->render(
-                $this->ui_factory
-                    ->messageBox()
-                    ->info(
-                        $this->txt('already_answered')
-                    )
-                )
-            );
-        }
-
-        $this->tpl->setContent($tpl->get());
-    }
-
     protected function showAnswer() : void
     {
         $exercise_id = (int) $this->http->request()->getQueryParams()['exercise_id'];
-
         if (null !== $exercise_id &&
             null !== $this->current_participant) {
             if (!$this->repository->hasParticipantAnsweredExercise(
@@ -213,19 +228,19 @@ class ilObjSrVideoInterviewAnswerGUI extends ilObjSrVideoInterviewGUI
                    )
                 );
             } else {
-                // @TODO: implement this passively later
-                $answer = $this->repository->getParticipantAnswerForExercise(
+                $this->renderAnswer($this->repository->getParticipantAnswerForExercise(
                     $this->current_participant->getId(),
                     $exercise_id
-                );
-
-                $this->renderAnswer($answer);
+                ));
             }
         }
 
-        $this->permissionDenied();
+        $this->objectNotFound();
     }
 
+    /**
+     * adds a Participants Answer for the current Exercise.
+     */
     protected function addAnswer() : void
     {
         $exercise_id = (int) $this->http->request()->getQueryParams()['exercise_id'];
@@ -263,11 +278,21 @@ class ilObjSrVideoInterviewAnswerGUI extends ilObjSrVideoInterviewGUI
         }
     }
 
+    /**
+     * deletes an existing answer or feedback of a Participant and the current Exercise.
+     *
+     * @TODO: implement method.
+     */
     protected function deleteAnswer() : void
     {
 
     }
 
+    /**
+     * adds a feedback to a Participants Answer for the current Exercise.
+     *
+     * @TODO: implement method
+     */
     protected function evaluateAnswer() : void
     {
 

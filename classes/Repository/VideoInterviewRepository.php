@@ -2,17 +2,28 @@
 
 namespace srag\Plugins\SrVideoInterview\Repository;
 
-use srag\Plugins\SrVideoInterview\Repository\AnswerRepository;
-use srag\Plugins\SrVideoInterview\Repository\ExerciseRepository;
-use srag\Plugins\SrVideoInterview\Repository\ParticipantRepository;
 use srag\Plugins\SrVideoInterview\VideoInterview\Entity\Answer;
 use srag\Plugins\SrVideoInterview\VideoInterview\Entity\Exercise;
 use srag\Plugins\SrVideoInterview\VideoInterview\Entity\Participant;
 
 /**
- * Class VidoInterviewRepository
+ * VideoInterviewRepository is a collection of all existing repository actions.
+ *
+ * this class can be used to easily access all operations of all plugin entities.
+ * instead of loading different repositories, this class can be used to instantiate
+ * just one repository an access all repositories operations.
  *
  * @author Thibeau Fuhrer <thf@studer-raimann.ch>
+ *
+ * @see AnswerRepository
+ * @see ExerciseRepository
+ * @see ParticipantRepository
+ *
+ * @TODO: refactor this and all other repositories later, since the naming is sometimes
+ *        misleading and this class doesn't contain all operations of the existing repos.
+ *
+ * @TODO: also implement methods that use multiple entities as an own function here and
+ *        don't include them in one of the entities repos.
  */
 final class VideoInterviewRepository
 {
@@ -32,7 +43,7 @@ final class VideoInterviewRepository
     private $participant_repository;
 
     /**
-     * Initialise VideoInterviewRepository
+     * Initialise VideoInterviewRepository and load an instance of all repositories.
      */
     public function __construct()
     {

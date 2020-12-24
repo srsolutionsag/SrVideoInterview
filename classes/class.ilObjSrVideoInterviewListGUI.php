@@ -1,26 +1,38 @@
 <?php
 
-require_once('./Customizing/global/plugins/Services/Repository/RepositoryObject/SrVideoInterview/classes/class.ilObjSrVideoInterviewGUI.php');
+require_once __DIR__ . "/class.ilObjSrVideoInterviewGUI.php";
 require_once __DIR__ . "/SrVideoInterviewGUI/class.ilObjSrVideoInterviewExerciseGUI.php";
 require_once __DIR__ . "/SrVideoInterviewGUI/class.ilObjSrVideoInterviewParticipantGUI.php";
 
 /**
  * Class ilObjSrVideoInterviewListGUI
+ *
  * @author Fabian Schmid <fs@studer-raimann.ch>
  */
 class ilObjSrVideoInterviewListGUI extends ilObjectPluginListGUI
 {
-    public function getGuiClass()
-    {
-        return ilObjSrVideoInterviewGUI::class;
-    }
-
-    public function initType()
+    /**
+     * @inheritDoc
+     */
+    public function initType() : void
     {
         $this->type = ilSrVideoInterviewPlugin::PLUGIN_ID;
     }
 
-    public function getProperties()
+    /**
+     * @inheritDoc
+     * @return string
+     */
+    public function getGuiClass() : string
+    {
+        return ilObjSrVideoInterviewGUI::class;
+    }
+
+    /**
+     * @ineritdoc
+     * @return array
+     */
+    public function getProperties() : array
     {
         $parent = parent::getProperties();
 
@@ -33,6 +45,8 @@ class ilObjSrVideoInterviewListGUI extends ilObjectPluginListGUI
     }
 
     /**
+     * initialises the base-commands of a VideoInterview.
+     *
      * @return array
      */
     public function initCommands()

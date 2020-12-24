@@ -23,7 +23,7 @@ use ILIAS\MainMenu\Storage\Services;
 class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
 {
     /**
-     * @var string plugin template dir
+     * @var string plugin dirs
      */
     const TEMPLATE_DIR = './Customizing/global/plugins/Services/Repository/RepositoryObject/SrVideoInterview/templates/default/';
     const CSS_DIR      = './Customizing/global/plugins/Services/Repository/RepositoryObject/SrVideoInterview/css/default/';
@@ -451,7 +451,7 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
     }
 
     /**
-     * renders a "permission denied" error toast.
+     * displays a general "permission denied" error toast.
      */
     protected function permissionDenied() : void
     {
@@ -459,7 +459,7 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
     }
 
     /**
-     * renders a "object not found" error toast.
+     * displays a general "object not found" error toast.
      */
     protected function objectNotFound() : void
     {

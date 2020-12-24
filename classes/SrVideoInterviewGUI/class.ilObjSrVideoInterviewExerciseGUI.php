@@ -6,7 +6,14 @@ use srag\Plugins\SrVideoInterview\VideoInterview\Entity\Exercise;
 use srag\Plugins\SrVideoInterview\AREntity\ARAnswer;
 
 /**
- * Class ilObjVideoInterviewExerciseGUI
+ * ilObjVideoInterviewExerciseGUI is responsible for managing Exercises for a VideoInterview.
+ *
+ * since we currently only support 1:1 cardinality (Exercise-VideoInterview) methods of
+ * this class are partially implemented in ilObjSrVideoInterviewGUI and ilObjSrVideoInterview.
+ *
+ * @see ilObjSrVideoInterviewGUI::editVideoInterview()
+ * @see ilObjSrVideoInterviewGUI::updateVideoInterview()
+ * @see ilObjSrVideoInterview::doDelete()
  *
  * @author Thibeau Fuhrer <thf@studer-raimann.ch>
  *
@@ -15,9 +22,9 @@ use srag\Plugins\SrVideoInterview\AREntity\ARAnswer;
 class ilObjSrVideoInterviewExerciseGUI extends ilObjSrVideoInterviewGUI
 {
     /**
-     * Exercise GUI tab-names and translation var
+     * @var string tab-name and translation-var
      */
-    const EXERCISE_TAB        = 'exercise_tab';
+    const EXERCISE_TAB = 'exercise_tab';
 
     /**
      * Exercise GUI commands
@@ -29,7 +36,7 @@ class ilObjSrVideoInterviewExerciseGUI extends ilObjSrVideoInterviewGUI
     const CMD_EXERCISE_DELETE = 'deleteExercise';
 
     /**
-     * Initialise ilObjVideoInterviewExerciseGUI
+     * Initialise ilObjVideoInterviewExerciseGUI and load further dependencies.
      *
      * @param int $a_ref_id
      * @param int $a_id_type
@@ -73,20 +80,13 @@ class ilObjSrVideoInterviewExerciseGUI extends ilObjSrVideoInterviewGUI
     }
 
     /**
-     * display an existing Exercise and controls depending on user-permission.
-     */
-    protected function showExercise(int $exercise_id) : void
-    {
-
-    }
-
-    /**
      * displays all existing Exercises for current VideoInterview object.
-     * currently only supports 1:1 cardinality and just shows one entry.
+     * currently assumes that only one Exercise for $this->obj_id is retrieved.
+     *
+     * @TODO: implement exercise-list-view when supporting m:1 cardinality.
      */
     protected function showAll() : void
     {
-        // assuming 1:1 cardinality.
         $exercise = $this->repository->getExercisesByObjId($this->obj_id)[0];
         if (null !== $exercise) {
             $tpl = new ilTemplate(self::TEMPLATE_DIR . 'tpl.exercise.html', false, false);
@@ -115,18 +115,29 @@ class ilObjSrVideoInterviewExerciseGUI extends ilObjSrVideoInterviewGUI
                 )
             );
 
-            $this->tpl->setContent(
-                $tpl->get()
-            );
+            $this->tpl->setContent($tpl->get());
         } else {
             $this->objectNotFound();
         }
     }
 
+    /**
+     * displays an existing Exercise.
+     *
+     * @TODO: implement this, when supporting m:1 cardinality.
+     */
+    protected function showExercise() : void
+    {
+
+    }
 
     /**
-     * edit an existing Exercise on the Repository Object settings-page.
-     * implement this when m:1 is required.
+     * displays an edit-form for an Exercise. Currently calls parent-method, which
+     * integrates the form in the VideoRepository Settings page.
+     *
+     * @see ilObjSrVideoInterviwGUI::editVideoInterview()
+     *
+     * @TODO: implement parent-method here, when supporting m:1 cardinality.
      */
     protected function editExercise() : void
     {
@@ -134,10 +145,25 @@ class ilObjSrVideoInterviewExerciseGUI extends ilObjSrVideoInterviewGUI
     }
 
     /**
-     * delete one or all existing Exercises when a VideoInterview is deleted.
+     * deletes an existing Exercise for the current VideoInterview by it's id.
+     *
+     * @TODO: implement this when supporting m:1 cardinality.
      */
     protected function deleteExercise() : void
     {
-        // @TODO: implement this in ilObjSrVideoInterview::doDelete()
+
+    }
+
+    /**
+     * delete all existing Exercises for the current VideoInterview.
+     * this is currently implemented in ilObjSrVideoInterview, when a VideoInterview is deleted.
+     *
+     * @see ilObjSrVideoInterview::doDelete()
+     *
+     * @TODO: implement this when supporting m:1 cardinality.
+     */
+    protected function deleteAllExercises() : void
+    {
+
     }
 }

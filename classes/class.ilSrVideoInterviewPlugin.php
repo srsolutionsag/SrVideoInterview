@@ -8,10 +8,11 @@ use ILIAS\DI\Container;
 use ILIAS\UI\Renderer;
 
 /**
- * ilSrVideoInterviewPlugin is a singleton plugin instance, which is primarily used
- * to provide a global txt() method, that
+ * ilSrVideoInterviewPlugin is the singleton plugin instance, which is primarily used
+ * to provide a global txt() method, that is used in GUI-classes.
  *
  * @author Fabian Schmid <fs@studer-raimann.ch>
+ * @author Thibeau Fuhrer <thf@studer-raimann.ch>
  */
 class ilSrVideoInterviewPlugin extends ilRepositoryObjectPlugin
 {
