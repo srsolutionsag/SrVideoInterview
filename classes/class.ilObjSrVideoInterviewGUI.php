@@ -190,7 +190,7 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
                 $this->tabs->setBackTarget($this->plugin->txt('back_to'), $this->ctrl->getLinkTargetByClass(ilObjSrVideoInterviewParticipantGUI::class));
                 $search = new ilRepositorySearchGUI();
                 $participant_gui = new ilObjSrVideoInterviewParticipantGUI($this->ref_id);
-                $search->setCallback($participant_gui, ilObjSrVideoInterviewParticipantGUI::CMD_ADD_FROM_ROLE);
+                $search->setCallback($participant_gui, ilObjSrVideoInterviewParticipantGUI::CMD_PARTICIPANT_ADD_BY_ROLE);
                 $this->ctrl->forwardCommand($search);
                 break;
             default:

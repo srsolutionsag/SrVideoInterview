@@ -145,4 +145,26 @@ class AnswerRepository implements Repository
 
         return null;
     }
+
+    /**
+     * deletes all existing answers for a given user participant id.
+     *
+     * @param int $participant_id
+     * @return bool
+     */
+    public function deleteAnswersForParticipant(int $participant_id) : bool
+    {
+        $ar_answers = ARAnswer::where(array(
+            'participant_id' => $participant_id,
+        ), '=')->get();
+
+        if (null !== $ar_answers) {
+            foreach ($ar_answers as $ar_answer) {
+                $ar_answer->delete();
+            }
+        }
+
+        // return always true, because answers are optional.
+        return true;
+    }
 }

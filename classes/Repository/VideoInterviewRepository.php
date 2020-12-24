@@ -157,6 +157,17 @@ final class VideoInterviewRepository
     }
 
     /**
+     * deletes all existing answers for a given user participant id.
+     *
+     * @param int $participant_id
+     * @return bool
+     */
+    public function deleteAnswersForParticipant(int $participant_id) : bool
+    {
+        return $this->answer_repository->deleteAnswersForParticipant($participant_id);
+    }
+
+    /**
      * retrieve an existing answer of a participant for an exercise.
      *
      * @param int $participant_id
