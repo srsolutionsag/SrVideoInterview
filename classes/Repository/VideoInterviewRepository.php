@@ -74,6 +74,17 @@ final class VideoInterviewRepository
     }
 
     /**
+     * retrieve an existing Answer by it's id.
+     *
+     * @param int $answer_id
+     * @return Answer|null
+     */
+    public function getAnswerById(int $answer_id) : ?Answer
+    {
+        return $this->answer_repository->get($answer_id);
+    }
+
+    /**
      * retrieve an existing Exercise by it's id.
      *
      * @param int $exercise_id
@@ -188,5 +199,17 @@ final class VideoInterviewRepository
     public function getParticipantAnswerForExercise(int $participant_id, int $exercise_id) : ?Answer
     {
         return $this->answer_repository->getParticipantAnswerForExercise($participant_id, $exercise_id);
+    }
+
+    /**
+     * retrieve an existing answer of a Participant for an Exercise with type FEEDBACK.
+     *
+     * @param int $participant_id
+     * @param int $exercise_id
+     * @return Answer|null
+     */
+    public function getParticipantFeedbackForExercise(int $participant_id, int $exercise_id) : ?Answer
+    {
+        return $this->answer_repository->getParticipantFeedbackForExercise($participant_id, $exercise_id);
     }
 }

@@ -32,7 +32,7 @@ class ilObjSrVideoInterviewParticipantGUI extends ilObjSrVideoInterviewGUI
      */
     const CMD_PARTICIPANT_INDEX             = 'showAll';
     const CMD_PARTICIPANT_SEARCH            = 'searchParticipant';
-    const CMD_PARTICIPANT_ADD               = 'addParticipant';
+    const CMD_PARTICIPANT_ADD               = 'addParticipants';
     const CMD_PARTICIPANT_ADD_BY_ROLE       = 'addParticipantsByRole';
     const CMD_PARTICIPANT_REMOVE            = 'removeParticipant';
     const CMD_PARTICIPANT_NOTIFY            = 'notifyParticipant';
@@ -67,7 +67,7 @@ class ilObjSrVideoInterviewParticipantGUI extends ilObjSrVideoInterviewGUI
     {
         $this->tabs->activateTab(self::PARTICIPANT_TAB);
         $cmd = $this->ctrl->getCmd(self::CMD_PARTICIPANT_INDEX);
-        switch ($this->ctrl->getCmd(self::CMD_PARTICIPANT_INDEX)) {
+        switch ($cmd) {
             case self::CMD_PARTICIPANT_INDEX:
             case self::CMD_PARTICIPANT_SEARCH:
             case self::CMD_PARTICIPANT_ADD:
@@ -109,12 +109,9 @@ class ilObjSrVideoInterviewParticipantGUI extends ilObjSrVideoInterviewGUI
             )
         );
 
-        $add_participants_btn = ilLinkButton::getInstance();
+        $add_participants_btn = ilSubmitButton::getInstance();
         $add_participants_btn->setCaption($this->txt('add_participants'), false);
-        $add_participants_btn->setUrl($this->ctrl->getLinkTargetByClass(
-            self::class,
-            self::CMD_PARTICIPANT_ADD
-        ));
+        $add_participants_btn->setCommand(self::CMD_PARTICIPANT_ADD);
 
         $this->toolbar->addInputItem($multi_select_user_input);
         $this->toolbar->addButtonInstance($add_participants_btn);
@@ -282,7 +279,7 @@ class ilObjSrVideoInterviewParticipantGUI extends ilObjSrVideoInterviewGUI
      *
      * @see ilObjSrVideoInterviewParticipantGUI::setupToolbar()
      */
-    protected function addParticipant() : void
+    protected function addParticipants() : void
     {
         $this->addParticipantsForUserIds(
             (array) $this->http->request()->getParsedBody()['selected']

@@ -11,12 +11,14 @@ use srag\Plugins\SrVideoInterview\AREntity\ARAnswer;
 /**
  * ilObjSrVideoInterviewAnswerGUI is responsible for managing Participant Answers.
  *
- * this class manages Participant Answers to Exercises, which also contains a professors
- * feedback (Answer) to a Participants Answer.
+ * this class is managing Participant Answers and Feedbacks, which both are types of Answers.
+ * it adds a Participants Answer for an Exercise and let's the professor evaluate them, by
+ * giving a Feedback to the Participant Answer.
  *
  * @author Thibeau Fuhrer <thf@studer-raimann.ch>
  *
  * @TODO: may refactor professor/participant Answer view.
+ * @TODO: naming is not as sexy as it could be.
  *
  * @ilCtrl_isCalledBy ilObjVideoInterviewAnswerGUI: ilObjSrVideoInterviewGUI
  */
@@ -61,14 +63,15 @@ class ilObjSrVideoInterviewAnswerGUI extends ilObjSrVideoInterviewGUI
      */
     public function executeCommand() : void
     {
-        $this->setupBackToTab();
-        $this->tabs->activateTab("should_not_be_an_actual_id");
         $cmd = $this->ctrl->getCmd(self::CMD_ANSWER_SHOW);
-
         switch ($cmd)
         {
             case self::CMD_ANSWER_SHOW:
             case self::CMD_ANSWER_ADD:
+                $this->setupBackToTab($this->ctrl->getLinkTargetByClass(
+                    ilObjSrVideoInterviewExerciseGUI::class,
+                    ilObjSrVideoInterviewExerciseGUI::CMD_EXERCISE_INDEX
+                ));
                 if ($this->access->checkAccess("read", $cmd, $this->ref_id)) {
                     $this->$cmd();
                 } else {
@@ -78,6 +81,10 @@ class ilObjSrVideoInterviewAnswerGUI extends ilObjSrVideoInterviewGUI
             case self::CMD_ANSWER_DELETE:
             case self::CMD_ANSWER_EVALUATE:
             case self::CMD_ANSWER_SHOW_TUT:
+                $this->setupBackToTab($this->ctrl->getLinkTargetByClass(
+                    ilObjSrVideoInterviewParticipantGUI::class,
+                    ilObjSrVideoInterviewParticipantGUI::CMD_PARTICIPANT_INDEX
+                ));
                 if ($this->access->checkAccess("write", $cmd, $this->ref_id)) {
                     $this->$cmd();
                 } else {
@@ -91,20 +98,22 @@ class ilObjSrVideoInterviewAnswerGUI extends ilObjSrVideoInterviewGUI
     }
 
     /**
-     * replaces all tabs of the parent-object and adds a back-to tab.
+     * replaces all tabs of the parent-object and adds a back to tab to return
+     * to a given command.
+     *
+     * @param string $cmd
      *
      * @see ilObjSrVideoInterviewGUI::setupTabs()
      */
-    protected function setupBackToTab() : void
+    protected function setupBackToTab(string $cmd) : void
     {
         if ($this->access->checkAccess("read", "", $this->ref_id)) {
             $this->tabs->clearTargets();
+            // deactivate all other tabs that might be active
+            $this->tabs->activateTab("should not be an actual id :)");
             $this->tabs->setBackTarget(
                 $this->txt('back_to'),
-                $this->ctrl->getLinkTargetByClass(
-                    ilObjSrVideoInterviewExerciseGUI::class,
-                    ilObjSrVideoInterviewExerciseGUI::CMD_EXERCISE_INDEX
-                )
+                $cmd
             );
         }
     }
@@ -135,26 +144,56 @@ class ilObjSrVideoInterviewAnswerGUI extends ilObjSrVideoInterviewGUI
             ");
         }
 
-        if ($this->current_participant !== $participant) {
+        // compare properties and values, dont use ===
+        if ($this->current_participant == $participant) {
             $tpl->addBlock("ANSWER_INFO_BLOCK", "ANSWER_INFO_BLOCK", $this->ui_renderer->render(
                 $this->ui_factory
                     ->messageBox()
                     ->info(
                         $this->txt('already_answered')
                     )
-            )
+            ));
+        } else {
+            $this->ctrl->setParameterByClass(
+                self::class,
+                'participant_id',
+                $participant->getId()
             );
+
+            $this->ctrl->setParameterByClass(
+                self::class,
+                'exercise_id',
+                $answer->getExerciseId()
+            );
+
+            $tpl->setVariable("ACTION", $this->ui_renderer->render(
+                $this->ui_factory
+                    ->button()
+                    ->primary(
+                        $this->txt('evaluate'),
+                        $this->ctrl->getLinkTargetByClass(
+                            self::class,
+                            self::CMD_ANSWER_EVALUATE
+                        )
+                    )
+            ));
         }
 
         $this->tpl->setContent($tpl->get());
     }
 
     /**
-     * builds and returns the Answer form with corresponding input-fields.
+     * builds and returns the Answer form with corresponding input-fields for either an
+     * Answer or Feedback (answer evaluation).
      *
+     * @param int $answer_type
      * @return Standard
      */
-    protected function buildAnswerForm() : Standard {
+    protected function buildAnswerForm(int $answer_type) : Standard {
+        $command = ($answer_type === ARAnswer::TYPE_ANSWER) ?
+            self::CMD_ANSWER_ADD : self::CMD_ANSWER_EVALUATE
+        ;
+
         return $this->ui_factory
             ->input()
             ->container()
@@ -162,7 +201,7 @@ class ilObjSrVideoInterviewAnswerGUI extends ilObjSrVideoInterviewGUI
             ->standard(
                 $this->ctrl->getFormActionByClass(
                     self::class,
-                    self::CMD_ANSWER_ADD
+                    $command
                 ),
                 array(
                     'answer_resource' => VideoRecorderInput::getInstance(
@@ -188,15 +227,11 @@ class ilObjSrVideoInterviewAnswerGUI extends ilObjSrVideoInterviewGUI
      */
     protected function showAnswerForEvaluation() : void
     {
-        $exercise_id = (int) $this->http->request()->getQueryParams()['exercise_id'];
-        $participant_id = (int) $this->http->request()->getQueryParams()['participant_id'];
-
-        if (null !== $exercise_id &&
-            null !== $participant_id
+        $answer_id = (int) $this->http->request()->getQueryParams()['answer_id'];
+        if (null !== $answer_id &&
+            null !== ($answer = $this->repository->getAnswerById($answer_id))
         ) {
-           if (null !== ($answer = $this->repository->getParticipantAnswerForExercise($participant_id, $exercise_id))) {
-               $this->renderAnswer($answer);
-           }
+            $this->renderAnswer($answer);
         }
 
         $this->objectNotFound();
@@ -224,7 +259,7 @@ class ilObjSrVideoInterviewAnswerGUI extends ilObjSrVideoInterviewGUI
 
                 $this->tpl->setContent(
                    $this->ui_renderer->render(
-                       $this->buildAnswerForm()
+                       $this->buildAnswerForm(ARAnswer::TYPE_ANSWER)
                    )
                 );
             } else {
@@ -238,8 +273,32 @@ class ilObjSrVideoInterviewAnswerGUI extends ilObjSrVideoInterviewGUI
         $this->objectNotFound();
     }
 
+//    protected function createAnswer(int $type) : void
+//    {
+//        $exercise_id = (int) $this->http->request()->getQueryParams()['exercise_id'];
+//        $participant_id = (int) $this->http->request()->getQueryParams()['participant_id'];
+//
+//        if (null !== $exercise_id &&
+//            null !== $participant_id
+//        ) {
+//            $answer = (ARAnswer::TYPE_ANSWER === $type) ?
+//                $this->repository->getParticipantAnswerForExercise($participant_id, $exercise_id) :
+//                $this->repository->getParticipantFeedbackForExercise($participant_id, $exercise_id)
+//            ;
+//
+//            if (null !== $answer) {
+//                // @TODO: might handle ilTemplate Exception here?
+//                $this->renderAnswer($answer);
+//            }
+//
+//            $this->objectNotFound();
+//        }
+//    }
+
     /**
      * adds a Participants Answer for the current Exercise.
+     *
+     * @TODO: implement thumbnail support
      */
     protected function addAnswer() : void
     {
@@ -248,7 +307,7 @@ class ilObjSrVideoInterviewAnswerGUI extends ilObjSrVideoInterviewGUI
         if (null !== $exercise_id &&
             null !== $this->current_participant
         ) {
-            $form = $this->buildAnswerForm()->withRequest($this->http->request());
+            $form = $this->buildAnswerForm(ARAnswer::TYPE_ANSWER)->withRequest($this->http->request());
             $data = $form->getData();
 
             if (!empty($data['answer_resource'])) {
@@ -257,6 +316,7 @@ class ilObjSrVideoInterviewAnswerGUI extends ilObjSrVideoInterviewGUI
                     ARAnswer::TYPE_ANSWER,
                     (string) $data['answer_content'],
                     $data['answer_resource'],
+                    '',
                     $exercise_id,
                     $this->current_participant->getId()
                 ));
@@ -295,6 +355,47 @@ class ilObjSrVideoInterviewAnswerGUI extends ilObjSrVideoInterviewGUI
      */
     protected function evaluateAnswer() : void
     {
+        $exercise_id = (int) $this->http->request()->getQueryParams()['exercise_id'];
+        $participant_id = (int) $this->http->request()->getQueryParams()['participant_id'];
 
+        if (null !== $exercise_id &&
+            null !== $participant_id &&
+            null === $this->repository->getParticipantFeedbackForExercise($participant_id, $exercise_id)
+        ) {
+            $form = $this->buildAnswerForm(ARAnswer::TYPE_FEEDBACK)->withRequest($this->http->request());
+            $data = $form->getData();
+
+            if (null !== $data) {
+                if ($this->repository->store(new Answer(
+                    null,
+                    ARAnswer::TYPE_FEEDBACK,
+                    (string) $data['answer_content'],
+                    $data['answer_resource'],
+                    '',
+                    $exercise_id,
+                    $participant_id
+                ))) {
+                    ilUtil::sendSuccess($this->txt('answer_evaluated'), true);
+                    $this->ctrl->redirectByClass(
+                        ilObjSrVideoInterviewParticipantGUI::class,
+                        ilObjSrVideoInterviewParticipantGUI::CMD_PARTICIPANT_INDEX
+                    );
+                }
+
+                ilUtil::sendFailure($this->txt('answer_not_evaluated'), true);
+                $this->ctrl->redirectByClass(
+                    self::class,
+                    self::CMD_ANSWER_SHOW
+                );
+            }
+
+            $this->tpl->setContent(
+                $this->ui_renderer->render(
+                    $form
+                )
+            );
+        }
+
+        // display evaluation.
     }
 }

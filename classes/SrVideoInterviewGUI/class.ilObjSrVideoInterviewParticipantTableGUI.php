@@ -134,7 +134,7 @@ class ilObjSrVideoInterviewParticipantTableGUI extends ilTable2GUI
                 )
             ,
 
-            'nofity' => $this->ui_factory
+            'notify' => $this->ui_factory
                 ->button()
                 ->shy(
                     $this->plugin->txt('notify_participant'),
@@ -146,7 +146,13 @@ class ilObjSrVideoInterviewParticipantTableGUI extends ilTable2GUI
             ,
         );
 
-        if ($this->repository->hasParticipantAnsweredExercise($participant['id'], $exercise->getId())) {
+        if (null !== ($answer = $this->repository->getParticipantAnswerForExercise($participant['id'], $exercise->getId()))) {
+            $this->ctrl->setParameterByClass(
+                ilObjSrVideoInterviewAnswerGUI::class,
+                'answer_id',
+                $answer->getId()
+            );
+
             $actions[] = $this->ui_factory
                 ->button()
                 ->shy(

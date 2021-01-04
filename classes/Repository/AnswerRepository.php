@@ -147,6 +147,36 @@ class AnswerRepository implements Repository
     }
 
     /**
+     * retrieve an existing answer of a Participant for an Exercise with type FEEDBACK.
+     *
+     * @param int $participant_id
+     * @param int $exercise_id
+     * @return Answer|null
+     */
+    public function getParticipantFeedbackForExercise(int $participant_id, int $exercise_id) : ?Answer
+    {
+        $ar_answer = ARAnswer::where(array(
+            'participant_id' => $participant_id,
+            'exercise_id'    => $exercise_id,
+            'type'           => ARAnswer::TYPE_FEEDBACK,
+        ),'=')->first();
+
+        if (null !== $ar_answer) {
+            return new Answer(
+                $ar_answer->getId(),
+                $ar_answer->getType(),
+                $ar_answer->getContent(),
+                $ar_answer->getResourceId(),
+                $ar_answer->getThumbnailId(),
+                $ar_answer->getExerciseId(),
+                $ar_answer->getParticipantId()
+            );
+        }
+
+        return null;
+    }
+
+    /**
      * deletes all existing answers for a given user participant id.
      *
      * @param int $participant_id

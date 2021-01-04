@@ -95,6 +95,7 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
         global $DIC;
 
         $this->video_upload_handler = new ilObjSrVideoInterviewUploadHandlerGUI();
+
         $this->repository  = new VideoInterviewRepository();
         $this->storage     = new Services();
         $this->ui_factory  = $DIC->ui()->factory();
@@ -134,12 +135,12 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
     }
 
     /**
-     * In this version of the plugin we create one excercise for one object and
-     * therefore the excercise is created here in afterSave.
+     * In this version of the plugin we create one Exercise for one object and
+     * therefore the Exercise is created here in afterSave.
      *
      * @param ilObject $newObj
      */
-    public function afterSave(ilObject $newObj)
+    public function afterSave(ilObject $newObj) : void
     {
         $form = $this->initCreateForm($newObj->getType());
         $form->checkInput();
@@ -185,13 +186,20 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
                 $participant_gui = new ilObjSrVideoInterviewParticipantGUI($this->ref_id);
                 $this->ctrl->forwardCommand($participant_gui);
                 break;
+            // ParticipantGUI toolbar delegation
             case strtolower(ilRepositorySearchGUI::class):
                 $this->tabs->clearTargets();
-                $this->tabs->setBackTarget($this->plugin->txt('back_to'), $this->ctrl->getLinkTargetByClass(ilObjSrVideoInterviewParticipantGUI::class));
-                $search = new ilRepositorySearchGUI();
+                $this->tabs->setBackTarget(
+                    $this->plugin->txt('back_to'),
+                    $this->ctrl->getLinkTargetByClass(
+                        ilObjSrVideoInterviewParticipantGUI::class
+                    )
+                );
+
+                $search_gui = new ilRepositorySearchGUI();
                 $participant_gui = new ilObjSrVideoInterviewParticipantGUI($this->ref_id);
-                $search->setCallback($participant_gui, ilObjSrVideoInterviewParticipantGUI::CMD_PARTICIPANT_ADD_BY_ROLE);
-                $this->ctrl->forwardCommand($search);
+                $search_gui->setCallback($participant_gui, ilObjSrVideoInterviewParticipantGUI::CMD_PARTICIPANT_ADD_BY_ROLE);
+                $this->ctrl->forwardCommand($search_gui);
                 break;
             default:
                 // do nothing, let parent handle $next_class
@@ -335,7 +343,7 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
 
             'exercise_resource' => VideoRecorderInput::getInstance(
                 $this->video_upload_handler,
-                'Video'
+                "Video"
             )->withValue($values['exercise_resource']),
         );
 

@@ -46,11 +46,11 @@ class Answer
 
     /**
      * Answer constructor.
-     *
      * @param int|null $id
      * @param int      $type
      * @param string   $content
      * @param string   $resource_id
+     * @param string   $thumbnail_id
      * @param int|null $exercise_id
      * @param int|null $participant_id
      */

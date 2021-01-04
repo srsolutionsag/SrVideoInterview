@@ -33,6 +33,7 @@ participant_already_invited#:#Dieser Teilnehmer hat bereits eine Benachrichtigun
 participant_invited#:#Benachrichtigung(en) versendet
 no_participants#:#Es wurden noch keine Teilnehmer hinzugefügt.
 general_error#:#Ups, etwas ist schief gelaufen.
+evaluate#:#Feedback
 
 obj_xvin#:#Video Interview
 objs_xvin#:#Video Interview
