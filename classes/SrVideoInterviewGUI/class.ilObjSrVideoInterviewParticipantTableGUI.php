@@ -159,7 +159,7 @@ class ilObjSrVideoInterviewParticipantTableGUI extends ilTable2GUI
                     $this->plugin->txt('show_answer'),
                     $this->ctrl->getLinkTargetByClass(
                         ilObjSrVideoInterviewAnswerGUI::class,
-                        ilObjSrVideoInterviewAnswerGUI::CMD_ANSWER_SHOW_TUT
+                        ilObjSrVideoInterviewAnswerGUI::CMD_ANSWER_SHOW
                     )
                 )
             ;

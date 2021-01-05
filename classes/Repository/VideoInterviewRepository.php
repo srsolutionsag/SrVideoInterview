@@ -85,6 +85,17 @@ final class VideoInterviewRepository
     }
 
     /**
+     * delete an existing Answer by it's id.
+     *
+     * @param int $answer_id
+     * @return bool
+     */
+    public function deleteAnswerById(int $answer_id) : bool
+    {
+        return $this->answer_repository->delete($answer_id);
+    }
+
+    /**
      * retrieve an existing Exercise by it's id.
      *
      * @param int $exercise_id

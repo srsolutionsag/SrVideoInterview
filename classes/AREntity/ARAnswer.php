@@ -161,7 +161,7 @@ class ARAnswer extends ActiveRecord
     /**
      * @return string
      */
-    public function getResourceId() : string
+    public function getResourceId() : ?string
     {
         return $this->resource_id;
     }

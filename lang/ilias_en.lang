@@ -34,6 +34,8 @@ participant_invited#:#Notification(s) sent
 no_participants#:#No Participants added yet.
 general_error#:#Whoops, something went wrong.
 evaluate#:#Feedback
+already_evaluated#:#You've already evaluated this Participant's Answer.
+feedback#:#Feedback
 
 obj_xvin#:#Video Interview
 objs_xvin#:#Video Interview

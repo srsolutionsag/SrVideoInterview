@@ -165,6 +165,10 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
      */
     public function executeCommand() : void
     {
+//        $this->repository->deleteAnswerById(4);
+//        echo "yes";
+//        exit;
+
         $this->setupTabs(); // when using setTabs(), tabs cannot be activated.
         $next_class = $this->ctrl->getNextClass($this);
         switch ($next_class) {
