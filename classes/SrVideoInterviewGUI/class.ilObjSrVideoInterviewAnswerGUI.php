@@ -211,7 +211,8 @@ class ilObjSrVideoInterviewAnswerGUI extends ilObjSrVideoInterviewGUI
                 ));
             }
 
-            if ($this->current_participant == $participant &&
+            // dont use strict comparison, only check for property values
+            if ($this->current_participant != $participant &&
                 ARAnswer::TYPE_ANSWER === $answer->getType()
             ) {
                 $this->ctrl->setParameterByClass(
@@ -281,7 +282,7 @@ class ilObjSrVideoInterviewAnswerGUI extends ilObjSrVideoInterviewGUI
                     'participant_id',
                     $participant->getId()
                 );
-                
+
                 $form = $this->getAnswerForm(ARAnswer::TYPE_FEEDBACK)->withRequest($this->http->request());
                 $data = $form->getData();
                 if (isset($data['answer_resource']) ||
