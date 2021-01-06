@@ -150,6 +150,7 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
             $newObj->getDescription(),
             $form->getInput('exercise_detailed_description'),
             "",
+            '',
             $newObj->getId()
         );
 
@@ -165,10 +166,6 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
      */
     public function executeCommand() : void
     {
-//        $this->repository->deleteAnswerById(4);
-//        echo "yes";
-//        exit;
-
         $this->setupTabs(); // when using setTabs(), tabs cannot be activated.
         $next_class = $this->ctrl->getNextClass($this);
         switch ($next_class) {
