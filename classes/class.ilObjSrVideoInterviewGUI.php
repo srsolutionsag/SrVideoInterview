@@ -122,7 +122,7 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
      */
     final public function getAfterCreationCmd() : string
     {
-        return ilObjSrVideoInterviewExerciseGUI::CMD_EXERCISE_INDEX;
+        return ilObjSrVideoInterviewExerciseGUI::CMD_EXERCISE_EDIT;
     }
 
     /**
