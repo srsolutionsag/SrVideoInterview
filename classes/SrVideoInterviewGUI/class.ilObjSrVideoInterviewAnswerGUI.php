@@ -128,6 +128,27 @@ class ilObjSrVideoInterviewAnswerGUI extends ilObjSrVideoInterviewGUI
      */
     protected function getAnswerForm(int $type) : Standard
     {
+        if (ARAnswer::TYPE_ANSWER === $type) {
+            $cmd = self::CMD_ANSWER_ADD;
+            $inputs = array(
+                'answer_resource' => VideoRecorderInput::getInstance(
+                    $this->video_upload_handler,
+                    $this->txt('answer') . " Video"
+                ),
+            );
+        } else {
+            $cmd = self::CMD_ANSWER_EVALUATE;
+            $inputs = array(
+                'answer_content' => $this->ui_factory
+                    ->input()
+                    ->field()
+                    ->textarea(
+                        $this->txt('additional_content')
+                    )
+                ,
+            );
+        }
+
         return $this->ui_factory
             ->input()
             ->container()
@@ -135,25 +156,95 @@ class ilObjSrVideoInterviewAnswerGUI extends ilObjSrVideoInterviewGUI
             ->standard(
                 $this->ctrl->getFormActionByClass(
                     self::class,
-                    (ARAnswer::TYPE_ANSWER === $type) ?
-                        self::CMD_ANSWER_ADD :
-                        self::CMD_ANSWER_EVALUATE
+                    $cmd
                 ),
-                array(
-                    'answer_resource' => VideoRecorderInput::getInstance(
-                        $this->video_upload_handler,
-                        $this->txt('answer') . " Video"
-                    ),
-
-                    'answer_content' => $this->ui_factory
-                        ->input()
-                        ->field()
-                        ->textarea(
-                            $this->txt('additional_content')
-                        )
-                    ,
-                )
+                $inputs
             );
+    }
+
+    /**
+     * get HTML markup to display an existing answer by it's id.
+     *
+     * @param int $answer_id
+     * @return string
+     * @throws ilTemplateException
+     */
+    public function getAnswerHTML(int $answer_id) : string
+    {
+        // @TODO: may implement this passively later.
+        $answer = $this->repository->getAnswerById($answer_id);
+        $participant = $this->repository->getParticipantById($answer->getParticipantId());
+
+        // @TODO: might catch exception here?
+        $tpl  = new ilTemplate(self::TEMPLATE_DIR . 'tpl.answer.html', false, false);
+        $user = new ilObjUser($participant->getUserId());
+
+        $title = "[{$user->getLogin()}] {$user->getFirstname()} {$user->getLastname()}'s ";
+        $title.= (ARAnswer::TYPE_ANSWER === $answer->getType()) ?
+            $this->txt('answer') :
+            $this->txt('feedback')
+        ;
+
+        $tpl->setVariable('TITLE', $title);
+
+        $tpl->setVariable('VIDEO', $this->getRecordedVideoHTML($answer->getResourceId()));
+
+        if (!empty($answer->getContent())) {
+            $tpl->addBlock('ANSWER_CONTENT_BLOCK', 'ANSWER_CONTENT_BLOCK', $this->ui_renderer->render(
+                $this->ui_factory
+                    ->legacy("
+                            <div>
+                                <h4>{$this->txt('additional_content')}</h4>
+                                <p>{$answer->getContent()}</p>
+                                <br />
+                            </div>
+                        ")
+            ));
+        }
+
+        // dont use strict comparison, only check for property values
+        if ($this->current_participant == $participant) {
+            $tpl->addBlock("ANSWER_INFO_BLOCK", "ANSWER_INFO_BLOCK", $this->ui_renderer->render(
+                $this->ui_factory
+                    ->messageBox()
+                    ->info(
+                        (ARAnswer::TYPE_ANSWER === $answer->getType()) ?
+                            $this->txt('already_answered') :
+                            $this->txt('already_evaluated')
+                    )
+            ));
+        }
+
+        // dont use strict comparison, only check for property values
+        if ($this->current_participant != $participant &&
+            ARAnswer::TYPE_ANSWER === $answer->getType()
+        ) {
+            $this->ctrl->setParameterByClass(
+                self::class,
+                'exercise_id',
+                $answer->getExerciseId()
+            );
+
+            $this->ctrl->setParameterByClass(
+                self::class,
+                'participant_id',
+                $participant->getId()
+            );
+
+            $tpl->setVariable("ACTION", $this->ui_renderer->render(
+                $this->ui_factory
+                    ->button()
+                    ->primary(
+                        $this->txt('evaluate'),
+                        $this->ctrl->getLinkTargetByClass(
+                            self::class,
+                            self::CMD_ANSWER_EVALUATE
+                        )
+                    )
+            ));
+        }
+
+        return $tpl->get();
     }
 
     /**
@@ -167,80 +258,11 @@ class ilObjSrVideoInterviewAnswerGUI extends ilObjSrVideoInterviewGUI
         $answer_id = $answer_id ?? (int) $this->http->request()->getQueryParams()['answer_id'];
 
         if (null !== $answer_id &&
-            null !== ($answer = $this->repository->getAnswerById($answer_id)) &&
-            null !== ($participant = $this->repository->getParticipantById($answer->getParticipantId()))
+            null !== ($answer = $this->repository->getAnswerById($answer_id))
         ) {
-            // @TODO: might catch exception here?
-            $tpl  = new ilTemplate(self::TEMPLATE_DIR . 'tpl.answer.html', false, false);
-
-            $user = new ilObjUser($participant->getUserId());
-
-            $title = "[{$user->getLogin()}] {$user->getFirstname()} {$user->getLastname()}'s ";
-            $title.= (ARAnswer::TYPE_ANSWER === $answer->getType()) ?
-                $this->txt('answer') :
-                $this->txt('feedback')
-            ;
-
-            $tpl->setVariable('TITLE', $title);
-
-            $tpl->setVariable('VIDEO', $this->getRecordedVideoHTML($answer->getResourceId()));
-
-            if (!empty($answer->getContent())) {
-                $tpl->addBlock('ANSWER_CONTENT_BLOCK', 'ANSWER_CONTENT_BLOCK', $this->ui_renderer->render(
-                    $this->ui_factory
-                        ->legacy("
-                            <div>
-                                <h4>{$this->txt('additional_content')}</h4>
-                                <p>{$answer->getContent()}</p>
-                                <br />
-                            </div>
-                        ")
-                ));
-            }
-
-            // dont use strict comparison, only check for property values
-            if ($this->current_participant == $participant) {
-                $tpl->addBlock("ANSWER_INFO_BLOCK", "ANSWER_INFO_BLOCK", $this->ui_renderer->render(
-                    $this->ui_factory
-                        ->messageBox()
-                        ->info(
-                            (ARAnswer::TYPE_ANSWER === $answer->getType()) ?
-                                $this->txt('already_answered') :
-                                $this->txt('already_evaluated')
-                        )
-                ));
-            }
-
-            // dont use strict comparison, only check for property values
-            if ($this->current_participant != $participant &&
-                ARAnswer::TYPE_ANSWER === $answer->getType()
-            ) {
-                $this->ctrl->setParameterByClass(
-                    self::class,
-                    'exercise_id',
-                    $answer->getExerciseId()
-                );
-
-                $this->ctrl->setParameterByClass(
-                    self::class,
-                    'participant_id',
-                    $participant->getId()
-                );
-
-                $tpl->setVariable("ACTION", $this->ui_renderer->render(
-                    $this->ui_factory
-                        ->button()
-                        ->primary(
-                            $this->txt('evaluate'),
-                            $this->ctrl->getLinkTargetByClass(
-                                self::class,
-                                self::CMD_ANSWER_EVALUATE
-                            )
-                        )
-                ));
-            }
-
-            $this->tpl->setContent($tpl->get());
+            $this->tpl->setContent(
+              $this->getAnswerHTML($answer->getId())
+            );
         } else {
             $this->objectNotFound();
         }
@@ -289,9 +311,13 @@ class ilObjSrVideoInterviewAnswerGUI extends ilObjSrVideoInterviewGUI
                     isset($data['answer_content'])
                 ) {
                     if (ARAnswer::TYPE_ANSWER === $type) {
+                        $success_class = ilObjSrVideoInterviewExerciseGUI::class;
+                        $success_cmd = ilObjSrVideoInterviewExerciseGUI::CMD_EXERCISE_SHOW;
                         $failure_class = ilObjSrVideoInterviewExerciseGUI::class;
                         $failure_cmd = ilObjSrVideoInterviewExerciseGUI::CMD_EXERCISE_INDEX;
                     } else {
+                        $success_class = ilObjSrVideoInterviewParticipantGUI::class;
+                        $success_cmd = ilObjSrVideoInterviewParticipantGUI::CMD_PARTICIPANT_INDEX;
                         $failure_class = self::class;
                         $failure_cmd = self::CMD_ANSWER_SHOW;
                     }
@@ -318,8 +344,8 @@ class ilObjSrVideoInterviewAnswerGUI extends ilObjSrVideoInterviewGUI
 
                         ilUtil::sendSuccess($this->txt('answer_added'), true);
                         $this->ctrl->redirectByClass(
-                            ilObjSrVideoInterviewParticipantGUI::class,
-                            ilObjSrVideoInterviewParticipantGUI::CMD_PARTICIPANT_INDEX
+                            $success_class,
+                            $success_cmd
                         );
                     }
 
@@ -379,6 +405,10 @@ class ilObjSrVideoInterviewAnswerGUI extends ilObjSrVideoInterviewGUI
      */
     protected function addExerciseAnswer() : void
     {
-        $this->addAnswer(ARAnswer::TYPE_ANSWER);
+        if (null !== $this->current_participant) {
+            $this->addAnswer(ARAnswer::TYPE_ANSWER);
+        }
+
+        $this->permissionDenied();
     }
 }
