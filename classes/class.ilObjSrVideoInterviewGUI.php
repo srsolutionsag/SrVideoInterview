@@ -465,13 +465,13 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
     protected function permissionDenied() : void
     {
         // @TODO: implement permissionDenied() method.
-        $this->tpl->setContent(
-            $this->ui_renderer->render(
-                $this->ui_factory
-                    ->messageBox()
-                    ->failure("Permission denied.")
-            )
-        );
+//        $this->tpl->setContent(
+//            $this->ui_renderer->render(
+//                $this->ui_factory
+//                    ->messageBox()
+//                    ->failure("Permission denied.")
+//            )
+//        );
     }
 
     /**
@@ -480,12 +480,12 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
     protected function objectNotFound() : void
     {
         // @TODO: implement objectNotFound() method.
-        $this->tpl->setContent(
-            $this->ui_renderer->render(
-                $this->ui_factory
-                    ->messageBox()
-                    ->failure("Requested object not found")
-            )
-        );
+//        $this->tpl->setContent(
+//            $this->ui_renderer->render(
+//                $this->ui_factory
+//                    ->messageBox()
+//                    ->failure("Requested object not found")
+//            )
+//        );
     }
 }
