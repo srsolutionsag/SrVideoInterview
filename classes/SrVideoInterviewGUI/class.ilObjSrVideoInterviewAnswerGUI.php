@@ -312,7 +312,7 @@ class ilObjSrVideoInterviewAnswerGUI extends ilObjSrVideoInterviewGUI
                 ) {
                     if (ARAnswer::TYPE_ANSWER === $type) {
                         $success_class = ilObjSrVideoInterviewExerciseGUI::class;
-                        $success_cmd = ilObjSrVideoInterviewExerciseGUI::CMD_EXERCISE_SHOW;
+                        $success_cmd = ilObjSrVideoInterviewExerciseGUI::CMD_EXERCISE_INDEX;
                         $failure_class = ilObjSrVideoInterviewExerciseGUI::class;
                         $failure_cmd = ilObjSrVideoInterviewExerciseGUI::CMD_EXERCISE_INDEX;
                     } else {
@@ -407,8 +407,8 @@ class ilObjSrVideoInterviewAnswerGUI extends ilObjSrVideoInterviewGUI
     {
         if (null !== $this->current_participant) {
             $this->addAnswer(ARAnswer::TYPE_ANSWER);
+        } else {
+            $this->permissionDenied();
         }
-
-        $this->permissionDenied();
     }
 }
