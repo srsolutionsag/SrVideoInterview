@@ -2,6 +2,13 @@
 /**
  * for 4:3 aspect-ratio
  */
+.sr-video-wrapper-small {
+    position: relative;
+    width: 40%;
+    padding-top: 30%;
+    margin-bottom: 5px;
+}
+
 .sr-video-wrapper {
     position: relative;
     width: 100%;
@@ -9,7 +16,7 @@
     margin-bottom: 5px;
 }
 
-.sr-video-wrapper video {
+.sr-video-wrapper video, .sr-video-wrapper-small video {
     position: absolute;
     display: inline-block;
     width: 100%;
@@ -18,4 +25,8 @@
     left: 0;
     bottom: 0;
     right: 0;
+}
+
+.sr-video-interview-white-col {
+    background-color: white;
 }
