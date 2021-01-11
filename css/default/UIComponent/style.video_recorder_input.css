@@ -1,11 +1,11 @@
 
 /**
- * for 4:3 aspect-ratio
+ * for 16:9 aspect-ratio
  */
-.sr-video-wrapper-small {
+.sr-video-wrapper {
     position: relative;
-    width: 40%;
-    padding-top: 30%;
+    width: 100%;
+    padding-top: 56.25%;
     margin-bottom: 5px;
     background-color: #2d2d2d;
     background-image: url('../../../templates/images/record.svg');
@@ -14,15 +14,11 @@
     background-position: center center;
 }
 
-.sr-video-wrapper {
-    position: relative;
-    width: 60%;
-    padding-top: 35%;
-    margin-bottom: 5px;
-    background-color: #1f1f1f;
+.sr-video-wrapper-small {
+    width: 40%;
 }
 
-.sr-video-wrapper video, .sr-video-wrapper-small video {
+.sr-video-preview {
     position: absolute;
     display: inline-block;
     width: 100%;
@@ -38,10 +34,10 @@
     display: none;
 }
 
-.sr-video-interview-white-col {
+.sr-col-white {
+    padding: 0 15px 15px 15px;
     background-color: white;
-
 }
-.sr-video-interview-white-col h3 {
+.sr-col-white h3 {
     padding-top: 6px;
 }

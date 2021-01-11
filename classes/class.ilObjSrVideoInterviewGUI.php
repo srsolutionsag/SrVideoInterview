@@ -457,7 +457,13 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
 
         $this->tpl->addCss("./Customizing/global/plugins/Services/Repository/RepositoryObject/SrVideoInterview/css/default/UIComponent/style.video_recorder_input.css");
 
-        return "<div class=\"sr-video-wrapper\"><video src=\"{$download_url}&{$file_identifier_key}={$resource_id}\" controls playsinline></video></div>";
+        return "
+            <div class=\"sr-video-wrapper-large\">
+                <div class=\"sr-video-wrapper\">
+                    <video class=\"sr-video-preview\" src=\"{$download_url}&{$file_identifier_key}={$resource_id}\" controls playsinline></video>          
+                </div>
+            </div>
+        ";
     }
 
     /**
