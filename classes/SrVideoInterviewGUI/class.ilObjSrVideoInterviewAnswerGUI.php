@@ -301,7 +301,7 @@ class ilObjSrVideoInterviewAnswerGUI extends ilObjSrVideoInterviewGUI
                     $participant->getId()
                 );
 
-                $form = $this->getAnswerForm(ARAnswer::TYPE_FEEDBACK)->withRequest($this->http->request());
+                $form = $this->getAnswerForm($type)->withRequest($this->http->request());
                 $data = $form->getData();
                 if (isset($data['answer_resource']) ||
                     isset($data['answer_content'])

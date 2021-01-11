@@ -6,11 +6,17 @@ require_once __DIR__ . "/SrVideoInterviewGUI/class.ilObjSrVideoInterviewParticip
 
 /**
  * Class ilObjSrVideoInterviewListGUI
- *
  * @author Fabian Schmid <fs@studer-raimann.ch>
  */
 class ilObjSrVideoInterviewListGUI extends ilObjectPluginListGUI
 {
+    public function __construct($a_context = self::CONTEXT_REPOSITORY)
+    {
+        global $DIC;
+        parent::__construct($a_context);
+        $DIC->ui()->mainTemplate()->addCss("./Customizing/global/plugins/Services/Repository/RepositoryObject/SrVideoInterview/css/default/UIComponent/style.general.css");
+    }
+
     /**
      * @inheritDoc
      */
@@ -38,7 +44,7 @@ class ilObjSrVideoInterviewListGUI extends ilObjectPluginListGUI
 
         $parent[] = [
             'property' => $this->txt('status'),
-            'value' => 'My Status'
+            'value'    => "<div class=\"sr-status-light\" style=\"background-color: green;\"></div>"
         ];
 
         return $parent;
@@ -46,7 +52,6 @@ class ilObjSrVideoInterviewListGUI extends ilObjectPluginListGUI
 
     /**
      * initialises the base-commands of a VideoInterview.
-     *
      * @return array
      */
     public function initCommands()
