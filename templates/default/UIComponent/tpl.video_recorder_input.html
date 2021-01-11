@@ -1,18 +1,20 @@
 
-<div id="{ID}" class="il-video-recorder">
+<div id="{ID}" class="il-sr-video-input">
 
-    <input type="hidden" class="resource-id" name="{NAME}" value="{VALUE}" />
+    <input type="hidden" class="sr-resource-input" name="{NAME}" value="{VALUE}" />
 
     <div class="sr-video-wrapper">
-        <!-- container for live-preview and finished recording -->
-        <video controls autoplay playsinline></video>
+        <video class="sr-video-preview" playsinline autoplay muted></video>
     </div>
 
-    <div class="wrapper wrap-controls">
-        <!-- buttons could lead to form submissions in certain contexts -->
-        <input type="button" class="btn-start-recording btn btn-default" value="Start" />
-        <input type="button" class="btn-stop-recording btn btn-default" value="Stop" disabled />
-        <input style="display: none;" type="button" class="btn-retake-recording btn btn-danger" value="Retake" disabled />
+    <div class="sr-error-msg help-block alert alert-danger" role="alert">
+        <img border="0" src="./templates/default/images/icon_alert.svg" alt="alert" />
+        <span></span>
+    </div>
+
+    <div>
+        <input type="button" class="sr-record-btn btn btn-default" value="{START}" disabled />
+        <input type="button" class="sr-retake-btn btn btn-danger" value="{RETAKE}" disabled />
     </div>
 
     <!--    use input type=file for iOS devices later  -->

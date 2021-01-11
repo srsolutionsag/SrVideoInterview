@@ -18,21 +18,38 @@ class Loader implements \ILIAS\UI\Implementation\Render\Loader
      */
     protected $dic;
 
-    public function __construct(Container $dic)
+    /**
+     * @var \ilSrVideoInterviewPlugin
+     */
+    protected $plugin;
+
+    /**
+     * Loader constructor.
+     * @param Container $dic
+     * @param           $plugin
+     */
+    public function __construct(Container $dic, $plugin)
     {
         $this->dic = $dic;
+        $this->plugin = $plugin;
     }
 
     public function getRendererFor(Component $component, array $contexts)
     {
-        if ($component instanceof VideoRecorderInput || $component instanceof MultiSelectUserInput) {
-            return new SrVideoInterviewRenderer(
+        if ($component instanceof VideoRecorderInput ||
+            $component instanceof MultiSelectUserInput
+        ) {
+            $renderer = new SrVideoInterviewRenderer(
                 $this->dic['ui.factory'],
                 $this->dic["ui.template_factory"],
                 $this->dic["lng"],
                 $this->dic["ui.javascript_binding"],
                 $this->dic["refinery"]
             );
+
+            $renderer->setPluginInstance($this->plugin);
+
+            return $renderer;
         }
 
         return $this->dic['ui.component_renderer_loader']->getRendererFor($component, $contexts);

@@ -128,25 +128,21 @@ class ilObjSrVideoInterviewAnswerGUI extends ilObjSrVideoInterviewGUI
      */
     protected function getAnswerForm(int $type) : Standard
     {
+        $inputs = array();
         if (ARAnswer::TYPE_ANSWER === $type) {
             $cmd = self::CMD_ANSWER_ADD;
-            $inputs = array(
-                'answer_resource' => VideoRecorderInput::getInstance(
+            $inputs['answer_resource'] = VideoRecorderInput::getInstance(
                     $this->video_upload_handler,
                     $this->txt('answer') . " Video"
-                ),
             );
         } else {
             $cmd = self::CMD_ANSWER_EVALUATE;
-            $inputs = array(
-                'answer_content' => $this->ui_factory
+            $inputs['answer_content'] = $this->ui_factory
                     ->input()
                     ->field()
                     ->textarea(
                         $this->txt('additional_content')
-                    )
-                ,
-            );
+                    );
         }
 
         return $this->ui_factory
@@ -253,9 +249,9 @@ class ilObjSrVideoInterviewAnswerGUI extends ilObjSrVideoInterviewGUI
      * @param int|null $answer_id
      * @throws ilTemplateException
      */
-    protected function showAnswer(int $answer_id = null) : void
+    protected function showAnswer() : void
     {
-        $answer_id = $answer_id ?? (int) $this->http->request()->getQueryParams()['answer_id'];
+        $answer_id = (int) $this->http->request()->getQueryParams()['answer_id'];
 
         if (null !== $answer_id &&
             null !== ($answer = $this->repository->getAnswerById($answer_id))
@@ -360,7 +356,7 @@ class ilObjSrVideoInterviewAnswerGUI extends ilObjSrVideoInterviewGUI
                     $this->getAnswerForm($type)
                 ));
             } else {
-                $this->showAnswer($answer->getId());
+                $this->tpl->setContent($this->getAnswerHTML($answer->getId()));
             }
         } else {
             $this->objectNotFound();

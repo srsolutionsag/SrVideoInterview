@@ -1,219 +1,229 @@
+/**
+ * (UI) VideoRecorderInput js does the actual recording when using this
+ * UIComponent within the plugin.
+ *
+ * This script initialises a media stream of the clients video and audio devices,
+ * after he granted us permission. Via buttons he can then start a recording of
+ * this stream, which will record up to 20 minutes max. Before form-submission, the
+ * recording will be uploaded to the ILIAS storage service and receive a resource-
+ * id and set this to a hidden input field.
+ *
+ * @author Thibeau Fuhrer <thf@studer-raimann.ch>
+ *
+ * The technology we use is called webRTC, and can be found by following sources:
+ *
+ * @see https://webrtc.github.io/samples/src/content/getusermedia/record/
+ * @see https://github.com/webrtc/samples/blob/gh-pages/src/content/getusermedia/record/js/main.js
+ */
 il = il || {};
 il.Plugins = il.Plugins || {};
 il.Plugins.SrVideoInterview = il.Plugins.SrVideoInterview || {};
 (function ($, il) {
-	/**
-	 * @TODO: improve performance by using the same instance when retaking a record.
-	 * @TODO: fix preview error, that doesn't work when retaking an existing recording.
-	 *
-	 * @type {{init: init}}
-	 */
 	il.Plugins.SrVideoInterview = (function ($) {
 		/**
-		 * VideoRecorderInput
+		 * init
+		 *
+		 * @TODO: refactor this later for readability.
 		 *
 		 * @param {string} id
 		 * @param {string} settings
 		 */
 		let init = function (id, settings) {
+
 			settings = Object.assign(JSON.parse(settings));
 			console.log(settings);
 
-			// obtain the plain HTMLMediaElement (hence no jQuery)
-			let videoContainer = document.querySelector('video');
+			let recorder,
+					recordedData,
+					video;
 
-			// get form submit buttons
-			let btnsSubmit = $('.il-standard-form-cmd > button');
+			let videoPreview  = document.querySelector('video.sr-video-preview'),
+				submitButton  = $('.il-standard-form-cmd > button'),
+				resourceInput = $(`#${id} .sr-resource-input`),
+				recordButton  = $(`#${id} .sr-record-btn`),
+				retakeButton  = $(`#${id} .sr-retake-btn`),
+				errorMessage  = $(`#${id} .sr-error-msg`),
+				form 					= resourceInput.form(),
+				timer					= 0;
 
-			// obtain recording controls
-			let btnStart  = $(`#${id} .btn-start-recording`),
-					btnStop   = $(`#${id} .btn-stop-recording`),
-					btnRetake = $(`#${id} .btn-retake-recording`),
-					fileInput = $(`#${id} .resource-id`);
-
-			// init globally accessible vars
-			let videoRecorder, mediaStream;
-
-			// when retaking an existing, dont delete on first retake.
-			let retakeOnExisting = false;
-
-			// check onload if already a recording exists and load it
-			$(function() {
-				if (fileInput.val()) {
-					retakeOnExisting = true;
-					videoContainer.style.display = "block";
-					videoContainer.volume = 1;
-					videoContainer.muted = false;
-					videoContainer.autoplay = false;
-					videoContainer.src = `${settings.download_url}&${settings.file_identifier_key}=${fileInput.val()}`;
-					btnStart.attr('disabled', true);
-					btnRetake.css('display', 'inline-block');
-					btnRetake.removeAttr('disabled');
-					btnsSubmit.removeAttr('disabled');
-				}
-			});
-
-			// register recording start
-			btnStart.click(function(e) {
-				e.preventDefault();
-				startRecording();
-			});
-
-			// register recording stop
-			btnStop.click(function(e) {
-				e.preventDefault();
-				stopRecording();
-			});
-
-			// register recording retake
-			btnRetake.click(async function(e) {
-				e.preventDefault();
-				if (!retakeOnExisting) {
-					retakeOnExisting = false;
-					await removeVideo(fileInput.val());
+			let enableRetakeButton = function() {
+				if ('none' === retakeButton.css('display')) {
+					retakeButton.css('display', 'inline-block');
 				}
 
-				fileInput.val(null);
-				btnRetake.attr('disabled', true);
-				startRecording();
-			});
-
-			/**
-			 * initializes and starts the recording.
-			 */
-			let startRecording = function() {
-				// manage controls visibility
-				btnStart.attr('disabled', true);
-				btnStop.removeAttr('disabled');
-				btnsSubmit.attr('disabled', true);
-
-				// ask for mediaDevices and retrieve their MediaStream(s)
-				navigator.mediaDevices.getUserMedia({
-					audio: true,
-					video: true,
-				}).then(function(stream) {
-					mediaStream = stream;
-
-					// enable live preview in videoContainer
-					videoContainer.style.display = "block";
-					videoContainer.volume = 0;
-					videoContainer.muted = true;
-					videoContainer.src = '';
-					videoContainer.srcObject = mediaStream;
-
-					// initialize recording
-					videoRecorder = new RecordRTC(mediaStream, {
-						recorderType: MediaStreamRecorder,
-						mimeType: 'video/webm',
-						disableLogs: true,
-					});
-
-					videoRecorder.startRecording();
-					videoRecorder.camera = mediaStream;
-				}).catch(function(err) {
-					alert("Whoops! Something went wrong, check your console for more details.");
-					console.log(err);
-				});
+				retakeButton.removeAttr('disabled');
 			}
 
-			/**
-			 * stops the recording and uploads it asynchronously.
-			 */
-			let stopRecording = function() {
-				// manage controls visibility
-				btnStop.attr('disabled', true);
+			let displayErrorMessage = function(text) {
+				if ('none' === errorMessage.css('display')) {
+					errorMessage.css('display', 'inline-block');
+				}
 
-				videoRecorder.stopRecording(async function() {
-					// disable live preview in videoContainer
-					videoContainer.srcObject = null;
-					videoContainer.volume = 1;
-					videoContainer.muted 	= false;
+				errorMessage.find('span').text(text);
+			}
 
-					// prepare blob-data for upload
-					let video = new File(
-						[videoRecorder.getBlob()],
-						'video_' + id + '.webm',
-						{
-							type: 'video/webm'
-						}
-					);
+			recordButton.click(function() {
+				if (recordButton.val() === settings.lng_vars['start']) {
+					startRecording();
+					recordButton.val(settings.lng_vars['stop']);
+				} else {
+					stopRecording();
+					recordButton.attr('disabled', true);
+				}
+			});
+
+			retakeButton.click(function() {
+				startRecording();
+				retakeButton.attr('disabled', true);
+				recordButton.removeAttr('disabled');
+			});
+
+			submitButton.click(async function(e) {
+				if (undefined !== video) {
+					e.preventDefault();
+					submitButton.attr('disabled', true);
 
 					let formData = new FormData();
 							formData.append('video-blob', video)
 							formData.append('video-filename', video.name);
 
-					await uploadVideo(formData);
+					await $.ajax({
+						url: settings.upload_url,
+						data: formData,
+						contentType: false,
+						processData: false,
+						type: 'POST',
+						success: function(response) {
+							response = Object.assign(JSON.parse(response));
+							console.log(response);
+							resourceInput.val(response[settings.file_identifier_key]);
+							form.submit();
+						},
+						error: function(e) {
+							console.error("Error when uploading the video blob: ", e)
+							displayErrorMessage(settings.lng_vars['general_error']);
+						}
+					});
+				}
+			});
 
-					// destroy recorder
-					videoRecorder.camera.stop();
-					videoRecorder.destroy();
-					videoRecorder = null;
-
-					// stop media streams (seems to change nothing)
-					// mediaStream.getTracks().forEach(function(track) {
-					// 	track.stop();
-					// });
-
-					mediaStream = null;
-
-					// enable retake control
-					btnRetake.css('display', 'inline-block');
-					btnRetake.removeAttr('disabled');
-
-					btnsSubmit.removeAttr('disabled');
-				});
+			let handleDataAvailable = function(event) {
+				if (event.data && event.data.size > 0) {
+					recordedData.push(event.data);
+				}
 			}
 
-			/**
-			 * uploads a recorded video into the storage service and retrieves the id.
-			 *
-			 * @param video
-			 * @returns {Promise<!jQuery.jqXHR|jQuery>}
-			 */
-			let uploadVideo = async function(video) {
-				return $.ajax({
-					url: settings.upload_url,
-					data: video,
-					cache: false,
-					contentType: false,
-					processData: false,
-					type: 'POST',
-					success: function(response) {
-						response = Object.assign(JSON.parse(response));
-						console.log(response);
-						videoContainer.src = URL.createObjectURL(videoRecorder.getBlob());
-						fileInput.val(response[settings.file_identifier_key]);
-					},
-					error: function (err) {
-						alert("Whoops! Something went wrong, check your console for more details.");
-						console.log(err);
+			let handleVideoResult = function() {
+				video = new Blob(
+					recordedData,
+					{
+						type: 'video/webm',
+						name: `video_${id}.webm`,
 					}
-				});
+				);
+
+				videoPreview.src = null;
+				videoPreview.srcObject = null;
+				videoPreview.src = window.URL.createObjectURL(video);
+				videoPreview.controls = true;
+				videoPreview.muted = false;
+				videoPreview.play();
 			}
 
-			/**
-			 * remove an uploaded recording by its id.
-			 *
-			 * @param videoId
-			 * @returns {Promise<!jQuery.jqXHR|jQuery>}
-			 */
-			let removeVideo = async function(videoId) {
-				return $.ajax({
-					url: settings.removal_url,
-					data: {
-						[settings.file_identifier_key]: videoId,
-					},
-					type: 'GET',
-					success: function(response) {
-						response = Object.assign(JSON.parse(response));
-						console.log(response);
-					},
-					error: function (err) {
-						alert("Whoops! Something went wrong, check your console for more details.");
-						console.log(err);
-					}
-				});
+			let startRecording = function() {
+				recordedData = [];
+				submitButton.attr('disabled', true);
+				videoPreview.srcObject = window.stream;
+				videoPreview.muted = true;
+				videoPreview.controls = false;
+				videoPreview.play();
+
+				try {
+					recorder = new MediaRecorder(window.stream, getSupportedMimeType);
+				} catch (e) {
+					displayErrorMessage(settings.lng_vars['general_error']);
+					return;
+				}
+
+				// register event-handler
+				recorder.ondataavailable = handleDataAvailable;
+				recorder.onstop = handleVideoResult;
+
+				recorder.start();
+
+				// set maximum duration of recording to 20 minutes
+				timer = setTimeout(stopRecording, (1000 * 60 * 20));
 			}
+
+			let stopRecording = function() {
+				recorder.stop();
+				if (0 !== timer) {
+					clearTimeout(timer);
+					timer = 0;
+				}
+				enableRetakeButton();
+				submitButton.removeAttr('disabled');
+
+				// for debugging purposes, stop media-stream on stop
+				// window.stream.getTracks().forEach(function(track) {
+				// 	track.stop();
+				// });
+			}
+
+			let handleSuccess = function(stream) {
+				window.stream = stream;
+
+				if (resourceInput.val()) {
+					enableRetakeButton();
+				} else {
+					videoPreview.srcObject = stream;
+					recordButton.removeAttr('disabled');
+				}
+			}
+
+			let getMediaStream = async function(constraints) {
+				return await navigator.mediaDevices.getUserMedia(constraints);
+			}
+
+			let getSupportedMimeType = function() {
+				let options = {mimeType: 'video/webm;codecs=vp9,opus'};
+				if (!MediaRecorder.isTypeSupported(options.mimeType)) {
+					options = {mimeType: 'video/webm;codecs=vp8,opus'};
+					if (!MediaRecorder.isTypeSupported(options.mimeType)) {
+						options = {mimeType: 'video/webm'};
+						if (!MediaRecorder.isTypeSupported(options.mimeType)) {
+							options = {mimeType: ''};
+						}
+					}
+				}
+
+				return options;
+			}
+
+			$(async function() {
+				try {
+					const stream = await getMediaStream({
+						audio: { echoCancellation: {exact: false} },
+						video: { width: 1280, height: 720	}
+					});
+
+					handleSuccess(stream);
+				} catch (e) {
+					console.error('navigator.getUserMedia error: ', e);
+					displayErrorMessage(settings.lng_vars['general_error']);
+				}
+
+				if (resourceInput.val()) {
+					videoPreview.autoplay = false;
+					videoPreview.controls = true;
+					videoPreview.muted = false;
+					videoPreview.src = `${settings.download_url}&${settings.file_identifier_key}=${resourceInput.val()}`;
+					recordButton.attr('disabled', true);
+					recordButton.val(settings.lng_vars['stop']);
+					retakeButton.css('display', 'inline-block');
+					retakeButton.removeAttr('disabled');
+				}
+			});
 		};
 
 		return {

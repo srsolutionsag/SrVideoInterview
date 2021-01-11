@@ -26,6 +26,16 @@ class SrVideoInterviewRenderer extends Renderer
     const TEMPLATE_DIR   = './Customizing/global/plugins/Services/Repository/RepositoryObject/SrVideoInterview/templates/default/UIComponent/';
 
     /**
+     * @var \ilSrVideoInterviewPlugin
+     */
+    protected $plugin;
+
+    public function setPluginInstance($plugin) : void
+    {
+        $this->plugin = $plugin;
+    }
+
+    /**
      * @param Template          $tpl
      * @param Input             $input
      * @param                   $id
@@ -34,6 +44,8 @@ class SrVideoInterviewRenderer extends Renderer
      */
     protected function renderInputField(Template $tpl, Input $input, $id, RendererInterface $default_renderer) : string
     {
+        $tpl->setVariable("START", $this->plugin->txt('start'));
+        $tpl->setVariable("RETAKE", $this->plugin->txt('retake'));
         $tpl->setVariable("NAME", $input->getName());
         $tpl->setVariable("VALUE", $input->getValue());
         $tpl->setVariable('LABEL', $input->getLabel());
@@ -71,9 +83,16 @@ class SrVideoInterviewRenderer extends Renderer
             $settings->upload_url   = $component->getUploadHandler()->getUploadURL();
             $settings->removal_url  = $component->getUploadHandler()->getFileRemovalURL();
             $settings->download_url = $component->getUploadHandler()->getExistingFileDownloadURL();
+            $settings->lng_vars = array(
+                'retake' => $this->plugin->txt('retake'),
+                'start' => $this->plugin->txt('start'),
+                'stop' => $this->plugin->txt('stop'),
+                'general_error' => $this->plugin->txt('general_error'),
+            );
 
             $global_template->addCss("./Customizing/global/plugins/Services/Repository/RepositoryObject/SrVideoInterview/css/default/UIComponent/style.video_recorder_input.css");
-            $registry->register('./Customizing/global/plugins/Services/Repository/RepositoryObject/SrVideoInterview/node_modules/recordrtc/RecordRTC.min.js');
+
+            $registry->register('https://webrtc.github.io/adapter/adapter-latest.js');
             $registry->register(self::JAVASCRIPT_DIR . "script.videoRecorderInput.js");
 
             $input_tpl = new ilTemplateWrapper(

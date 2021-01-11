@@ -19,7 +19,7 @@ add_participant#:#Teilnehmer hinzufügen
 add_participants#:#Teilnehmer hinzufügen
 add_participants_by_role#:#Nach Rolle suchen
 send_invitation#:#Alle Teilnehmenden benachrichtigen
-additional_content#:#Zusätzliche Bemerkung
+additional_content#:#Feedback
 already_answered#:#Du hast für diese Aufgabe bereits eine Antwort eingereicht.
 exercise_answered#:#Deine Antwort wurde gespeichert und dem Proffessor zugesendet!
 answer_not_completed#:#Deine Antwort muss eine Videoaufnahme beinhalten.
@@ -36,6 +36,7 @@ general_error#:#Ups, etwas ist schief gelaufen.
 evaluate#:#Feedback
 already_evaluated#:#Du hast die Antwort dieses Teilnehmers bereits beantwortet.
 feedback#:#Feedback
+answer_added#:#Antwort hinzugefügt.
 
 obj_xvin#:#Video Interview
 objs_xvin#:#Video Interview

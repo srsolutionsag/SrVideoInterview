@@ -277,6 +277,7 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
     {
         $form                          = parent::initCreateForm($a_new_type);
         $exercise_detailed_description = new ilTextAreaInputGUI($this->txt('exercise_detailed_description'), 'exercise_detailed_description');
+
         $form->addItem($exercise_detailed_description);
 
         return $form;

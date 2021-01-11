@@ -153,7 +153,7 @@ class ilObjSrVideoInterviewUploadHandlerGUI extends AbstractCtrlAwareUploadHandl
             $i = $this->storage->upload($result, $this->stakeholder);
             $status = HandlerResultInterface::STATUS_OK;
             $identifier = $i->serialize();
-            $message = 'Upload ok';
+            $message = 'upload ok';
         } else {
             $status = HandlerResultInterface::STATUS_FAILED;
             $identifier = '';

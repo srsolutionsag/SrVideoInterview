@@ -19,7 +19,7 @@ add_participant#:#Add Participant
 add_participants#:#Add Participants
 add_participants_by_role#:#Add by Role
 send_invitation#:#Inform all Participants
-additional_content#:#Additional Comment
+additional_content#:#Feedback
 already_answered#:#You have already submitted an answer to this exercise.
 exercise_answered#:#Your Answer has been submitted and sent to your Professor!
 answer_not_completed#:#Your Answer must include a video recording.
@@ -36,6 +36,7 @@ general_error#:#Whoops, something went wrong.
 evaluate#:#Feedback
 already_evaluated#:#You've already evaluated this Participant's Answer.
 feedback#:#Feedback
+answer_added#:#Answer added.
 
 obj_xvin#:#Video Interview
 objs_xvin#:#Video Interview

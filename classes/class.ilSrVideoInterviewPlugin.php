@@ -68,7 +68,7 @@ class ilSrVideoInterviewPlugin extends ilRepositoryObjectPlugin
      */
     public function exchangeUIRendererAfterInitialization(\ILIAS\DI\Container $dic) : Closure
     {
-        $loader = new Loader($dic);
+        $loader = new Loader($dic, $this);
         return static function ($dic) use ($loader) {
             return new class($loader) extends DefaultRenderer implements Renderer {
 

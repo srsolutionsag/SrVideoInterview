@@ -4,8 +4,8 @@
  */
 .sr-video-wrapper {
     position: relative;
-    width: 100%;
-    padding-top: 75%;
+    width: 60%;
+    padding-top: 35%;
     margin-bottom: 5px;
 }
 
@@ -18,4 +18,9 @@
     left: 0;
     bottom: 0;
     right: 0;
+}
+
+.il-sr-video-input .sr-retake-btn,
+.il-sr-video-input .sr-error-msg {
+    display: none;
 }

@@ -29,7 +29,8 @@ class VideoRecorderInput extends File
         Factory $refinery,
         C\Input\Field\UploadHandler $handler,
         string $label
-    ) {
+    )
+    {
         parent::__construct($data_factory, $refinery, $handler, $label, null);
     }
 
