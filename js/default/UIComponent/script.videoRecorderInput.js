@@ -24,27 +24,28 @@ il.Plugins.SrVideoInterview = il.Plugins.SrVideoInterview || {};
 		 * init
 		 *
 		 * @TODO: refactor this later for readability.
+		 * @TODO: add apple safari browser support.
 		 *
 		 * @param {string} id
 		 * @param {string} settings
 		 */
 		let init = function (id, settings) {
-
 			settings = Object.assign(JSON.parse(settings));
 			console.log(settings);
 
 			let recorder,
 					recordedData,
-					video;
+					recordedVideo;
 
 			let videoPreview  = document.querySelector('video.sr-video-preview'),
-				submitButton  = $('.il-standard-form-cmd > button'),
-				resourceInput = $(`#${id} .sr-resource-input`),
-				recordButton  = $(`#${id} .sr-record-btn`),
-				retakeButton  = $(`#${id} .sr-retake-btn`),
-				errorMessage  = $(`#${id} .sr-error-msg`),
-				form 					= resourceInput.form(),
-				timer					= 0;
+					submitButton  = $('.il-standard-form-cmd > button'),
+					resourceInput = $(`#${id} .sr-resource-input`),
+					recordButton  = $(`#${id} .sr-record-btn`),
+					retakeButton  = $(`#${id} .sr-retake-btn`),
+					errorMessage  = $(`#${id} .sr-error-msg`),
+					form 					= resourceInput.form(),
+					timer					= 0,
+					predecessor	  = null;
 
 			let enableRetakeButton = function() {
 				if ('none' === retakeButton.css('display')) {
@@ -79,31 +80,15 @@ il.Plugins.SrVideoInterview = il.Plugins.SrVideoInterview || {};
 			});
 
 			submitButton.click(async function(e) {
-				if (undefined !== video) {
+				retakeButton.attr('disabled', true);
+				recordButton.attr('disabled', true);
+
+				if (undefined !== recordedVideo) {
 					e.preventDefault();
 					submitButton.attr('disabled', true);
 
-					let formData = new FormData();
-							formData.append('video-blob', video)
-							formData.append('video-filename', video.name);
-
-					await $.ajax({
-						url: settings.upload_url,
-						data: formData,
-						contentType: false,
-						processData: false,
-						type: 'POST',
-						success: function(response) {
-							response = Object.assign(JSON.parse(response));
-							console.log(response);
-							resourceInput.val(response[settings.file_identifier_key]);
-							form.submit();
-						},
-						error: function(e) {
-							console.error("Error when uploading the video blob: ", e)
-							displayErrorMessage(settings.lng_vars['general_error']);
-						}
-					});
+					console.log("triggered submit");
+					await handleVideoUpload(recordedVideo);
 				}
 			});
 
@@ -114,7 +99,7 @@ il.Plugins.SrVideoInterview = il.Plugins.SrVideoInterview || {};
 			}
 
 			let handleVideoResult = function() {
-				video = new Blob(
+				recordedVideo = new Blob(
 					recordedData,
 					{
 						type: 'video/webm',
@@ -124,10 +109,56 @@ il.Plugins.SrVideoInterview = il.Plugins.SrVideoInterview || {};
 
 				videoPreview.src = null;
 				videoPreview.srcObject = null;
-				videoPreview.src = window.URL.createObjectURL(video);
+				videoPreview.src = window.URL.createObjectURL(recordedVideo);
 				videoPreview.controls = true;
 				videoPreview.muted = false;
 				videoPreview.play();
+			}
+
+			let handleVideoUpload = async function(video) {
+				console.log("entered handleVideoUpload");
+
+				if (predecessor) {
+					await $.ajax({
+						url: settings.removal_url,
+						data: {
+							[settings.file_identifier_key]: predecessor,
+						},
+						type: 'GET',
+						success: function(response) {
+							// @TODO: check response status for OK/NOK
+							response = Object.assign(JSON.parse(response));
+							console.log(response);
+						},
+						error: function(e) {
+							console.error("Error when deleting video predecessor : ", e)
+							displayErrorMessage(settings.lng_vars['general_error']);
+						}
+					});
+				}
+
+				let formData = new FormData();
+						formData.append('video-blob', video)
+						formData.append('video-filename', video.name);
+
+				await $.ajax({
+					url: settings.upload_url,
+					data: formData,
+					contentType: false,
+					processData: false,
+					type: 'POST',
+					success: function(response) {
+						// @TODO: check response status for OK/NOK
+						response = Object.assign(JSON.parse(response));
+						console.log(response);
+						resourceInput.val(response[settings.file_identifier_key]);
+						form.submit();
+					},
+					error: function(e) {
+						console.error("Error when uploading the video blob: ", e)
+						displayErrorMessage(settings.lng_vars['general_error']);
+					}
+				});
 			}
 
 			let startRecording = function() {
@@ -214,10 +245,11 @@ il.Plugins.SrVideoInterview = il.Plugins.SrVideoInterview || {};
 				}
 
 				if (resourceInput.val()) {
+					predecessor = resourceInput.val();
 					videoPreview.autoplay = false;
 					videoPreview.controls = true;
 					videoPreview.muted = false;
-					videoPreview.src = `${settings.download_url}&${settings.file_identifier_key}=${resourceInput.val()}`;
+					videoPreview.src = `${settings.download_url}&${settings.file_identifier_key}=${predecessor}`;
 					recordButton.attr('disabled', true);
 					recordButton.val(settings.lng_vars['stop']);
 					retakeButton.css('display', 'inline-block');
