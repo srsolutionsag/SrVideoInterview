@@ -142,13 +142,11 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
      */
     public function afterSave(ilObject $newObj) : void
     {
-        $form = $this->initCreateForm($newObj->getType());
-        $form->checkInput();
         $exercise = new Exercise(
             null,
             $newObj->getTitle(),
             $newObj->getDescription(),
-            $form->getInput('exercise_detailed_description'),
+            "",
             "",
             '',
             $newObj->getId()
@@ -273,15 +271,15 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
         }
     }
 
-    public function initCreateForm($a_new_type)
-    {
-        $form                          = parent::initCreateForm($a_new_type);
-        $exercise_detailed_description = new ilTextAreaInputGUI($this->txt('exercise_detailed_description'), 'exercise_detailed_description');
-
-        $form->addItem($exercise_detailed_description);
-
-        return $form;
-    }
+//    public function initCreateForm($a_new_type)
+//    {
+//        $form                          = parent::initCreateForm($a_new_type);
+//        $exercise_detailed_description = new ilTextAreaInputGUI($this->txt('exercise_detailed_description'), 'exercise_detailed_description');
+//
+//        $form->addItem($exercise_detailed_description);
+//
+//        return $form;
+//    }
 
 
     /**
@@ -464,6 +462,31 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
                 </div>
             </div>
         ";
+    }
+
+    /**
+     * sends an email to an existing participant and returns occurred errors.
+     *
+     * @param int    $user_id
+     * @param string $title
+     * @param string $message
+     * @return array
+     */
+    protected function sendMailToUser(int $user_id, string $title, string $message) : array
+    {
+        // use logged-in user (actor) as sender
+        $mail = new ilMail($this->user->getId());
+        $user = new ilObjUser($user_id);
+
+        $mail->setSaveInSentbox(true);
+        return $mail->enqueue(
+            $user->getLogin(),
+            '',
+            '',
+            $title,
+            $message,
+            array()
+        );
     }
 
     /**
