@@ -177,29 +177,6 @@ class ilObjSrVideoInterviewParticipantGUI extends ilObjSrVideoInterviewGUI
     }
 
     /**
-     * sends an email to an existing participant and returns occurred errors.
-     *
-     * @param Participant $participant
-     * @return array
-     */
-    protected function sendMailToParticipant(Participant $participant) : array
-    {
-        // use logged-in user (actor) as sender
-        $mail = new ilMail($this->user->getId());
-        $user = new ilObjUser($participant->getUserId());
-
-        $mail->setSaveInSentbox(true);
-        return $mail->enqueue(
-            $user->getLogin(),
-            '',
-            '',
-            $this->txt('invitation_title'),
-            $this->txt('invitation_message'),
-            array()
-        );
-    }
-
-    /**
      * adds new Participants to the current VideoInterview by an array of user-id's
      * if they don't exist and redirects on success/failure.
      *
@@ -235,6 +212,27 @@ class ilObjSrVideoInterviewParticipantGUI extends ilObjSrVideoInterviewGUI
             self::class,
             self::CMD_PARTICIPANT_INDEX
         );
+    }
+
+    /**
+     * send an Invitation with the current Exercises goto-link to a Participant.
+     *
+     * @param Participant $participant
+     * @return bool
+     */
+    protected function inviteParticipant(Participant $participant) : bool
+    {
+        $message = str_replace(
+            '{GOTO_URL}',
+            ilLink::_getStaticLink($this->ref_id),
+            $this->txt('invitation_message')
+        );
+
+        return empty($this->sendMailToUser(
+            $participant->getUserId(),
+            $this->txt('invitation_title'),
+            $message
+        ));
     }
 
     /**
@@ -343,7 +341,7 @@ class ilObjSrVideoInterviewParticipantGUI extends ilObjSrVideoInterviewGUI
                 );
             }
 
-            if (empty($this->sendMailToParticipant($participant))) {
+            if ($this->inviteParticipant($participant)) {
                 $participant->setInvitationSent(true);
                 $this->repository->store($participant);
 
@@ -374,18 +372,24 @@ class ilObjSrVideoInterviewParticipantGUI extends ilObjSrVideoInterviewGUI
             foreach ($participants as $participant) {
                 // skip notification if an invitation has already been sent.
                 if (!$participant->isInvitationSent()) {
-                    $error = $this->sendMailToParticipant($participant);
-                    if (empty($error)) {
+                    if ($this->inviteParticipant($participant)) {
                         $participant->setInvitationSent(true);
                         $this->repository->store($participant);
                     } else {
-                        $errors[] = $error;
+                        $errors[] = $participant->getId();
                     }
                 }
             }
 
             if (empty($errors)) {
                 ilUtil::sendSuccess($this->txt('participant_invited'), true);
+                $this->ctrl->redirectByClass(
+                    self::class,
+                    self::CMD_PARTICIPANT_INDEX
+                );
+            } else {
+                // actually a warning, but that's not supported yet.
+                ilUtil::sendFailure($this->txt('some_participant_invited'), true);
                 $this->ctrl->redirectByClass(
                     self::class,
                     self::CMD_PARTICIPANT_INDEX

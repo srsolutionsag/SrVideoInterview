@@ -212,7 +212,8 @@ class ilObjSrVideoInterviewAnswerGUI extends ilObjSrVideoInterviewGUI
         }
 
         // dont use strict comparison, only check for property values
-        if ($this->current_participant != $participant &&
+        // @TODO: change to != after debugging
+        if ($this->current_participant == $participant &&
             ARAnswer::TYPE_ANSWER === $answer->getType()
         ) {
             $this->ctrl->setParameterByClass(
@@ -265,7 +266,30 @@ class ilObjSrVideoInterviewAnswerGUI extends ilObjSrVideoInterviewGUI
     }
 
     /**
+     * send an email to a Participant to inform him when a Feedback has been added.
+     *
+     * @param Participant $participant
+     * @return bool
+     */
+    protected function informParticipant(Participant $participant) : bool
+    {
+        $message = str_replace(
+            '{GOTO_URL}',
+            ilLink::_getStaticLink($this->ref_id),
+            $this->txt('new_feedback_message')
+        );
+
+        return empty($this->sendMailToUser(
+            $participant->getUserId(),
+            $this->txt('new_feedback_title'),
+            $message
+        ));
+    }
+
+    /**
      * add answer of any type
+     *
+     * @TODO: outsource this method into separate subs
      *
      * @param int $type
      * @throws ilTemplateException
@@ -327,10 +351,20 @@ class ilObjSrVideoInterviewAnswerGUI extends ilObjSrVideoInterviewGUI
                         $exercise_id,
                         $participant->getId()
                     ))) {
-                        $answer = (ARAnswer::TYPE_ANSWER === $type) ?
-                            $this->repository->getParticipantAnswerForExercise($participant->getId(), $exercise_id) :
-                            $this->repository->getParticipantFeedbackForExercise($participant->getId(), $exercise_id)
-                        ;
+                        if (ARAnswer::TYPE_FEEDBACK === $type) {
+                            $lng_var = 'feedback_added';
+                            $this->informParticipant($participant);
+                            $answer = $this->repository->getParticipantFeedbackForExercise(
+                                $participant->getId(),
+                                $exercise_id
+                            );
+                        } else {
+                            $lng_var = 'answer_added';
+                            $answer = $this->repository->getParticipantAnswerForExercise(
+                                $participant->getId(),
+                                $exercise_id
+                            );
+                        }
 
                         $this->ctrl->setParameterByClass(
                             self::class,
@@ -338,7 +372,7 @@ class ilObjSrVideoInterviewAnswerGUI extends ilObjSrVideoInterviewGUI
                             $answer->getId()
                         );
 
-                        ilUtil::sendSuccess($this->txt('answer_added'), true);
+                        ilUtil::sendSuccess($this->txt($lng_var), true);
                         $this->ctrl->redirectByClass(
                             $success_class,
                             $success_cmd

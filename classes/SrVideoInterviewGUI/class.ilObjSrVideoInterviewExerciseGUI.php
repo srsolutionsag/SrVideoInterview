@@ -141,6 +141,7 @@ class ilObjSrVideoInterviewExerciseGUI extends ilObjSrVideoInterviewGUI
      */
     protected function editExercise() : void
     {
+        $this->tabs->activateTab(parent::VIDEO_INTERVIEW_TAB);
         $this->editVideoInterview();
     }
 

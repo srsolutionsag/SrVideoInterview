@@ -28,15 +28,22 @@ show_answer#:#Show answer
 notify_participant#:#Notify
 invitation_sent#:#Notified
 invitation_title#:#VideoInterview Invitation
-invitation_message#:#You've been added to a new VideInterview!
+invitation_message#:#Hey! You've been added to a new VideInterview, checkout this Link {GOTO_URL} to see your Exercises!
 participant_already_invited#:#This Participant already received a notification.
 participant_invited#:#Notification(s) sent
+new_feedback_title#:#New Feedback
+new_feedback_message#:#Hey! Your professor has evaluated your answer for this VideoInterview Exercise ({GOTO_URL}).
+some_participant_invited#:#Some Notification(s) sent. Check the Participant-Table "invited" status, because few Invitations could not be sent.
 no_participants#:#No Participants added yet.
 general_error#:#Whoops, something went wrong.
 evaluate#:#Feedback
 already_evaluated#:#You've already evaluated this Participant's Answer.
 feedback#:#Feedback
 answer_added#:#Answer added.
+feedback_added#:#Feedback added.
+retake#:#Retake
+start#:#Start recording
+stop#:#Stop recording
 
 obj_xvin#:#Video Interview
 objs_xvin#:#Video Interview

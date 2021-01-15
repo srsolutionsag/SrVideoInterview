@@ -28,15 +28,22 @@ show_answer#:#Antwort ansehen
 notify_participant#:#Benachrichtigen
 invitation_sent#:#Benachrichtigt
 invitation_title#:#Einladung zum VideoInterview
-invitation_message#:#Du wurdest zu einem neuen VideoInterview hinzugefügt!
+invitation_message#:#Hey! Du wurdest zu einem neuen VideoInterview hinzugefügt klicke auf diesen Link {GOTO_URL} um deine Aufgaben anzuschauen!
 participant_already_invited#:#Dieser Teilnehmer hat bereits eine Benachrichtigung erhalten.
+new_feedback_title#:#Neues Feedback
+new_feedback_message#:#Hey! Dein Proffessor hat deine eingereichte Antwort zum diesem VideoInterview ({GOTO_URL}) ausgewertet.
 participant_invited#:#Benachrichtigung(en) versendet
+some_participant_invited#:#Einige Benachrichtigung(en) versendet. Überprüfe die Teilnehmertabelle, ein paar Einladungen konnten nämlich nicht korrekt versendet werden.
 no_participants#:#Es wurden noch keine Teilnehmer hinzugefügt.
 general_error#:#Ups, etwas ist schief gelaufen.
 evaluate#:#Feedback
 already_evaluated#:#Du hast die Antwort dieses Teilnehmers bereits beantwortet.
 feedback#:#Feedback
 answer_added#:#Antwort hinzugefügt.
+feedback_added#:#Feedback hinzugefügt.
+retake#:#Wiederholen
+start#:#Aufnahme starten
+stop#:#Aufnahme stoppen
 
 obj_xvin#:#Video Interview
 objs_xvin#:#Video Interview
