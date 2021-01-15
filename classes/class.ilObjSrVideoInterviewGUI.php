@@ -105,6 +105,8 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
         $this->user        = $DIC->user();
 
         parent::__construct($a_ref_id, $a_id_type, $a_parent_node_id);
+
+        $this->tpl->addCss(self::CSS_DIR . 'style.general.css');
     }
 
     /**

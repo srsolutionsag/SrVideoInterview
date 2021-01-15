@@ -1,0 +1,30 @@
+/**
+ * style.general.css
+ *
+ * this stylesheet contains the general CSS adjustments of this plugin.
+ * it currently styles a pseudo-status-light, that is used to display
+ * the status (green, red, yellow) of something.
+ *
+ * @author Thibeau Fuhrer <thf@studer-raimann.ch>
+ */
+
+.sr-status-light {
+	height: 15px;
+	width: 15px;
+	border-radius: 50%;
+	padding: 0;
+	margin: 2px;
+}
+
+.sr-list-view-item {
+	position: absolute;
+	display: inline-block;
+	margin: 1px 0 0 1px;
+	content: '';
+}
+
+.sr-list-view-item p {
+	float: left;
+	margin: 0 5px 0 0;
+	padding: 0;
+}

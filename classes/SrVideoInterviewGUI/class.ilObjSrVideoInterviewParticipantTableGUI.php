@@ -45,7 +45,6 @@ class ilObjSrVideoInterviewParticipantTableGUI extends ilTable2GUI
         $this->repository  = new VideoInterviewRepository();
         $this->ui_factory  = $DIC->ui()->factory();
         $this->ui_renderer = $DIC->ui()->renderer();
-        $DIC->ui()->mainTemplate()->addCss("./Customizing/global/plugins/Services/Repository/RepositoryObject/SrVideoInterview/css/default/UIComponent/style.general.css");
 
         $this->setId(self::TABLE_NAME);
         $this->setPrefix(self::TABLE_NAME);

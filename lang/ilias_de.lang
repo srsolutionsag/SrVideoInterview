@@ -44,6 +44,9 @@ feedback_added#:#Feedback hinzugefügt.
 retake#:#Wiederholen
 start#:#Aufnahme starten
 stop#:#Aufnahme stoppen
+status#:#Status
+answered#:#Beantwortet
+not_answered#:#Noch nicht beantwortet
 
 obj_xvin#:#Video Interview
 objs_xvin#:#Video Interview
