@@ -2,12 +2,15 @@
  * style.general.css
  *
  * this stylesheet contains the general CSS adjustments of this plugin.
- * it currently styles a pseudo-status-light, that is used to display
- * the status (green, red, yellow) of something.
+ * it mainly styles a pseudo-status-light, that is used on several
+ * occasions in the code and optimises a few templates.
  *
  * @author Thibeau Fuhrer <thf@studer-raimann.ch>
  */
 
+/**
+ * pseudo-status-light styles
+ */
 .sr-status-light {
 	height: 15px;
 	width: 15px;
@@ -17,6 +20,7 @@
 }
 
 .sr-list-view-item {
+	/* makes status-light appear vertically centered */
 	position: absolute;
 	display: inline-block;
 	margin: 1px 0 0 1px;
@@ -26,5 +30,15 @@
 .sr-list-view-item p {
 	float: left;
 	margin: 0 5px 0 0;
-	padding: 0;
+}
+
+/**
+ * exercise template styles
+ */
+.sr-col-white {
+	padding: 0 15px 15px 15px;
+	background-color: white;
+}
+.sr-col-white h3 {
+	padding-top: 6px;
 }

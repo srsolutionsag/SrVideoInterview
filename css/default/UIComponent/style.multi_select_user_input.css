@@ -1,6 +1,10 @@
 /**
- * definitely some ugly css. improve this later and may use less.
- * (not even sure if this is best-practise, but it works)
+ * style.multi_select_user_input.css
+ *
+ * this stylesheet contains all CSS needed to make our custom toolbar
+ * multi-user-select-input work.
+ *
+ * @author Fabian Schmid <fs@studer-raimann.ch>
  */
 .sr-wrapper {
 	display: inline-block;
