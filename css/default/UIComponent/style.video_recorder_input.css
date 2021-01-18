@@ -10,10 +10,10 @@
     /* makes the video wrapper appear in an 16:9 aspect-ratio */
     position: relative;
     width: 100%;
-    padding-top: 56.25%;
     margin-bottom: 5px;
+    padding-top: 56.25%;
 
-    /* makes a placeholder appear when loading or on error */
+    /* makes a placeholder appear when loading or error */
     background-color: #2d2d2d;
     background-image: url('../../../templates/images/record.svg');
     background-size: 30% 30%;
@@ -36,7 +36,21 @@
     right: 0;
 }
 
+.il-sr-video-input .sr-ios-recording-controls,
 .il-sr-video-input .sr-retake-btn,
 .il-sr-video-input .sr-error-msg {
     display: none;
 }
+
+@media only screen and (max-device-width : 768px) {
+    .sr-video-wrapper-small {
+        width: 100%;
+    }
+
+    .sr-video-wrapper {
+        /* makes video container appear as 16:9 aspect-ratio in mobile format */
+        padding-top: 75%;
+        max-width: 56.25%;
+    }
+}
+

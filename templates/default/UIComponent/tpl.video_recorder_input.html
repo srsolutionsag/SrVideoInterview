@@ -14,15 +14,14 @@
         <span></span>
     </div>
 
-    <div>
+    <div class="sr-recording-controls">
+        <!-- buttons lead to form-submissions in certain contexts -->
         <input type="button" class="sr-record-btn btn btn-default" value="{START}" disabled />
         <input type="button" class="sr-retake-btn btn btn-danger" value="{RETAKE}" disabled />
     </div>
 
-    <!--    use input type=file for iOS devices later  -->
-
-    <!--    <div>-->
-    <!--        <input type="file" accept="video/*" capture="camera" name="{LABEL}" />-->
-    <!--    </div>-->
+    <div class="sr-ios-recording-controls">
+        <input type="file" class="sr-ios-result" name="sr-ios-result" accept="video/*" capture="camera" />
+    </div>
 
 </div>

@@ -43,6 +43,7 @@ il.Plugins.SrVideoInterview = il.Plugins.SrVideoInterview || {};
 					recordButton  = $(`#${id} .sr-record-btn`),
 					retakeButton  = $(`#${id} .sr-retake-btn`),
 					errorMessage  = $(`#${id} .sr-error-msg`),
+					iosVideoInput = $(`#${id} .sr-ios-result`),
 					form 					= resourceInput.form(),
 					timer					= 0,
 					predecessor	  = null;
@@ -126,8 +127,10 @@ il.Plugins.SrVideoInterview = il.Plugins.SrVideoInterview || {};
 					success: function(response) {
 						response = Object.assign(JSON.parse(response));
 						// console.log(response);
+
 						if (1 === response.status) {
 							resourceInput.val(response[settings.file_identifier_key]);
+							iosVideoInput.remove();
 							form.submit();
 						} else {
 							displayErrorMessage(settings.lng_vars['general_error']);
@@ -171,6 +174,7 @@ il.Plugins.SrVideoInterview = il.Plugins.SrVideoInterview || {};
 					clearTimeout(timer);
 					timer = 0;
 				}
+
 				enableRetakeButton();
 				submitButton.removeAttr('disabled');
 
@@ -210,6 +214,18 @@ il.Plugins.SrVideoInterview = il.Plugins.SrVideoInterview || {};
 				return options;
 			}
 
+			let iOS = function() {
+				return [
+						'iPad Simulator',
+						'iPhone Simulator',
+						'iPod Simulator',
+						'iPad',
+						'iPhone',
+						'iPod'
+					].includes(navigator.platform) ||
+					(navigator.userAgent.includes("Mac") && "ontouchend" in document)
+			}
+
 			recordButton.click(function() {
 				if (recordButton.val() === settings.lng_vars['start']) {
 					startRecording();
@@ -227,30 +243,29 @@ il.Plugins.SrVideoInterview = il.Plugins.SrVideoInterview || {};
 			});
 
 			submitButton.click(async function(e) {
+				e.preventDefault();
 				retakeButton.attr('disabled', true);
 				recordButton.attr('disabled', true);
 
 				if (undefined !== recordedVideo) {
 					e.preventDefault();
 					submitButton.attr('disabled', true);
-
 					await handleVideoUpload(recordedVideo);
 				}
 			});
 
+			iosVideoInput.change(function() {
+				recordedVideo = iosVideoInput[0].files[0];
+				videoPreview.src = null;
+				videoPreview.srcObject = null;
+				videoPreview.src = window.URL.createObjectURL(recordedVideo);
+				videoPreview.controls = true;
+				videoPreview.muted = false;
+				videoPreview.load();
+				videoPreview.play();
+			});
+
 			$(async function() {
-				try {
-					const stream = await getMediaStream({
-						audio: { echoCancellation: {exact: false} },
-						video: { width: 1280, height: 720	}
-					});
-
-					handleSuccess(stream);
-				} catch (e) {
-					// console.error('navigator.getUserMedia error: ', e);
-					displayErrorMessage(settings.lng_vars['general_error']);
-				}
-
 				if (resourceInput.val()) {
 					predecessor = resourceInput.val();
 					videoPreview.autoplay = false;
@@ -261,6 +276,25 @@ il.Plugins.SrVideoInterview = il.Plugins.SrVideoInterview || {};
 					recordButton.val(settings.lng_vars['stop']);
 					retakeButton.css('display', 'inline-block');
 					retakeButton.removeAttr('disabled');
+				}
+
+				if (!iOS()) {
+					try {
+						const stream = await getMediaStream({
+							audio: { echoCancellation: {exact: false} },
+							video: { width: 1280, height: 720	}
+						});
+
+						handleSuccess(stream);
+					} catch (e) {
+						// console.error('navigator.getUserMedia error: ', e);
+						displayErrorMessage(settings.lng_vars['general_error']);
+						retakeButton.attr('disabled', true);
+						recordButton.attr('disabled', true);
+					}
+				} else {
+					$(`#${id} .sr-ios-recording-controls`).css('display', 'inline-block');
+					$(`#${id} .sr-recording-controls`).css('display', 'none');
 				}
 			});
 		};
