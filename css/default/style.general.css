@@ -42,3 +42,12 @@
 .sr-col-white h3 {
 	padding-top: 6px;
 }
+
+/**
+ * answer template styles
+ */
+.sr-feedback-wrapper {
+	background: #90FF85;
+	padding: 2px 10px;
+	border-radius: 5%;
+}

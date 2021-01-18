@@ -159,13 +159,14 @@ class ilObjSrVideoInterviewAnswerGUI extends ilObjSrVideoInterviewGUI
     }
 
     /**
-     * get HTML markup to display an existing answer by it's id.
+     * get HTML markup to display an existing answer by it's id and show additional feedback.
      *
-     * @param int $answer_id
+     * @param int      $answer_id
+     * @param int|null $feedback_id
      * @return string
      * @throws ilTemplateException
      */
-    public function getAnswerHTML(int $answer_id) : string
+    public function getAnswerHTML(int $answer_id, int $feedback_id = null) : string
     {
         // @TODO: may implement this passively later.
         $answer = $this->repository->getAnswerById($answer_id);
@@ -185,20 +186,21 @@ class ilObjSrVideoInterviewAnswerGUI extends ilObjSrVideoInterviewGUI
 
         $tpl->setVariable('VIDEO', $this->getRecordedVideoHTML($answer->getResourceId()));
 
-        if (!empty($answer->getContent())) {
-            $tpl->addBlock('ANSWER_CONTENT_BLOCK', 'ANSWER_CONTENT_BLOCK', $this->ui_renderer->render(
+        if (null !== $feedback_id) {
+            $feedback = $this->repository->getAnswerById($feedback_id);
+            $tpl->addBlock('FEEDBACK_CONTENT_BLOCK', 'FEEDBACK_CONTENT_BLOCK', $this->ui_renderer->render(
                 $this->ui_factory
                     ->legacy("
-                            <div>
-                                <h4>{$this->txt('additional_content')}</h4>
-                                <p>{$answer->getContent()}</p>
+                            <div class=\"sr-feedback-wrapper\">
+                                <h4>{$this->txt('feedback')}:</h4>
+                                <p>{$feedback->getContent()}</p>
                                 <br />
                             </div>
                         ")
             ));
         }
 
-        // dont use strict comparison, only check for property values
+        // dont use strict comparison, only check for object property values
         if ($this->current_participant == $participant) {
             $tpl->addBlock("ANSWER_INFO_BLOCK", "ANSWER_INFO_BLOCK", $this->ui_renderer->render(
                 $this->ui_factory
@@ -390,7 +392,9 @@ class ilObjSrVideoInterviewAnswerGUI extends ilObjSrVideoInterviewGUI
                     $this->getAnswerForm($type)
                 ));
             } else {
-                $this->tpl->setContent($this->getAnswerHTML($answer->getId()));
+                $feedback = $this->repository->getParticipantFeedbackForExercise($participant->getId(), $exercise_id);
+                $feedback_id = (null !== $feedback) ? $feedback->getId() : null;
+                $this->tpl->setContent($this->getAnswerHTML($answer->getId(), $feedback_id));
             }
         } else {
             $this->objectNotFound();

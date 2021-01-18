@@ -233,7 +233,7 @@ il.Plugins.SrVideoInterview = il.Plugins.SrVideoInterview || {};
 				if (undefined !== recordedVideo) {
 					e.preventDefault();
 					submitButton.attr('disabled', true);
-					
+
 					await handleVideoUpload(recordedVideo);
 				}
 			});
