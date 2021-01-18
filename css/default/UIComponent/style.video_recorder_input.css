@@ -43,11 +43,10 @@
     display: none;
 }
 
-.sr-ios-file-input {
-    border: 1px solid #ccc;
-    display: inline-block;
-    padding: 6px 12px;
-    cursor: pointer;
+.sr-ios-file-input span {
+    font-size: 12px;
+    font-weight: normal;
+    color: white;
 }
 
 @media only screen and (max-device-width : 768px) {
