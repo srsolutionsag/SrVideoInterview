@@ -21,7 +21,11 @@
     </div>
 
     <div class="sr-ios-recording-controls">
-        <input type="file" class="sr-ios-result" name="sr-ios-result" accept="video/*" capture="camera" />
+        <!-- label-wrapper to control the inputs appearance -->
+        <label class="sr-ios-file-input">
+            <input type="file" class="sr-ios-result" accept="video/*" capture="camera" />
+            {RECORD}
+        </label>
     </div>
 
 </div>

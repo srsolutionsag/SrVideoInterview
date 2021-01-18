@@ -47,6 +47,7 @@ stop#:#Aufnahme stoppen
 status#:#Status
 answered#:#Beantwortet
 not_answered#:#Noch nicht beantwortet
+record#:#Aufnehmen
 
 obj_xvin#:#Video Interview
 objs_xvin#:#Video Interview

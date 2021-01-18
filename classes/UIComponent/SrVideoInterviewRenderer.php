@@ -46,6 +46,7 @@ class SrVideoInterviewRenderer extends Renderer
     {
         $tpl->setVariable("START", $this->plugin->txt('start'));
         $tpl->setVariable("RETAKE", $this->plugin->txt('retake'));
+        $tpl->setVariable("RECORD", $this->plugin->txt('record'));
         $tpl->setVariable("NAME", $input->getName());
         $tpl->setVariable("VALUE", $input->getValue());
         $tpl->setVariable('LABEL', $input->getLabel());
@@ -87,6 +88,7 @@ class SrVideoInterviewRenderer extends Renderer
                 'retake' => $this->plugin->txt('retake'),
                 'start' => $this->plugin->txt('start'),
                 'stop' => $this->plugin->txt('stop'),
+                'record' => $this->plugin->txt('record'),
                 'general_error' => $this->plugin->txt('general_error'),
             );
 
