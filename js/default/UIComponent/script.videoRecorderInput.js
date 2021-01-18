@@ -31,7 +31,7 @@ il.Plugins.SrVideoInterview = il.Plugins.SrVideoInterview || {};
 		 */
 		let init = function (id, settings) {
 			settings = Object.assign(JSON.parse(settings));
-			console.log(settings);
+			// console.log(settings);
 
 			let recorder,
 					recordedData,
@@ -63,35 +63,6 @@ il.Plugins.SrVideoInterview = il.Plugins.SrVideoInterview || {};
 				errorMessage.find('span').text(text);
 			}
 
-			recordButton.click(function() {
-				if (recordButton.val() === settings.lng_vars['start']) {
-					startRecording();
-					recordButton.val(settings.lng_vars['stop']);
-				} else {
-					stopRecording();
-					recordButton.attr('disabled', true);
-				}
-			});
-
-			retakeButton.click(function() {
-				startRecording();
-				retakeButton.attr('disabled', true);
-				recordButton.removeAttr('disabled');
-			});
-
-			submitButton.click(async function(e) {
-				retakeButton.attr('disabled', true);
-				recordButton.attr('disabled', true);
-
-				if (undefined !== recordedVideo) {
-					e.preventDefault();
-					submitButton.attr('disabled', true);
-
-					console.log("triggered submit");
-					await handleVideoUpload(recordedVideo);
-				}
-			});
-
 			let handleDataAvailable = function(event) {
 				if (event.data && event.data.size > 0) {
 					recordedData.push(event.data);
@@ -116,9 +87,8 @@ il.Plugins.SrVideoInterview = il.Plugins.SrVideoInterview || {};
 			}
 
 			let handleVideoUpload = async function(video) {
-				console.log("entered handleVideoUpload");
-
 				if (predecessor) {
+					let error = false;
 					await $.ajax({
 						url: settings.removal_url,
 						data: {
@@ -126,15 +96,21 @@ il.Plugins.SrVideoInterview = il.Plugins.SrVideoInterview || {};
 						},
 						type: 'GET',
 						success: function(response) {
-							// @TODO: check response status for OK/NOK
 							response = Object.assign(JSON.parse(response));
-							console.log(response);
+							// console.log(response);
+							if (!1 === response.status) {
+								displayErrorMessage(settings.lng_vars['general_error']);
+								error = true;
+							}
 						},
 						error: function(e) {
-							console.error("Error when deleting video predecessor : ", e)
+							// console.error("Error when deleting video predecessor : ", e)
 							displayErrorMessage(settings.lng_vars['general_error']);
+							error = true;
 						}
 					});
+
+					if (error) return;
 				}
 
 				let formData = new FormData();
@@ -148,14 +124,17 @@ il.Plugins.SrVideoInterview = il.Plugins.SrVideoInterview || {};
 					processData: false,
 					type: 'POST',
 					success: function(response) {
-						// @TODO: check response status for OK/NOK
 						response = Object.assign(JSON.parse(response));
-						console.log(response);
-						resourceInput.val(response[settings.file_identifier_key]);
-						form.submit();
+						// console.log(response);
+						if (1 === response.status) {
+							resourceInput.val(response[settings.file_identifier_key]);
+							form.submit();
+						} else {
+							displayErrorMessage(settings.lng_vars['general_error']);
+						}
 					},
 					error: function(e) {
-						console.error("Error when uploading the video blob: ", e)
+						// console.error("Error when uploading the video blob: ", e)
 						displayErrorMessage(settings.lng_vars['general_error']);
 					}
 				});
@@ -231,6 +210,34 @@ il.Plugins.SrVideoInterview = il.Plugins.SrVideoInterview || {};
 				return options;
 			}
 
+			recordButton.click(function() {
+				if (recordButton.val() === settings.lng_vars['start']) {
+					startRecording();
+					recordButton.val(settings.lng_vars['stop']);
+				} else {
+					stopRecording();
+					recordButton.attr('disabled', true);
+				}
+			});
+
+			retakeButton.click(function() {
+				startRecording();
+				retakeButton.attr('disabled', true);
+				recordButton.removeAttr('disabled');
+			});
+
+			submitButton.click(async function(e) {
+				retakeButton.attr('disabled', true);
+				recordButton.attr('disabled', true);
+
+				if (undefined !== recordedVideo) {
+					e.preventDefault();
+					submitButton.attr('disabled', true);
+					
+					await handleVideoUpload(recordedVideo);
+				}
+			});
+
 			$(async function() {
 				try {
 					const stream = await getMediaStream({
@@ -240,7 +247,7 @@ il.Plugins.SrVideoInterview = il.Plugins.SrVideoInterview || {};
 
 					handleSuccess(stream);
 				} catch (e) {
-					console.error('navigator.getUserMedia error: ', e);
+					// console.error('navigator.getUserMedia error: ', e);
 					displayErrorMessage(settings.lng_vars['general_error']);
 				}
 

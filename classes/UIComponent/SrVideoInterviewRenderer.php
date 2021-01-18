@@ -82,7 +82,6 @@ class SrVideoInterviewRenderer extends Renderer
             $settings->accepted_files = implode(',', $component->getAcceptedMimeTypes());
             $settings->upload_url   = $component->getUploadHandler()->getUploadURL();
             $settings->removal_url  = $component->getUploadHandler()->getFileRemovalURL();
-            $settings->download_url = $component->getUploadHandler()->getExistingFileDownloadURL();
             $settings->lng_vars = array(
                 'retake' => $this->plugin->txt('retake'),
                 'start' => $this->plugin->txt('start'),

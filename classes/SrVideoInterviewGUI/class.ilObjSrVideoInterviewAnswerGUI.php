@@ -107,7 +107,7 @@ class ilObjSrVideoInterviewAnswerGUI extends ilObjSrVideoInterviewGUI
      */
     protected function setupBackToTab(string $cmd) : void
     {
-        if ($this->access->checkAccess("read", "", $this->ref_id)) {
+        if ($this->access->checkAccess("read", $cmd, $this->ref_id)) {
             $this->tabs->clearTargets();
             // deactivate all other tabs that might be active
             $this->tabs->activateTab("should not be an actual id :)");
@@ -132,17 +132,17 @@ class ilObjSrVideoInterviewAnswerGUI extends ilObjSrVideoInterviewGUI
         if (ARAnswer::TYPE_ANSWER === $type) {
             $cmd = self::CMD_ANSWER_ADD;
             $inputs['answer_resource'] = VideoRecorderInput::getInstance(
-                    $this->video_upload_handler,
-                    $this->txt('answer') . " Video"
+                $this->video_upload_handler,
+                $this->txt('answer') . " Video"
             );
         } else {
             $cmd = self::CMD_ANSWER_EVALUATE;
             $inputs['answer_content'] = $this->ui_factory
-                    ->input()
-                    ->field()
-                    ->textarea(
-                        $this->txt('additional_content')
-                    );
+                ->input()
+                ->field()
+                ->textarea(
+                    $this->txt('additional_content')
+                );
         }
 
         return $this->ui_factory
@@ -212,8 +212,7 @@ class ilObjSrVideoInterviewAnswerGUI extends ilObjSrVideoInterviewGUI
         }
 
         // dont use strict comparison, only check for property values
-        // @TODO: change to != after debugging
-        if ($this->current_participant == $participant &&
+        if ($this->current_participant != $participant &&
             ARAnswer::TYPE_ANSWER === $answer->getType()
         ) {
             $this->ctrl->setParameterByClass(
@@ -247,7 +246,6 @@ class ilObjSrVideoInterviewAnswerGUI extends ilObjSrVideoInterviewGUI
     /**
      * show any type of answer
      *
-     * @param int|null $answer_id
      * @throws ilTemplateException
      */
     protected function showAnswer() : void
@@ -269,13 +267,14 @@ class ilObjSrVideoInterviewAnswerGUI extends ilObjSrVideoInterviewGUI
      * send an email to a Participant to inform him when a Feedback has been added.
      *
      * @param Participant $participant
+     * @param int         $exercise_id
      * @return bool
      */
-    protected function informParticipant(Participant $participant) : bool
+    protected function informParticipant(Participant $participant, int $exercise_id) : bool
     {
         $message = str_replace(
             '{GOTO_URL}',
-            ilLink::_getStaticLink($this->ref_id),
+            ilLink::_getStaticLink($this->ref_id) . "&exercise_id={$exercise_id}",
             $this->txt('new_feedback_message')
         );
 
@@ -327,8 +326,9 @@ class ilObjSrVideoInterviewAnswerGUI extends ilObjSrVideoInterviewGUI
 
                 $form = $this->getAnswerForm($type)->withRequest($this->http->request());
                 $data = $form->getData();
-                if (isset($data['answer_resource']) ||
-                    isset($data['answer_content'])
+
+                if (!empty($data['answer_resource']) ||
+                    !empty($data['answer_content'])
                 ) {
                     if (ARAnswer::TYPE_ANSWER === $type) {
                         $success_class = ilObjSrVideoInterviewExerciseGUI::class;
@@ -353,7 +353,7 @@ class ilObjSrVideoInterviewAnswerGUI extends ilObjSrVideoInterviewGUI
                     ))) {
                         if (ARAnswer::TYPE_FEEDBACK === $type) {
                             $lng_var = 'feedback_added';
-                            $this->informParticipant($participant);
+                            $this->informParticipant($participant, $exercise_id);
                             $answer = $this->repository->getParticipantFeedbackForExercise(
                                 $participant->getId(),
                                 $exercise_id
