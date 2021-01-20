@@ -1,7 +1,7 @@
 participant_tab#:#Participant Administration
 exercise_tab#:#Exercise
 settings#:#Settings
-exercise_detailed_description#:#Detailed Description
+exercise_detailed_description#:#Task
 exercise_resource#:#Video
 exercise_updated#:#Exercise successfully updated
 exercises#:#Exercises
@@ -28,7 +28,7 @@ show_answer#:#Show answer
 notify_participant#:#Notify
 invitation_sent#:#Notified
 invitation_title#:#VideoInterview Invitation
-invitation_message#:#Hey! You've been added to a new VideInterview, checkout this Link {GOTO_URL} to see your Exercises!
+invitation_message#:#Hey! You've been added to a new VideoInterview, checkout this Link {GOTO_URL} to see your Exercises!
 participant_already_invited#:#This Participant already received a notification.
 participant_invited#:#Notification(s) sent
 new_feedback_title#:#New Feedback
