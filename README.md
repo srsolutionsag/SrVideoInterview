@@ -10,6 +10,7 @@ This project is licensed under the GPL-3.0-only license
 
 * ILIAS 6.0 - 6.999
 * PHP >=7.0
+* Composer >=1.0
 
 ## Installation
 
@@ -19,6 +20,8 @@ Start at your ILIAS root directory
 mkdir -p Customizing/global/plugins/Services/Repository/RepositoryObject
 cd Customizing/global/plugins/Services/Repository/RepositoryObject
 git clone https://github.com/studer-raimann/SrVideoInterview.git SrVideoInterview
+cd SrVideoInterview
+composer install
 ```
 
 Update, activate and config the plugin in the ILIAS Plugin Administration
