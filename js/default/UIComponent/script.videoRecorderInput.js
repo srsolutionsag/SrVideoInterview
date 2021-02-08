@@ -24,7 +24,6 @@ il.Plugins.SrVideoInterview = il.Plugins.SrVideoInterview || {};
 		 * init
 		 *
 		 * @TODO: refactor this later for readability.
-		 * @TODO: add apple safari browser support.
 		 *
 		 * @param {string} id
 		 * @param {string} settings
@@ -71,11 +70,11 @@ il.Plugins.SrVideoInterview = il.Plugins.SrVideoInterview || {};
 			}
 
 			let handleVideoResult = function() {
-				recordedVideo = new Blob(
+				recordedVideo = new File(
 					recordedData,
+					`video_${id}.webm`,
 					{
 						type: 'video/webm',
-						name: `video_${id}.webm`,
 					}
 				);
 
