@@ -30,7 +30,7 @@ il.Plugins.SrVideoInterview = il.Plugins.SrVideoInterview || {};
 		 */
 		let init = function (id, settings) {
 			settings = Object.assign(JSON.parse(settings));
-			// console.log(settings);
+			console.log(settings);
 
 			let recorder,
 					recordedData,
@@ -99,13 +99,15 @@ il.Plugins.SrVideoInterview = il.Plugins.SrVideoInterview || {};
 							response = Object.assign(JSON.parse(response));
 							// console.log(response);
 							if (!1 === response.status) {
-								displayErrorMessage(settings.lng_vars['general_error']);
+								// displayErrorMessage(settings.lng_vars['general_error']);
+								displayErrorMessage("Error when deleting video predecessors: " + response.message);
+								console.log("Error when deleting video predecessors: ", response.message);
 								error = true;
 							}
 						},
 						error: function(e) {
-							// console.error("Error when deleting video predecessor : ", e)
-							displayErrorMessage(settings.lng_vars['general_error']);
+							// displayErrorMessage(settings.lng_vars['general_error']);
+							console.error("Error when deleting video predecessor : ", e)
 							error = true;
 						}
 					});
@@ -132,12 +134,15 @@ il.Plugins.SrVideoInterview = il.Plugins.SrVideoInterview || {};
 							iosVideoInput.remove();
 							form.submit();
 						} else {
-							displayErrorMessage(settings.lng_vars['general_error']);
+							// displayErrorMessage(settings.lng_vars['general_error']);
+							displayErrorMessage("Error when uploading current video: " + response.message);
+							console.log("Error when uploading current video: ", response.message);
 						}
 					},
 					error: function(e) {
-						// console.error("Error when uploading the video blob: ", e)
-						displayErrorMessage(settings.lng_vars['general_error']);
+						// displayErrorMessage(settings.lng_vars['general_error']);
+						displayErrorMessage("Error when uploading current video: " + e.toString());
+						console.error("Error when uploading the current blob: ", e);
 					}
 				});
 			}
@@ -153,7 +158,9 @@ il.Plugins.SrVideoInterview = il.Plugins.SrVideoInterview || {};
 				try {
 					recorder = new MediaRecorder(window.stream, getSupportedMimeType);
 				} catch (e) {
-					displayErrorMessage(settings.lng_vars['general_error']);
+					// displayErrorMessage(settings.lng_vars['general_error']);
+					displayErrorMessage("Error when creating the MediaRecorder for: " + window.stream + " and MimeType " + getSupportedMimeType());
+					console.log("Error when creating the MediaRecorder for: " + window.stream + " and MimeType " + getSupportedMimeType());
 					return;
 				}
 
@@ -206,6 +213,8 @@ il.Plugins.SrVideoInterview = il.Plugins.SrVideoInterview || {};
 						options = {mimeType: 'video/webm'};
 						if (!MediaRecorder.isTypeSupported(options.mimeType)) {
 							options = {mimeType: ''};
+							displayErrorMessage("No supported MimeType detected.");
+							console.log("No supported MimeType detected.");
 						}
 					}
 				}
@@ -286,8 +295,9 @@ il.Plugins.SrVideoInterview = il.Plugins.SrVideoInterview || {};
 
 						handleSuccess(stream);
 					} catch (e) {
-						// console.error('navigator.getUserMedia error: ', e);
-						displayErrorMessage(settings.lng_vars['general_error']);
+						// displayErrorMessage(settings.lng_vars['general_error']);
+						displayErrorMessage("Error when retrieving clients MediaStreams: " + e.toString());
+						console.error("Error when retrieving clients MediaStreams: ", e);
 						retakeButton.attr('disabled', true);
 						recordButton.attr('disabled', true);
 					}
