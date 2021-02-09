@@ -18,7 +18,7 @@ participant_added#:#Participant has been added to this Video Interview.
 add_participant#:#Add Participant
 add_participants#:#Add Participants
 add_participants_by_role#:#Add by Role
-send_invitation#:#Inform all Participants
+send_invitation#:#Notify all Participants
 additional_content#:#Feedback
 already_answered#:#You have already submitted an answer to this exercise.
 exercise_answered#:#Your Answer has been submitted and sent to your Professor!

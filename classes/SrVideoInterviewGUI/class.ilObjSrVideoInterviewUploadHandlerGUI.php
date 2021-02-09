@@ -131,8 +131,9 @@ class ilObjSrVideoInterviewUploadHandlerGUI extends AbstractCtrlAwareUploadHandl
         $identification = $this->storage->find($identifier);
 
         if (null !== $identification) {
-            $file = $this->storage->inline($identification);
-            $file->run();
+            $file = $this->storage->stream($identification);
+            $stream = $file->getStream();
+            ilFileDelivery::streamVideoInline($stream->getMetadata('uri'), 'Video.webm');
         }
 
         // what on err?
