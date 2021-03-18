@@ -251,7 +251,6 @@ il.Plugins.SrVideoInterview = il.Plugins.SrVideoInterview || {};
 			});
 
 			submitButton.click(async function(e) {
-				e.preventDefault();
 				retakeButton.attr('disabled', true);
 				recordButton.attr('disabled', true);
 
