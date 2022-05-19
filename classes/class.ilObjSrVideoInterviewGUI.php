@@ -69,6 +69,11 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
     protected $ui_renderer;
 
     /**
+     * @var \ILIAS\UI\Renderer
+     */
+    protected $custom_renderer;
+
+    /**
      * @var VideoInterviewRepository
      */
     protected $repository;
@@ -95,6 +100,9 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
         global $DIC;
 
         $this->video_upload_handler = new ilObjSrVideoInterviewUploadHandlerGUI();
+        $this->custom_renderer = new \ILIAS\UI\Implementation\DefaultRenderer(
+            new \srag\Plugins\SrVideoInterview\UIComponent\Loader($DIC, ilSrVideoInterviewPlugin::getInstance())
+        );
 
         $this->repository  = new VideoInterviewRepository();
         $this->storage     = new Services();
@@ -408,7 +416,7 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
         }
 
         $this->tpl->setContent(
-            $this->ui_renderer->render($form)
+            $this->custom_renderer->render($form)
         );
     }
 
@@ -438,7 +446,7 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
         }
 
         $this->tpl->setContent(
-            $this->ui_renderer->render(
+            $this->custom_renderer->render(
                 $this->buildVideoInterviewForm($data)
             )
         );
