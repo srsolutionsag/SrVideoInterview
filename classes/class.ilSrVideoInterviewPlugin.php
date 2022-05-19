@@ -2,11 +2,6 @@
 
 require_once './Customizing/global/plugins/Services/Repository/RepositoryObject/SrVideoInterview/vendor/autoload.php';
 
-use srag\Plugins\SrVideoInterview\UIComponent\Loader;
-use ILIAS\UI\Implementation\DefaultRenderer;
-use ILIAS\DI\Container;
-use ILIAS\UI\Renderer;
-
 /**
  * ilSrVideoInterviewPlugin is the singleton plugin instance, which is primarily used
  * to provide a global txt() method, that is used in GUI-classes.
@@ -58,21 +53,5 @@ class ilSrVideoInterviewPlugin extends ilRepositoryObjectPlugin
     final protected function uninstallCustom() : void
     {
         // TODO: Implement uninstallCustom() method, remove database tables
-    }
-
-    /**
-     * checks if given Component is a custom one and exchanges the default Renderer if so.
-     *
-     * @param Container $dic
-     * @return Closure
-     */
-    public function exchangeUIRendererAfterInitialization(\ILIAS\DI\Container $dic) : Closure
-    {
-        $loader = new Loader($dic, $this);
-        return static function ($dic) use ($loader) {
-            return new class($loader) extends DefaultRenderer implements Renderer {
-
-            };
-        };
     }
 }

@@ -388,7 +388,7 @@ class ilObjSrVideoInterviewAnswerGUI extends ilObjSrVideoInterviewGUI
                     );
                 }
 
-                $this->tpl->setContent($this->ui_renderer->render(
+                $this->tpl->setContent($this->custom_renderer->render(
                     $this->getAnswerForm($type)
                 ));
             } else {
