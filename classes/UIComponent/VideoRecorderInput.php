@@ -7,6 +7,7 @@ use ILIAS\Refinery\Factory;
 use ILIAS\UI\Component as C;
 use ILIAS\Data\Factory as DataFactory;
 use ILIAS\UI\Implementation\Component\Input\InputData;
+use ILIAS\Refinery\Constraint;
 
 /**
  * Class File
@@ -29,23 +30,22 @@ class VideoRecorderInput extends File
         Factory $refinery,
         C\Input\Field\UploadHandler $handler,
         string $label
-    )
-    {
+    ) {
         parent::__construct($data_factory, $refinery, $handler, $label, null);
     }
 
     /**
      * @inheritDoc
      */
-    protected function getConstraintForRequirement()
+    protected function getConstraintForRequirement(): ?Constraint
     {
-        return $this->refinery->string();
+        return $this->refinery->string()->length()->min(1);
     }
 
     /**
      * @inheritDoc
      */
-    protected function isClientSideValueOk($value) : bool
+    protected function isClientSideValueOk($value): bool
     {
         // @TODO: prove if value is correct
         return true;
@@ -54,9 +54,10 @@ class VideoRecorderInput extends File
     /**
      * @inheritDoc
      */
-    public function getUpdateOnLoadCode() : \Closure
+    public function getUpdateOnLoadCode(): \Closure
     {
-        return static function () {};
+        return static function (): void {
+        };
     }
 
     /**
@@ -68,7 +69,7 @@ class VideoRecorderInput extends File
     public static function getInstance(
         UploadHandler $upload_handler,
         string $label
-    ) : VideoRecorderInput {
+    ): VideoRecorderInput {
         global $DIC;
 
         $data_factory = new \ILIAS\Data\Factory();

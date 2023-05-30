@@ -7,16 +7,15 @@ use ILIAS\UI\Component\Component;
 use ILIAS\UI\Implementation\Component\Input\Field\MultiSelectUserInput;
 use ILIAS\UI\Implementation\Component\Input\Field\SrVideoInterviewRenderer;
 use ILIAS\UI\Implementation\Component\Input\Field\VideoRecorderInput;
+use ILIAS\UI\Implementation\Render\ComponentRenderer;
+use ILIAS\UI\Implementation\Render\RendererFactory;
 
 /**
  * Class Loader
  */
 class Loader implements \ILIAS\UI\Implementation\Render\Loader
 {
-    /**
-     * @var Container
-     */
-    protected $dic;
+    protected \ILIAS\DI\Container $dic;
 
     /**
      * @var \ilSrVideoInterviewPlugin
@@ -34,7 +33,7 @@ class Loader implements \ILIAS\UI\Implementation\Render\Loader
         $this->plugin = $plugin;
     }
 
-    public function getRendererFor(Component $component, array $contexts)
+    public function getRendererFor(Component $component, array $contexts): ComponentRenderer
     {
         if ($component instanceof VideoRecorderInput ||
             $component instanceof MultiSelectUserInput
@@ -55,7 +54,7 @@ class Loader implements \ILIAS\UI\Implementation\Render\Loader
         return $this->dic['ui.component_renderer_loader']->getRendererFor($component, $contexts);
     }
 
-    public function getRendererFactoryFor(Component $component)
+    public function getRendererFactoryFor(Component $component): RendererFactory
     {
         return $this->dic['ui.component_renderer_loader']->getRendererFactoryFor($component);
     }

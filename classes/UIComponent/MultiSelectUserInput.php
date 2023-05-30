@@ -24,7 +24,7 @@ class MultiSelectUserInput extends ilTextInputGUI
      * @param string $a_title
      * @param string $a_postvar
      */
-    public function __construct($a_title = "", $a_postvar = "")
+    public function __construct(string $a_title = "", string $a_postvar = "")
     {
         global $DIC;
         parent::__construct($a_title, $a_postvar);
@@ -35,7 +35,7 @@ class MultiSelectUserInput extends ilTextInputGUI
         iljQueryUtil::initjQueryUI();
     }
 
-    public function render($a_mode = "")
+    public function render(string $a_mode = ""): string
     {
         $id = str_replace('.', '_', uniqid('input_', true));
 
@@ -45,17 +45,17 @@ class MultiSelectUserInput extends ilTextInputGUI
             true
         );
 
-        if (strlen($this->getValue())) {
+        if (strlen($this->getValue()) !== 0) {
             $tpl->setCurrentBlock("prop_text_propval");
             $tpl->setVariable("PROPERTY_VALUE", ilUtil::prepareFormOutput($this->getValue()));
             $tpl->parseCurrentBlock();
         }
-        if (strlen($this->getInlineStyle())) {
+        if (strlen($this->getInlineStyle()) !== 0) {
             $tpl->setCurrentBlock("stylecss");
             $tpl->setVariable("CSS_STYLE", ilUtil::prepareFormOutput($this->getInlineStyle()));
             $tpl->parseCurrentBlock();
         }
-        if (strlen($this->getCssClass())) {
+        if (strlen($this->getCssClass()) !== 0) {
             $tpl->setCurrentBlock("classcss");
             $tpl->setVariable('CLASS_CSS', ilUtil::prepareFormOutput($this->getCssClass()));
             $tpl->parseCurrentBlock();
@@ -72,7 +72,7 @@ class MultiSelectUserInput extends ilTextInputGUI
         if ($this->getMaxLength() != null) {
             $tpl->setVariable("MAXLENGTH", $this->getMaxLength());
         }
-        if (strlen($this->getSuffix())) {
+        if (strlen($this->getSuffix()) !== 0) {
             $tpl->setVariable("INPUT_SUFFIX", $this->getSuffix());
         }
 
@@ -93,7 +93,7 @@ class MultiSelectUserInput extends ilTextInputGUI
             } else {
                 $hidden = $this->getHiddenTag($postvar, $this->getValue());
             }
-            if ($hidden) {
+            if ($hidden !== '' && $hidden !== '0') {
                 $tpl->setVariable("HIDDEN_INPUT", $hidden);
             }
             $tpl->setVariable("DISABLED", " disabled=\"disabled\"");
@@ -134,7 +134,7 @@ class MultiSelectUserInput extends ilTextInputGUI
     /**
      * @inheritDoc
      */
-    public function getToolbarHTML() : string
+    public function getToolbarHTML(): string
     {
         return $this->render("text");
     }
@@ -145,7 +145,7 @@ class MultiSelectUserInput extends ilTextInputGUI
      * @param string $postvar
      * @return MultiSelectUserInput
      */
-    public static function getInstance(string $label = "", string $postvar = "") : self
+    public static function getInstance(string $label = "", string $postvar = ""): self
     {
         return (new self(
             $label,

@@ -25,24 +25,21 @@ class ilObjSrVideoInterviewParticipantGUI extends ilObjSrVideoInterviewGUI
     /**
      * @var string tab-name and translation-var
      */
-    const PARTICIPANT_TAB = 'participant_tab';
+    public const PARTICIPANT_TAB = 'participant_tab';
 
     /**
      * Participant GUI commands
      */
-    const CMD_PARTICIPANT_INDEX             = 'showAll';
-    const CMD_PARTICIPANT_SEARCH            = 'searchParticipant';
-    const CMD_PARTICIPANT_ADD               = 'addParticipants';
-    const CMD_PARTICIPANT_ADD_BY_ROLE       = 'addParticipantsByRole';
-    const CMD_PARTICIPANT_REMOVE            = 'removeParticipant';
-    const CMD_PARTICIPANT_NOTIFY            = 'notifyParticipant';
-    const CMD_PARTICIPANT_BROADCAST         = 'notifyAllParticipants';
-    const CMD_PARTICIPANT_CONFIRM_BROADCAST = 'confirmBroadcast';
+    public const CMD_PARTICIPANT_INDEX             = 'showAll';
+    public const CMD_PARTICIPANT_SEARCH            = 'searchParticipant';
+    public const CMD_PARTICIPANT_ADD               = 'addParticipants';
+    public const CMD_PARTICIPANT_ADD_BY_ROLE       = 'addParticipantsByRole';
+    public const CMD_PARTICIPANT_REMOVE            = 'removeParticipant';
+    public const CMD_PARTICIPANT_NOTIFY            = 'notifyParticipant';
+    public const CMD_PARTICIPANT_BROADCAST         = 'notifyAllParticipants';
+    public const CMD_PARTICIPANT_CONFIRM_BROADCAST = 'confirmBroadcast';
 
-    /**
-     * @var ilToolbarGUI
-     */
-    protected $toolbar;
+    protected ilToolbarGUI $toolbar;
 
     /**
      * Initialise ilObjVideoInterviewParticipantGUI and load further dependencies.
@@ -63,7 +60,7 @@ class ilObjSrVideoInterviewParticipantGUI extends ilObjSrVideoInterviewGUI
     /**
      * dispatches the given command and calls the corresponding method.
      */
-    public function executeCommand() : void
+    public function executeCommand(): void
     {
         $this->tabs->activateTab(self::PARTICIPANT_TAB);
         $cmd = $this->ctrl->getCmd(self::CMD_PARTICIPANT_INDEX);
@@ -92,7 +89,7 @@ class ilObjSrVideoInterviewParticipantGUI extends ilObjSrVideoInterviewGUI
      * this method adds a toolbar to the page, from which users can be added as participants
      * and later invited via broadcast-method.
      */
-    protected function setupToolbar() : void
+    protected function setupToolbar(): void
     {
         // general toolbar options
         $this->toolbar->setFormAction($this->ctrl->getFormActionByClass(self::class));
@@ -121,11 +118,11 @@ class ilObjSrVideoInterviewParticipantGUI extends ilObjSrVideoInterviewGUI
         $add_by_role_btn = ilLinkButton::getInstance();
         $add_by_role_btn->setCaption($this->txt('add_participants_by_role'), false);
         $add_by_role_btn->setUrl($this->ctrl->getLinkTargetByClass(
-            array(
+            [
                 // delegate to ilRepositorySearchGUI
                 self::class,
-                ilRepositorySearchGUI::class
-            )
+                ilRepositorySearchGUI::class,
+            ]
         ));
 
         $this->toolbar->addButtonInstance($add_by_role_btn);
@@ -147,28 +144,22 @@ class ilObjSrVideoInterviewParticipantGUI extends ilObjSrVideoInterviewGUI
      * returns a json-array that contains all users for a given search-term,
      * used as an ajax-autocomplete datasource by the toolbars multi-select-user-input.
      */
-    protected function searchParticipant() : void
+    protected function searchParticipant(): void
     {
         $term  = filter_input(INPUT_GET, "term");
-        $users = array();
+        $users = [];
         foreach (ilObjUser::searchUsers($term) as $user) {
-            $users[] = array(
-                'label' => "{$user['firstname']} {$user['lastname']} [{$user['login']}]",
-                'value' => $user['usr_id'],
-            );
+            $users[] = ['label' => "{$user['firstname']} {$user['lastname']} [{$user['login']}]", 'value' => $user['usr_id']];
         }
 
         if (empty($users)) {
-            $users = array(
-                'label' => $this->txt('nothing_found'),
-                'value' => "",
-            );
+            $users = ['label' => $this->txt('nothing_found'), 'value' => ""];
         }
 
         $this->http->saveResponse(
             $this->http
                 ->response()
-                ->withBody(Streams::ofString(json_encode($users)))
+                ->withBody(Streams::ofString(json_encode($users, JSON_THROW_ON_ERROR)))
                 ->withHeader('Content-Type', 'application/json; charset=utf-8')
         );
 
@@ -182,13 +173,13 @@ class ilObjSrVideoInterviewParticipantGUI extends ilObjSrVideoInterviewGUI
      *
      * @param array $user_ids
      */
-    protected function addParticipantsForUserIds(array $user_ids) : void
+    protected function addParticipantsForUserIds(array $user_ids): void
     {
         if (!empty($user_ids)) {
-            $errors = array();
+            $errors = [];
             foreach ($user_ids as $user_id) {
                 $participant = $this->repository->getParticipantForObjByUserId($this->obj_id, $user_id);
-                if (null === $participant) {
+                if (!$participant instanceof \srag\Plugins\SrVideoInterview\VideoInterview\Entity\Participant) {
                     $errors[] = $this->repository->store(new Participant(
                         null,
                         false,
@@ -220,7 +211,7 @@ class ilObjSrVideoInterviewParticipantGUI extends ilObjSrVideoInterviewGUI
      * @param Participant $participant
      * @return bool
      */
-    protected function inviteParticipant(Participant $participant) : bool
+    protected function inviteParticipant(Participant $participant): bool
     {
         $message = str_replace(
             '{GOTO_URL}',
@@ -238,7 +229,7 @@ class ilObjSrVideoInterviewParticipantGUI extends ilObjSrVideoInterviewGUI
     /**
      * displays a confirmation screen, before the broadcast-method is called.
      */
-    protected function confirmBroadcast() : void
+    protected function confirmBroadcast(): void
     {
         $confirmation_screen = new ilConfirmationGUI();
         $confirmation_screen->setFormAction($this->ctrl->getFormActionByClass(self::class));
@@ -261,11 +252,12 @@ class ilObjSrVideoInterviewParticipantGUI extends ilObjSrVideoInterviewGUI
      *
      * @see ilObjSrVideoInterviewParticipantTableGUI
      */
-    protected function showAll() : void
+    protected function showAll(): void
     {
         $this->setupToolbar();
         $table_gui = new ilObjSrVideoInterviewParticipantTableGUI(
-            $this, self::CMD_PARTICIPANT_INDEX
+            $this,
+            self::CMD_PARTICIPANT_INDEX
         );
 
         $this->tpl->setContent($table_gui->getHTML());
@@ -277,7 +269,7 @@ class ilObjSrVideoInterviewParticipantGUI extends ilObjSrVideoInterviewGUI
      *
      * @see ilObjSrVideoInterviewParticipantGUI::setupToolbar()
      */
-    protected function addParticipants() : void
+    protected function addParticipants(): void
     {
         $this->addParticipantsForUserIds(
             (array) $this->http->request()->getParsedBody()['selected']
@@ -292,7 +284,7 @@ class ilObjSrVideoInterviewParticipantGUI extends ilObjSrVideoInterviewGUI
      *
      * @param array $user_ids
      */
-    public function addParticipantsByRole(array $user_ids) : void
+    public function addParticipantsByRole(array $user_ids): void
     {
         $this->addParticipantsForUserIds($user_ids);
     }
@@ -300,20 +292,17 @@ class ilObjSrVideoInterviewParticipantGUI extends ilObjSrVideoInterviewGUI
     /**
      * removes an existing participant and all saved Answers for the current VideoInterview.
      */
-    protected function removeParticipant() : void
+    protected function removeParticipant(): void
     {
         $participant_id = $this->http->request()->getQueryParams()['participant_id'];
         $participant    = $this->repository->getParticipantById($participant_id);
-        if (null !== $participant) {
-            if ($this->repository->deleteAnswersForParticipant($participant_id) &&
-                $this->repository->removeParticipantById($participant_id)
-            ) {
-                ilUtil::sendSuccess($this->txt('participant_removed'), true);
-                $this->ctrl->redirectByClass(
-                    self::class,
-                    self::CMD_PARTICIPANT_INDEX
-                );
-            }
+        if (null !== $participant && ($this->repository->deleteAnswersForParticipant($participant_id) &&
+            $this->repository->removeParticipantById($participant_id))) {
+            ilUtil::sendSuccess($this->txt('participant_removed'), true);
+            $this->ctrl->redirectByClass(
+                self::class,
+                self::CMD_PARTICIPANT_INDEX
+            );
         }
 
         ilUtil::sendFailure($this->txt('general_error'), true);
@@ -327,7 +316,7 @@ class ilObjSrVideoInterviewParticipantGUI extends ilObjSrVideoInterviewGUI
      * sends an email to ONE existing Participant for the current VideoInterview, if
      * he haven't been invited yet.
      */
-    protected function notifyParticipant() : void
+    protected function notifyParticipant(): void
     {
         $participant_id = $this->http->request()->getQueryParams()['participant_id'];
         $participant    = $this->repository->getParticipantById($participant_id);
@@ -364,11 +353,11 @@ class ilObjSrVideoInterviewParticipantGUI extends ilObjSrVideoInterviewGUI
      * sends an email to ALL existing Participants of the current VideoInterview, if
      * they haven't been invited yet.
      */
-    protected function notifyAllParticipants() : void
+    protected function notifyAllParticipants(): void
     {
         $participants = $this->repository->getParticipantsByObjId($this->obj_id);
         if (null !== $participants) {
-            $errors = array();
+            $errors = [];
             foreach ($participants as $participant) {
                 // skip notification if an invitation has already been sent.
                 if (!$participant->isInvitationSent()) {

@@ -22,15 +22,15 @@ use ilTemplateException;
  */
 class SrVideoInterviewRenderer extends Renderer
 {
-    const JAVASCRIPT_DIR = './Customizing/global/plugins/Services/Repository/RepositoryObject/SrVideoInterview/js/default/UIComponent/';
-    const TEMPLATE_DIR   = './Customizing/global/plugins/Services/Repository/RepositoryObject/SrVideoInterview/templates/default/UIComponent/';
+    public const JAVASCRIPT_DIR = './Customizing/global/plugins/Services/Repository/RepositoryObject/SrVideoInterview/js/default/UIComponent/';
+    public const TEMPLATE_DIR   = './Customizing/global/plugins/Services/Repository/RepositoryObject/SrVideoInterview/templates/default/UIComponent/';
 
     /**
      * @var \ilSrVideoInterviewPlugin
      */
     protected $plugin;
 
-    public function setPluginInstance($plugin) : void
+    public function setPluginInstance($plugin): void
     {
         $this->plugin = $plugin;
     }
@@ -42,7 +42,7 @@ class SrVideoInterviewRenderer extends Renderer
      * @param RendererInterface $default_renderer
      * @return string
      */
-    protected function renderInputField(Template $tpl, Input $input, $id, RendererInterface $default_renderer) : string
+    protected function renderInputField(Template $tpl, Input $input, $id, RendererInterface $default_renderer): string
     {
         $tpl->setVariable("START", $this->plugin->txt('start'));
         $tpl->setVariable("RETAKE", $this->plugin->txt('retake'));
@@ -59,7 +59,7 @@ class SrVideoInterviewRenderer extends Renderer
      * @param ResourceRegistry $registry
      * @return void|null
      */
-    public function registerResources(ResourceRegistry $registry)
+    public function registerResources(ResourceRegistry $registry): void
     {
         // override renderer defaults
     }
@@ -70,7 +70,7 @@ class SrVideoInterviewRenderer extends Renderer
      * @return string
      * @throws ilTemplateException
      */
-    public function render(Component $component, RendererInterface $default_renderer) : string
+    public function render(Component $component, RendererInterface $default_renderer): string
     {
         global $DIC;
 
@@ -84,13 +84,7 @@ class SrVideoInterviewRenderer extends Renderer
             $settings->upload_url   = $component->getUploadHandler()->getUploadURL();
             $settings->removal_url  = $component->getUploadHandler()->getFileRemovalURL();
             $settings->download_url = $component->getUploadHandler()->getExistingFileDownloadURL();
-            $settings->lng_vars = array(
-                'retake' => $this->plugin->txt('retake'),
-                'start' => $this->plugin->txt('start'),
-                'stop' => $this->plugin->txt('stop'),
-                'record' => $this->plugin->txt('record'),
-                'general_error' => $this->plugin->txt('general_error'),
-            );
+            $settings->lng_vars = ['retake' => $this->plugin->txt('retake'), 'start' => $this->plugin->txt('start'), 'stop' => $this->plugin->txt('stop'), 'record' => $this->plugin->txt('record'), 'general_error' => $this->plugin->txt('general_error')];
 
             $global_template->addCss("./Customizing/global/plugins/Services/Repository/RepositoryObject/SrVideoInterview/css/default/UIComponent/style.video_recorder_input.css");
 
@@ -123,8 +117,8 @@ class SrVideoInterviewRenderer extends Renderer
         }
 
         $component = $component->withOnLoadCode(
-            static function($id) use ($settings) {
-                $settings = json_encode($settings);
+            static function ($id) use ($settings) {
+                $settings = json_encode($settings, JSON_THROW_ON_ERROR);
                 return "il.Plugins.SrVideoInterview.init('{$id}', '{$settings}')";
             }
         );
@@ -142,12 +136,8 @@ class SrVideoInterviewRenderer extends Renderer
     /**
      * @return string[]
      */
-    protected function getComponentInterfaceName() : array
+    protected function getComponentInterfaceName(): array
     {
-        return array(
-            VideoRecorderInput::class,
-//            MultiSelectUserInput::class,
-        );
+        return [VideoRecorderInput::class];
     }
-
 }

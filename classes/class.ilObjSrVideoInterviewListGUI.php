@@ -14,17 +14,14 @@ use srag\Plugins\SrVideoInterview\VideoInterview\Entity\Participant;
  */
 class ilObjSrVideoInterviewListGUI extends ilObjectPluginListGUI
 {
-    /**
-     * @var VideoInterviewRepository
-     */
-    protected $repository;
+    protected \srag\Plugins\SrVideoInterview\Repository\VideoInterviewRepository $repository;
 
     /**
      * ilObjSrVideoInterviewListGUI constructor.
      *
      * @param int $a_context
      */
-    public function __construct($a_context = self::CONTEXT_REPOSITORY)
+    public function __construct(int $a_context = self::CONTEXT_REPOSITORY)
     {
         global $DIC;
 
@@ -39,7 +36,7 @@ class ilObjSrVideoInterviewListGUI extends ilObjectPluginListGUI
     /**
      * @inheritDoc
      */
-    public function initType() : void
+    public function initType(): void
     {
         $this->type = ilSrVideoInterviewPlugin::PLUGIN_ID;
     }
@@ -48,7 +45,7 @@ class ilObjSrVideoInterviewListGUI extends ilObjectPluginListGUI
      * @inheritDoc
      * @return string
      */
-    public function getGuiClass() : string
+    public function getGuiClass(): string
     {
         return ilObjSrVideoInterviewGUI::class;
     }
@@ -59,7 +56,7 @@ class ilObjSrVideoInterviewListGUI extends ilObjectPluginListGUI
      * @ineritdoc
      * @return array
      */
-    public function getProperties() : array
+    public function getProperties(): array
     {
         $parent = parent::getProperties();
 
@@ -73,13 +70,10 @@ class ilObjSrVideoInterviewListGUI extends ilObjectPluginListGUI
                     'red'
                 ;
 
-                $parent[] = array(
-                    'property' => $this->txt('status'),
-                    'value'    => "
+                $parent[] = ['property' => $this->txt('status'), 'value'    => "
                         <div class=\"sr-list-view-item\">
                             <p class=\"sr-status-light\" style=\"background-color: {$status_light};\"></p>
-                        </div>"
-                );
+                        </div>"];
             }
         }
 
@@ -90,28 +84,28 @@ class ilObjSrVideoInterviewListGUI extends ilObjectPluginListGUI
      * initialises the base-commands of a VideoInterview.
      * @return array
      */
-    public function initCommands()
+    public function initCommands(): array
     {
         $this->copy_enabled = false;
         $this->enableTags(true);
 
-        return array(
-            array(
+        return [
+            [
                 'permission' => 'read',
                 'cmd'        => ilObjSrVideoInterviewExerciseGUI::CMD_EXERCISE_INDEX,
                 'default'    => true
-            ),
-            array(
+            ],
+            [
                 'permission' => 'write',
                 'cmd'        => ilObjSrVideoInterviewParticipantGUI::CMD_PARTICIPANT_INDEX,
                 'default'    => false
-            ),
-            array(
+            ],
+            [
                 'permission' => 'write',
                 'cmd'        => ilObjSrVideoInterviewExerciseGUI::CMD_EXERCISE_EDIT,
                 'txt'        => $this->txt('edit'),
                 'default'    => false
-            ),
-        );
+            ],
+        ];
     }
 }

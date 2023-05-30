@@ -25,14 +25,14 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
     /**
      * @var string plugin dirs
      */
-    const TEMPLATE_DIR = './Customizing/global/plugins/Services/Repository/RepositoryObject/SrVideoInterview/templates/default/';
-    const CSS_DIR      = './Customizing/global/plugins/Services/Repository/RepositoryObject/SrVideoInterview/css/default/';
-    const JS_DIR       = './Customizing/global/plugins/Services/Repository/RepositoryObject/SrVideoInterview/js/default/';
+    public const TEMPLATE_DIR = './Customizing/global/plugins/Services/Repository/RepositoryObject/SrVideoInterview/templates/default/';
+    public const CSS_DIR      = './Customizing/global/plugins/Services/Repository/RepositoryObject/SrVideoInterview/css/default/';
+    public const JS_DIR       = './Customizing/global/plugins/Services/Repository/RepositoryObject/SrVideoInterview/js/default/';
 
     /**
      * @var string repository object tab (must be called settings, to work properly with parent commands)
      */
-    const VIDEO_INTERVIEW_TAB = 'settings';
+    public const VIDEO_INTERVIEW_TAB = 'settings';
 
     /**
      * Repository Object commands (replace by parent methods when implementing m:1)
@@ -40,18 +40,12 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
      * @see ilObjectGUI::editObject()
      * @see ilObjectGUI::updateObject()
      */
-    const CMD_VIDEO_INTERVIEW_EDIT   = 'editVideoInterview';
-    const CMD_VIDEO_INTERVIEW_UPDATE = 'updateVideoInterview';
+    public const CMD_VIDEO_INTERVIEW_EDIT   = 'editVideoInterview';
+    public const CMD_VIDEO_INTERVIEW_UPDATE = 'updateVideoInterview';
 
-    /**
-     * @var \ILIAS\DI\HTTPServices
-     */
-    protected $http;
+    protected \ILIAS\DI\HTTPServices $http;
 
-    /**
-     * @var ILIAS\Refinery\Factory
-     */
-    protected $refinery;
+    protected ILIAS\Refinery\Factory $refinery;
 
     /**
      * @var Services
@@ -71,22 +65,13 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
     /**
      * @var \ILIAS\UI\Renderer
      */
-    protected $custom_renderer;
+    protected \ILIAS\UI\Implementation\DefaultRenderer $custom_renderer;
 
-    /**
-     * @var VideoInterviewRepository
-     */
-    protected $repository;
+    protected \srag\Plugins\SrVideoInterview\Repository\VideoInterviewRepository $repository;
 
-    /**
-     * @var ilObjSrVideoInterviewUploadHandlerGUI
-     */
-    protected $video_upload_handler;
+    protected \ilObjSrVideoInterviewUploadHandlerGUI $video_upload_handler;
 
-    /**
-     * @var ilObjUser
-     */
-    protected $user;
+    protected ilObjUser $user;
 
     /**
      * Initialise ilObjSrVideoInterviewGUI and declare further dependencies.
@@ -95,7 +80,7 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
      * @param int $a_id_type
      * @param int $a_parent_node_id
      */
-    public function __construct($a_ref_id = 0, $a_id_type = self::REPOSITORY_NODE_ID, $a_parent_node_id = 0)
+    public function __construct(int $a_ref_id = 0, int $a_id_type = self::REPOSITORY_NODE_ID, int $a_parent_node_id = 0)
     {
         global $DIC;
 
@@ -121,7 +106,7 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
      * @inheritDoc
      * @return string
      */
-    final public function getType() : string
+    final public function getType(): string
     {
         return ilSrVideoInterviewPlugin::PLUGIN_ID;
     }
@@ -130,7 +115,7 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
      * @inheritDoc
      * @return string
      */
-    final public function getAfterCreationCmd() : string
+    final public function getAfterCreationCmd(): string
     {
         return ilObjSrVideoInterviewExerciseGUI::CMD_EXERCISE_EDIT;
     }
@@ -139,7 +124,7 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
      * @inheritDoc
      * @return string
      */
-    final public function getStandardCmd() : string
+    final public function getStandardCmd(): string
     {
         return ilObjSrVideoInterviewExerciseGUI::CMD_EXERCISE_INDEX;
     }
@@ -150,7 +135,7 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
      *
      * @param ilObject $newObj
      */
-    public function afterSave(ilObject $newObj) : void
+    public function afterSave(ilObject $newObj): void
     {
         $exercise = new Exercise(
             null,
@@ -172,7 +157,7 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
      *
      * @throws ilCtrlException
      */
-    public function executeCommand() : void
+    public function executeCommand(): void
     {
         $this->setupTabs(); // when using setTabs(), tabs cannot be activated.
         $next_class = $this->ctrl->getNextClass($this);
@@ -223,7 +208,7 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
      *
      * @param string $cmd
      */
-    public function performCommand(string $cmd) : void
+    public function performCommand(string $cmd): void
     {
         switch ($cmd) {
             case self::CMD_VIDEO_INTERVIEW_EDIT:
@@ -244,7 +229,7 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
     /**
      * adds our repository object tabs according to a users permission.
      */
-    final protected function setupTabs() : void
+    final protected function setupTabs(): void
     {
         if ($this->access->checkAccess("read", "", $this->ref_id)) {
             $this->tabs->addTab(
@@ -298,64 +283,48 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
      * @param array $values
      * @return Standard
      */
-    protected function buildVideoInterviewForm(array $values = array(
-        'title' => "",
-        'description' => "",
-        'exercise_detailed_description' => "",
-        'exercise_resource' => "",
-    )) : Standard
+    protected function buildVideoInterviewForm(array $values = ['title' => "", 'description' => "", 'exercise_detailed_description' => "", 'exercise_resource' => ""]): Standard
     {
-        $video_interview_inputs = array(
-            'title' => $this->ui_factory
-                ->input()
-                ->field()
-                ->text($this->txt('title'))
-                ->withValue($values['title'])
-                ->withRequired(true)
-                ->withAdditionalTransformation(
-                    $this->refinery->custom()->transformation(
-                        function (string $value) {
-                            if (null !== $value) {
-                                $this->object->setTitle($value);
-                                return $value;
-                            }
-
-                            return null;
-                        }
-                    )
-                )
-            ,
-
-            'description' => $this->ui_factory
-                ->input()
-                ->field()
-                ->text($this->txt('description'))
-                ->withValue($values['description'])
-                ->withAdditionalTransformation(
-                    $this->refinery->custom()->transformation(
-                        function (string $value) {
-                            $this->object->setDescription($value);
+        $video_interview_inputs = ['title' => $this->ui_factory
+            ->input()
+            ->field()
+            ->text($this->txt('title'))
+            ->withValue($values['title'])
+            ->withRequired(true)
+            ->withAdditionalTransformation(
+                $this->refinery->custom()->transformation(
+                    function (string $value): ?string {
+                        if (null !== $value) {
+                            $this->object->setTitle($value);
                             return $value;
                         }
-                    )
+
+                        return null;
+                    }
                 )
-            ,
-        );
+            ), 'description' => $this->ui_factory
+            ->input()
+            ->field()
+            ->text($this->txt('description'))
+            ->withValue($values['description'])
+            ->withAdditionalTransformation(
+                $this->refinery->custom()->transformation(
+                    function (string $value): string {
+                        $this->object->setDescription($value);
+                        return $value;
+                    }
+                )
+            )];
 
-        $exercise_inputs = array(
-            'exercise_detailed_description' => $this->ui_factory
-                ->input()
-                ->field()
-                ->textarea($this->txt('exercise_detailed_description'))
-                ->withValue($values['exercise_detailed_description'])
-                ->withRequired(true)
-            ,
-
-            'exercise_resource' => VideoRecorderInput::getInstance(
+        $exercise_inputs = ['exercise_detailed_description' => $this->ui_factory
+            ->input()
+            ->field()
+            ->textarea($this->txt('exercise_detailed_description'))
+            ->withValue($values['exercise_detailed_description'])
+            ->withRequired(true), 'exercise_resource' => VideoRecorderInput::getInstance(
                 $this->video_upload_handler,
                 "Video"
-            )->withValue($values['exercise_resource']),
-        );
+            )->withValue($values['exercise_resource'])];
 
         return $this->ui_factory
             ->input()
@@ -377,7 +346,7 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
      *
      * @TODO: move to ExerciseGUI when implementing m:1.
      */
-    protected function updateVideoInterview() : void
+    protected function updateVideoInterview(): void
     {
         // assuming we use 1:1 cardinality and can only retrieve one object yet
         $exercise = $this->repository->getExercisesByObjId($this->obj_id)[0];
@@ -425,14 +394,11 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
      *
      * @TODO: move to ExerciseGUI when implementing m:1
      */
-    protected function editVideoInterview() : void
+    protected function editVideoInterview(): void
     {
         // assuming we use 1:1 cardinality and can only retrieve one object yet
         $exercise = $this->repository->getExercisesByObjId($this->obj_id)[0];
-        $data = array(
-            'title' => $this->object->getTitle(),
-            'description' => $this->object->getDescription()
-        );
+        $data = ['title' => $this->object->getTitle(), 'description' => $this->object->getDescription()];
 
         if (null !== $exercise) {
             $this->ctrl->setParameterByClass(
@@ -458,7 +424,7 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
      * @param string $resource_id
      * @return string
      */
-    protected function getRecordedVideoHTML(string $resource_id) : string
+    protected function getRecordedVideoHTML(string $resource_id): string
     {
         $download_url = $this->video_upload_handler->getExistingFileDownloadURL();
         $file_identifier_key = $this->video_upload_handler->getFileIdentifierParameterName();
@@ -482,7 +448,7 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
      * @param string $message
      * @return array
      */
-    protected function sendMailToUser(int $user_id, string $title, string $message) : array
+    protected function sendMailToUser(int $user_id, string $title, string $message): array
     {
         // use logged-in user (actor) as sender
         $mail = new ilMail($this->user->getId());
@@ -495,14 +461,14 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
             '',
             $title,
             $message,
-            array()
+            []
         );
     }
 
     /**
      * displays a general "permission denied" error toast.
      */
-    protected function permissionDenied() : void
+    protected function permissionDenied(): void
     {
         $this->tpl->setContent(
             $this->ui_renderer->render(
@@ -516,7 +482,7 @@ class ilObjSrVideoInterviewGUI extends ilObjectPluginGUI
     /**
      * displays a general "object not found" error toast.
      */
-    protected function objectNotFound() : void
+    protected function objectNotFound(): void
     {
         $this->tpl->setContent(
             $this->ui_renderer->render(

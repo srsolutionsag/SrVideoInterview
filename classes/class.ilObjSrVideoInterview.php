@@ -11,7 +11,7 @@ class ilObjSrVideoInterview extends ilObjectPlugin
     /**
      * sets the plugin repository id
      */
-    protected function initType() : void
+    protected function initType(): void
     {
         $this->type = ilSrVideoInterviewPlugin::PLUGIN_ID;
     }
@@ -21,7 +21,7 @@ class ilObjSrVideoInterview extends ilObjectPlugin
      *
      * @TODO: implement this method
      */
-    protected function doDelete()
+    protected function doDelete(): void
     {
         // $this->id is the VideoInterview (obj) id, that is about to be deleted.
     }

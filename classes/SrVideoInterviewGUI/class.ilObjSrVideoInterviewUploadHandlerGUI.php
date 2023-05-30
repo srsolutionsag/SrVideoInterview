@@ -19,7 +19,7 @@ use ILIAS\MainMenu\Storage\Resource\Stakeholder\ResourceStakeholder;
  */
 class ilObjSrVideoInterviewUploadHandlerGUI extends AbstractCtrlAwareUploadHandler
 {
-    const CMD_DOWNLOAD = 'download';
+    public const CMD_DOWNLOAD = 'download';
 
     /**
      * @var Services
@@ -28,7 +28,7 @@ class ilObjSrVideoInterviewUploadHandlerGUI extends AbstractCtrlAwareUploadHandl
     /**
      * @var ResourceStakeholder
      */
-    private $stakeholder;
+    private \ILIAS\MainMenu\Storage\Resource\Stakeholder\AbstractResourceStakeholder $stakeholder;
 
     /**
      * ilUIDemoFileUploadHandlerGUI constructor.
@@ -36,11 +36,11 @@ class ilObjSrVideoInterviewUploadHandlerGUI extends AbstractCtrlAwareUploadHandl
     public function __construct()
     {
         $this->storage = new Services();
-        $this->stakeholder = new class extends AbstractResourceStakeholder {
+        $this->stakeholder = new class () extends AbstractResourceStakeholder {
             /**
              * @return string
              */
-            public function getId() : string
+            public function getId(): string
             {
                 return ilSrVideoInterviewPlugin::PLUGIN_ID;
             }
@@ -52,7 +52,7 @@ class ilObjSrVideoInterviewUploadHandlerGUI extends AbstractCtrlAwareUploadHandl
     /**
      * @inheritDoc
      */
-    public function executeCommand() : void
+    public function executeCommand(): void
     {
         switch ($this->ctrl->getCmd()) {
             case self::CMD_DOWNLOAD:
@@ -71,7 +71,7 @@ class ilObjSrVideoInterviewUploadHandlerGUI extends AbstractCtrlAwareUploadHandl
      *
      * @return string
      */
-    public function getExistingFileDownloadURL() : string
+    public function getExistingFileDownloadURL(): string
     {
         return $this->ctrl->getLinkTargetByClass(
             self::class,
@@ -84,7 +84,7 @@ class ilObjSrVideoInterviewUploadHandlerGUI extends AbstractCtrlAwareUploadHandl
     /**
      * @inheritDoc
      */
-    public function getUploadURL() : string
+    public function getUploadURL(): string
     {
         // override upload link to enable async.
         return $this->ctrl->getLinkTargetByClass(
@@ -98,7 +98,7 @@ class ilObjSrVideoInterviewUploadHandlerGUI extends AbstractCtrlAwareUploadHandl
     /**
      * @inheritDoc
      */
-    public function getFileRemovalURL() : string
+    public function getFileRemovalURL(): string
     {
         // override upload link to enable async.
         return $this->ctrl->getLinkTargetByClass(
@@ -112,7 +112,7 @@ class ilObjSrVideoInterviewUploadHandlerGUI extends AbstractCtrlAwareUploadHandl
     /**
      * @inheritDoc
      */
-    public function getExistingFileInfoURL() : string
+    public function getExistingFileInfoURL(): string
     {
         // override upload link to enable async.
         return $this->ctrl->getLinkTargetByClass(
@@ -126,7 +126,7 @@ class ilObjSrVideoInterviewUploadHandlerGUI extends AbstractCtrlAwareUploadHandl
     /**
      * @param string $identifier
      */
-    protected function downloadExistingFile(string $identifier) : void
+    protected function downloadExistingFile(string $identifier): void
     {
         $identification = $this->storage->find($identifier);
 
@@ -142,7 +142,7 @@ class ilObjSrVideoInterviewUploadHandlerGUI extends AbstractCtrlAwareUploadHandl
     /**
      * @inheritDoc
      */
-    protected function getUploadResult() : HandlerResultInterface
+    protected function getUploadResult(): HandlerResultInterface
     {
         $this->upload->process();
         /**
@@ -168,11 +168,10 @@ class ilObjSrVideoInterviewUploadHandlerGUI extends AbstractCtrlAwareUploadHandl
      * @param string $identifier
      * @return HandlerResultInterface
      */
-    protected function getRemoveResult(string $identifier) : HandlerResultInterface
+    protected function getRemoveResult(string $identifier): HandlerResultInterface
     {
         $id = $this->storage->find($identifier);
         if ($id !== null) {
-
             $this->storage->stream($id)->getStream();
             $this->storage->remove($id);
             return new BasicHandlerResult(
@@ -195,7 +194,7 @@ class ilObjSrVideoInterviewUploadHandlerGUI extends AbstractCtrlAwareUploadHandl
      * @param string $identifier
      * @return FileInfoResult
      */
-    protected function getInfoResult(string $identifier) : FileInfoResult
+    public function getInfoResult(string $identifier): ?FileInfoResult
     {
         $id = $this->storage->find($identifier);
 
@@ -223,7 +222,7 @@ class ilObjSrVideoInterviewUploadHandlerGUI extends AbstractCtrlAwareUploadHandl
      * @param array $file_ids
      * @return array
      */
-    public function getInfoForExistingFiles(array $file_ids) : array
+    public function getInfoForExistingFiles(array $file_ids): array
     {
         $infos = [];
         foreach ($file_ids as $file_id) {
