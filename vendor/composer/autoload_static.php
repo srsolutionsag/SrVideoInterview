@@ -21,6 +21,7 @@ class ComposerStaticInit357b332b054365bb3c0e8d6632cb069c
     );
 
     public static $classMap = array (
+        'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
         'ILIAS\\UI\\Implementation\\Component\\Input\\Field\\MultiSelectUserInput' => __DIR__ . '/../..' . '/classes/UIComponent/MultiSelectUserInput.php',
         'ILIAS\\UI\\Implementation\\Component\\Input\\Field\\SrVideoInterviewRenderer' => __DIR__ . '/../..' . '/classes/UIComponent/SrVideoInterviewRenderer.php',
         'ILIAS\\UI\\Implementation\\Component\\Input\\Field\\VideoRecorderInput' => __DIR__ . '/../..' . '/classes/UIComponent/VideoRecorderInput.php',
