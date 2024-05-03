@@ -45,7 +45,7 @@ class VideoRecorderInput extends File
     /**
      * @inheritDoc
      */
-    protected function isClientSideValueOk($value): bool
+    public function isClientSideValueOk($value): bool
     {
         // @TODO: prove if value is correct
         return true;
